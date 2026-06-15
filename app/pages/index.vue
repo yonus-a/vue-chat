@@ -8,6 +8,7 @@ import ChatDashboard from '~/components/chat/ChatDashboard.vue';
 
 definePageMeta({
   layout: 'chat',
+  hideBottomNav: true,
 });
 
 export default defineComponent({
