@@ -133,7 +133,7 @@
 <script lang="ts">
 import { defineComponent, computed, ref, type PropType } from 'vue';
 import type { Contact, ExtendedMessage } from '~/types/chat';
-import { useProfileStore, useDate, useI18n } from '#imports';
+import { useChatStore, useDate, useI18n } from '#imports';
 import { useChatActionStore } from '~/stores/chatActionStore';
 import BubbleVideo from './chat-bubbles/BubbleVideo.vue';
 import FileDisplay from './chat-bubbles/FileDisplay.vue';
@@ -177,12 +177,12 @@ export default defineComponent({
         RequestCard,
     },
     setup(props) {
-        const profileStore = useProfileStore()
+        const chatStore = useChatStore()
         const chatActionStore = useChatActionStore()
         const { formatDateShort, formatTime } = useDate()
         const { t } = useI18n()
 
-        const isMine = computed(() => props.message.senderId === profileStore.userData.id)
+        const isMine = computed(() => props.message.senderId === chatStore.currentUserId)
         const imageDisplayRef = ref<ImageDisplayInstance | null>(null);
 
         // Typing as any to forcefully bypass the TypeScript compilation error for "openMenu does not exist"
@@ -283,7 +283,7 @@ export default defineComponent({
         const replyName = computed(() => {
             if (!props.message.repliedTo) return ''
             let message = props.message.repliedTo
-            if (message.senderId === profileStore.userData.id) return t('chat.you')
+            if (message.senderId === chatStore.currentUserId) return t('chat.you')
             return props.contact.name
         })
 

@@ -6,7 +6,7 @@
         <!-- Video Background Layer -->
         <video v-show="showVideo" ref="pipVideo" autoplay playsinline muted
             class="absolute inset-0 w-full h-full object-cover z-0"
-            :class="{ 'scale-x-[-1]': !callStore.isSharingScreen && targetMember.id === profileStore.userData.id }"></video>
+            :class="{ 'scale-x-[-1]': !callStore.isSharingScreen && targetMember.id === chatStore.currentUserId }"></video>
 
         <!-- UI Content Layer -->
         <div v-if="!showVideo" class="relative pointer-events-none select-none z-10 w-full h-full flex flex-col items-center justify-center gap-y-4 bg-black/20">
@@ -37,7 +37,7 @@ import { useDraggable, useWindowSize } from '@vueuse/core';
 import { useRouter } from 'vue-router';
 import ContactAvatar from '../chat/contact/ContactAvatar.vue';
 
-const profileStore = useProfileStore();
+const chatStore = useChatStore();
 const callStore = useCallStore();
 const router = useRouter();
 
@@ -119,7 +119,7 @@ onMounted(() => {
 });
 
 const targetMember = computed(() => {
-    const others = callStore.callMembers.filter(m => m.id !== profileStore.userData.id);
+    const others = callStore.callMembers.filter(m => m.id !== chatStore.currentUserId);
     return others.length > 0 ? others[0] : callStore.callMembers[0];
 });
 /**
@@ -129,7 +129,7 @@ const targetMember = computed(() => {
  * 3. My Local Camera stream (if enabled)
  */
 const activeStream = computed(() => {
-    const others = callStore.callMembers.filter(m => m.id !== profileStore.userData.id);
+    const others = callStore.callMembers.filter(m => m.id !== chatStore.currentUserId);
     const otherStream = others.find(m => m.stream)?.stream;
 
     if (otherStream) return otherStream;
@@ -138,7 +138,7 @@ const activeStream = computed(() => {
 
 const showVideo = computed(() => {
     // Show if others have a stream OR if I am sharing/streaming cam
-    const otherStreaming = callStore.callMembers.some(m => m.id !== profileStore.userData.id && m.stream);
+    const otherStreaming = callStore.callMembers.some(m => m.id !== chatStore.currentUserId && m.stream);
     if (otherStreaming) return true;
 
     return callStore.isSharingScreen || !callStore.isCamDisabled;

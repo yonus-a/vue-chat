@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { Message, Contact, FilterKeys } from "~/types/chat";
+import type { Message, Contact, FilterKeys, UserRoleKey } from "~/types/chat";
 import { useWindowSize } from "~/composables/useWindowSize";
 
 export const useChatStore = defineStore("chat", () => {
   const { height: windowHeight } = useWindowSize();
-  
 
   // Dynamic Calculation based on screen height
   const chatsPerPage = computed(() => {
@@ -35,6 +34,11 @@ export const useChatStore = defineStore("chat", () => {
   };
 
   // --- STATE ---
+  const currentUserId = ref(1);
+  const chosenRole = ref<UserRoleKey>("user");
+  const currentUserBirthDate = ref<Date | null>(
+    new Date("1999-11-25T00:00:00Z"),
+  );
   const activeConversationId = ref<number | null>(null);
   const messagesMap = ref<Record<number, Message[]>>({});
 
@@ -62,7 +66,7 @@ export const useChatStore = defineStore("chat", () => {
     pageSize: number,
     search: string = "",
   ): Contact[] => {
-    const myId = 99;
+    const myId = currentUserId.value;
     const now = new Date();
 
     const basePool: Contact[] = [
@@ -76,6 +80,7 @@ export const useChatStore = defineStore("chat", () => {
         isActive: false,
         unreadCount: 2,
         serviceType: "chat",
+        userType: ["user"],
         birthDate: getRandomBirthDate(),
         phoneNumber: "09134168227",
         nationalCode: "1235678901",
@@ -102,6 +107,7 @@ export const useChatStore = defineStore("chat", () => {
         isActive: true,
         unreadCount: 0,
         serviceType: "voice-call",
+        userType: ["user"],
         birthDate: getSpecificBirthDate(),
         phoneNumber: "09134168227",
         nationalCode: "1235678901",
@@ -140,6 +146,7 @@ export const useChatStore = defineStore("chat", () => {
         isActive: template.isActive,
         unreadCount: template.unreadCount,
         serviceType: template.serviceType,
+        userType: template.userType,
         phoneNumber: template.phoneNumber,
         nationalCode: template.nationalCode,
         birthDate: template.birthDate,
@@ -238,6 +245,7 @@ export const useChatStore = defineStore("chat", () => {
             isActive: true,
             unreadCount: 0,
             serviceType: "chat",
+            userType: ["user"],
             lastMessage: {
               id: -1,
               conversationId: -i - 1,
@@ -342,6 +350,9 @@ export const useChatStore = defineStore("chat", () => {
   });
 
   return {
+    currentUserId,
+    chosenRole,
+    currentUserBirthDate,
     conversationStates,
     activeConversationId,
     fetchConversations,

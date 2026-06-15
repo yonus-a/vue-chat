@@ -62,7 +62,7 @@ export default defineComponent({
             type: Boolean, default: true,
         },
         align: {
-            type: String as PropType<'left' | 'right' | 'top' | 'bottom' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'>,
+            type: String as PropType<'top' | null>,
             default: null
         },
         ignoreGlobal: { type: Boolean, default: false },
@@ -126,9 +126,8 @@ export default defineComponent({
         const panelPositionStyles = computed(() => {
             const isVisible = isOpen.value;
 
-            // Determine effective alignment (prop override vs auto-calculation)
-            const v = props.align?.includes('top') ? 'top' : props.align?.includes('bottom') ? 'bottom' : verticalAlign.value;
-            const h = props.align?.includes('left') ? 'left' : props.align?.includes('right') ? 'right' : horizontalAlign.value;
+            const v = props.align === 'top' ? 'top' : verticalAlign.value;
+            const h = horizontalAlign.value;
 
             const styles: any = {
                 opacity: isVisible ? '1' : '0',
@@ -180,25 +179,14 @@ export default defineComponent({
             }
         });
         const handleSelect = (key: string) => { emit('select', key); closeMenu(); };
-        const getColorClass = (color?: string) => {
-            switch (color) {
-                case 'success': return 'text-success fill-success';
-                case 'error': return 'text-error fill-error';
-                case 'primary': return 'text-primary fill-primary';
-                case 'warning': return 'text-warning fill-warning';
-                default: return 'text-on-background fill-on-background';
-            }
-        };
 
         const handleContentClick = () => {
             if (hasCustomContent.value) return
-            //if (!props.autoClose) return
-            //closeMenu()
         }
 
         expose({ open: () => { globalActiveMenuId.value = instanceId; isOpen.value = true; calculateAlignment(); }, close: closeMenu });
 
-        return { isOpen, handleContentClick, menuWrapper, panelRef, toggleMenu, closeMenu, handleSelect, getColorClass, panelPositionStyles, hasCustomContent };
+        return { isOpen, handleContentClick, menuWrapper, panelRef, toggleMenu, closeMenu, handleSelect, panelPositionStyles, hasCustomContent };
     }
 });
 </script>

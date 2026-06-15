@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { useProfileStore, useDate, useI18n, useAppToast } from "#imports";
+import { useDate, useI18n, useAppToast } from "#imports";
 import type { ExtendedMessage, Message } from "~/types/chat";
 import { useEventBus } from "@vueuse/core";
 import { useChatStore } from "~/stores/chatStore";
@@ -12,7 +12,6 @@ import type {
 import type { Provider } from "~/types/service";
 
 export const useChatActionStore = defineStore("chatAction", () => {
-  const profileStore = useProfileStore();
   const { t } = useI18n();
   const { openToast } = useAppToast();
   const { formatDateShort, formatTime } = useDate();
@@ -66,7 +65,7 @@ export const useChatActionStore = defineStore("chatAction", () => {
     if (selectedMessages.value.size !== 1) return false;
     const msg = selectedArray.value[0];
     if (!msg) return false;
-    const isMine = msg.senderId === profileStore.userData.id;
+    const isMine = msg.senderId === chatStore.currentUserId;
     const hoursPassed =
       (Date.now() - new Date(msg.date).getTime()) / (1000 * 60 * 60);
     return isMine && hoursPassed < editWindowHours.value;
@@ -74,7 +73,7 @@ export const useChatActionStore = defineStore("chatAction", () => {
   const canDelete = computed(() => {
     if (selectedMessages.value.size === 0) return false;
     return selectedArray.value.every((msg) => {
-      const isMine = msg.senderId === profileStore.userData.id;
+      const isMine = msg.senderId === chatStore.currentUserId;
       const hoursPassed =
         (Date.now() - new Date(msg.date).getTime()) / (1000 * 60 * 60);
       return isMine && hoursPassed < editWindowHours.value;
@@ -259,7 +258,7 @@ export const useChatActionStore = defineStore("chatAction", () => {
   const copyMessageText = () => {
     const textToCopy = selectedArray.value
       .map((msg) => {
-        const isMine = msg.senderId === profileStore.userData.id;
+        const isMine = msg.senderId === chatStore.currentUserId;
         const senderName = isMine ? t("chat.you") : msg.contact?.name || "User";
         const dateTime = `${formatDateShort(msg.date)}, ${formatTime(msg.date)}`;
         const content =
@@ -303,7 +302,7 @@ export const useChatActionStore = defineStore("chatAction", () => {
       conversationId: conversationId,
       date: new Date(),
       type: "text",
-      senderId: profileStore.userData.id,
+      senderId: chatStore.currentUserId,
       isSent: false,
       isRead: false,
       isEdited: false,
@@ -334,7 +333,7 @@ export const useChatActionStore = defineStore("chatAction", () => {
       conversationId: conversationId,
       date: new Date(),
       type: "text",
-      senderId: profileStore.userData.id,
+      senderId: chatStore.currentUserId,
       isSent: false,
       isRead: false,
       isEdited: false,

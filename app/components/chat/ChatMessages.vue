@@ -115,7 +115,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch, type PropType, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useI18n, useChatActionStore, useChatStore, useCallStore, useDate, useProfileStore } from '#imports';
+import { useI18n, useChatActionStore, useChatStore, useCallStore, useDate } from '#imports';
 import { useVirtualizer } from '@tanstack/vue-virtual';
 import ChatBubble from './ChatBubble.vue';
 import type { Message, MessageType, Contact, ExtendedMessage } from '~/types/chat';
@@ -144,7 +144,6 @@ export default defineComponent({
     setup(props) {
         const menuRef = ref<Menu | null>(null)
         const modal = ref<Modal | null>(null);
-        const profileStore = useProfileStore();
         const route = useRoute();
         const router = useRouter()
         const chatStore = useChatStore();
@@ -166,7 +165,7 @@ export default defineComponent({
         const isLoading = ref(false);
         const currentPage = ref(1);
         const maxPages = 5;
-        const currentUserId = profileStore.userData.id;
+        const currentUserId = chatStore.currentUserId;
 
         const MENU_KEYS = ['add-user'];
 
@@ -289,7 +288,7 @@ export default defineComponent({
                 const scenario = scenarios[id % scenarios.length];
 
                 const isMe = Math.floor(globalIndex / 2) % 2 === 0;
-                const senderId = isMe ? profileStore.userData.id : 2;
+                const senderId = isMe ? chatStore.currentUserId : 2;
 
                 const daysOffset = Math.floor(globalIndex / 5) * 1.5;
                 const minutesOffset = (globalIndex % 5) * 15;
@@ -310,7 +309,7 @@ export default defineComponent({
                         type: 'text',
                         text: `This is the original message ${repliedId} that got replied to.`,
                         isEdited: false,
-                        senderId: repliedIsMe ? profileStore.userData.id : 2,
+                        senderId: repliedIsMe ? chatStore.currentUserId : 2,
                         isSent: true,
                         isRead: true,
                     };
@@ -376,7 +375,7 @@ export default defineComponent({
             if (currentScroll < lastScrollTop) {
                 showOptionsBar.value = false;
             } else {
-                showOptionsBar.value = profileStore.chosenRole !== 'user';
+                showOptionsBar.value = chatStore.chosenRole !== 'user';
             }
             lastScrollTop = currentScroll;
 

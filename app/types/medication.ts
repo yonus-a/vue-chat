@@ -1,5 +1,4 @@
-export type MedicationPeriodType = "daily" | "hourly";
-export type RepetitionTypes = "day" | "hour" | "custom";
+export type MedicationPeriodType = "day" | "hour";
 
 export interface MedicationBrand {
   id: number;

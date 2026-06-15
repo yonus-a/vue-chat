@@ -14,29 +14,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-const profileStore = useProfileStore();
-const storiesStore = useStoriesStore();
 const chatStore = useChatStore();
 const pageContainer = ref<HTMLElement | null>(null);
 
 const lastScrollY = ref(0);
-const scrollThreshold = 10;
 
 const handleScroll = () => {
   const currentScrollY = pageContainer.value?.scrollTop;
   if (!currentScrollY) return;
-  if (
-    currentScrollY > lastScrollY.value + scrollThreshold &&
-    storiesStore.isStoriesOpen
-  ) {
-    storiesStore.isStoriesOpen = false;
-  }
   lastScrollY.value = currentScrollY;
 };
 
 onBeforeMount(() => {
   chatStore.fetchConversations("", 1);
-  profileStore.loadUserProfile();
-  storiesStore.fetchStories();
 });
 </script>

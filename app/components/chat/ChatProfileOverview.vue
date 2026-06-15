@@ -114,7 +114,7 @@
 import { defineComponent, type PropType, ref, watch, onMounted } from 'vue';
 import type { Contact } from '~/types/chat';
 import { useRoute, useRouter } from 'vue-router';
-import { useDate, useI18n, useCallStore, useProfileStore } from '#imports';
+import { useDate, useI18n, useCallStore, useChatStore } from '#imports';
 import profileBackground from '/images/chat/profile-background.webp'
 import ContactAvatar from './contact/ContactAvatar.vue';
 import FileDisplay from './profile/FileDisplay.vue';
@@ -145,7 +145,7 @@ export default defineComponent({
         const router = useRouter()
         const route = useRoute()
         const { t } = useI18n()
-        const profileStore = useProfileStore()
+        const chatStore = useChatStore()
         const imageList = ref<HTMLElement | null>(null)
         const isLoadingAttachements = ref(false)
         const isLoadingMedia = ref(false)
@@ -154,7 +154,7 @@ export default defineComponent({
         const currentFilePage = ref(0)
         const currentMediaPage = ref(1)
 
-        const role = computed(() => profileStore.chosenRole)
+        const role = computed(() => chatStore.chosenRole)
         const listHeight = computed(() => {
             if (!imageList.value) return 12;
             return imageList.value.clientHeight;

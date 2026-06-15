@@ -10,15 +10,10 @@
       "nationalCode": "کد ملی",
       "phoneNumber": "شماره تماس",
       "age": "سن",
-      "ageDisplay": "{year} سال",
       "files": "فایل ها",
       "media": "تصاویر"
     },
     "lastSeen": "آخرین بازدید {time}",
-    "nationalId": "کد ملی",
-    "age": "سن",
-    "ageText": "{years} سال",
-    "attachements": "پیوست ها",
     "options": {
       "end": "خاتمه",
       "refer": "ارجاع",
@@ -115,7 +110,6 @@
       "search": "جستجو ...",
       "available": "آماده ویزیت",
       "online": "آنلاین",
-      "add": "افزودن",
       "buttonText": {
         "single": "افزودن پزشک",
         "multiple": "افزودن ({count}) پزشک"
@@ -124,7 +118,6 @@
     "noProviders": "ارایه دهنده ای یافت نشد.",
     "requestCard": {
       "addMedic": {
-        "title": "افزودن پزشک :",
         "awaitingApproval": "در انتظار تایید بیمار...",
         "awaitingPayment": "در انتظار پرداخت...",
         "awaitingMedicApproval": "در انتظار تایید پزشک...",
@@ -137,10 +130,7 @@
         "confirmRequest": "تایید و نوبت گیری",
         "reject": "رد",
         "pay": "پرداخت",
-        "retry": "درخواست مجدد",
-        "error": {
-          "maxMedics": "حداکثر میتوانید {count} فرد را اضافه کنید."
-        }
+        "retry": "درخواست مجدد"
       },
       "infoAccess": {
         "patientTitle": "اجازه اشتراک ‌گذاری کد ملی",
@@ -185,7 +175,6 @@
     },
     "call": {
       "title": "تماس",
-      "you": "شما",
       "deviceDoesntSupport": "دستگاه شما از این قابلیت پشتیبانی نمیکند."
     },
     "board": {
@@ -199,16 +188,12 @@
     "prescription": {
       "title": "نسخه نویسی",
       "medicine": "داروها",
-      "initialDetection": "تشخیص اولیه",
       "medicationName": "نام دارو",
-      "brands": "برند",
       "dose": "دوز مصرف",
-      "usageLimit": "مقدار استفاده",
       "repetitionAmount": "تعداد تکرار",
       "usageMethod": "شیوه استفاده",
       "addMedications": "افزودن دارو",
       "warning": "خطا",
-      "repeat": "تکرار",
       "usage": "هر {count} {time}",
       "period": "دوره",
       "timePeriod": "مدت زمان",
@@ -220,16 +205,9 @@
         "hospitalization": "بستری کلینیک",
         "prescriptionDrugs": "تجویز نسخه"
       },
-      "priority": {
-        "title": "اولویت",
-        "high": "بالا",
-        "medium": "متوسط",
-        "low": "پایین"
-      },
       "success": "با موفقیت ثبت شد",
       "hospitalizationSuccess": "فرم بستری با موفقیت ارسال شد",
-      "emptyList": "هیچ دارویی اضافه نشده است",
-      "medicineSearch": "دارویی"
+      "emptyList": "هیچ دارویی اضافه نشده است"
     }
   }
 }

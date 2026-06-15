@@ -38,7 +38,7 @@
 import { type PropType, defineComponent, computed, ref, watch, onMounted } from 'vue';
 import type { CallMember } from '~/types/call';
 import ContactAvatar from '../chat/contact/ContactAvatar.vue';
-import { useProfileStore } from '#imports';
+import { useChatStore } from '#imports';
 
 export default defineComponent({
     name: 'CallMemberDisplay',
@@ -57,9 +57,9 @@ export default defineComponent({
     },
     emits: ['toggle-fullscreen'],
     setup(props, { emit }) {
-        const profileStore = useProfileStore();
+        const chatStore = useChatStore();
         const videoRef = ref<HTMLVideoElement | null>(null);
-        const isMine = computed(() => profileStore.userData.id === props.contact.id);
+        const isMine = computed(() => chatStore.currentUserId === props.contact.id);
 
         // Detect if camera is on or screen is being shared
         const hasActiveStream = computed(() => {

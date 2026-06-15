@@ -1,10 +1,10 @@
 import type { Service } from "./service";
 import type { Provider } from "./service";
 import type { Invoice } from "./invoice";
-import type { UserRoleKey } from "./profile";
 export type MessageType = "text" | "image" | "file" | "voice" | "video";
 export type status = "pending" | "approved" | "rejected" | "expired";
 export type ServicePresence = "online" | "on-site";
+export type UserRoleKey = "user" | "employee" | "business" | "support";
 
 export interface Message {
   id: number;

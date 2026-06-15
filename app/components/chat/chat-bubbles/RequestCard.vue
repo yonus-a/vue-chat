@@ -58,7 +58,7 @@
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue';
 import type { Message, Contact } from '~/types/chat';
-import { useI18n, useProfileStore, useChatActionStore, useAppToast } from '#imports';
+import { useI18n, useChatStore, useChatActionStore, useAppToast } from '#imports';
 import ContactAvatar from '../contact/ContactAvatar.vue';
 import type { Modal } from '~/types/components/modal';
 import { useRoute } from 'vue-router';
@@ -91,8 +91,8 @@ export default defineComponent({
 
         const isSending = computed(() => !props.message.isSent)
         const chatActionStore = useChatActionStore()
-        const profileStore = useProfileStore()
-        const role = computed(() => profileStore.chosenRole)
+        const chatStore = useChatStore()
+        const role = computed(() => chatStore.chosenRole)
         const request = computed(() => props.message.request)
         const isServiceRequest = computed(() => request.value?.type === 'add-person');
         const providers = computed(() => {
@@ -127,7 +127,7 @@ export default defineComponent({
         })
 
 
-        const isMedic = computed(() => profileStore.userData.id == props.message.senderId && profileStore.chosenRole !== 'user')
+        const isMedic = computed(() => chatStore.currentUserId == props.message.senderId && chatStore.chosenRole !== 'user')
 
         const cardSubText = computed(() => {
             let text = ''

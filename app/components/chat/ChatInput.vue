@@ -118,7 +118,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, nextTick, watch, onMounted, onUnmounted } from 'vue';
-import { useI18n, useChatActionStore, useProfileStore } from '#imports';
+import { useI18n, useChatActionStore, useChatStore } from '#imports';
 import { type Menu } from '~/types/components/menu';
 import InputAttachement from './chat-input/InputAttachement.vue';
 import { useAppPermissions } from '~/composables/useAppPermissions';
@@ -138,7 +138,7 @@ export default defineComponent({
         const router = useRouter()
         const { requestWithPopup, checkMediaStatus } = useAppPermissions();
         const chatActionStore = useChatActionStore();
-        const profileStore = useProfileStore()
+        const chatStore = useChatStore()
         const route = useRoute()
         const savedRange = ref<Range | null>(null);
         const isSelectingEmoji = ref(false);
@@ -279,7 +279,7 @@ export default defineComponent({
                 date: new Date(),
                 type: 'text', // default
                 isEdited: false,
-                senderId: profileStore.userData.id,
+                senderId: chatStore.currentUserId,
                 isSent: false,
                 isRead: false, // Mine are always read
                 repliedTo: chatActionStore.replyingTo || undefined // Inject reply data if active
@@ -398,7 +398,7 @@ export default defineComponent({
         const displayActionName = computed(() => {
             let message = replyingToMessageData.value?.senderId
             if (textMode.value === 'edit') return t('chat.you')
-            if (profileStore.userData.id === message) return t('chat.you')
+            if (chatStore.currentUserId === message) return t('chat.you')
             return `${replyingToMessageData.value?.contact?.name}`
         })
 

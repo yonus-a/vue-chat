@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { CallMember } from "~/types/call";
-import { useProfileStore, useAppPermissions } from "#imports";
+import { useChatStore, useAppPermissions } from "#imports";
 import { useRouter } from "vue-router";
 
 export const useCallStore = defineStore("call", () => {
-  const profileStore = useProfileStore();
+  const chatStore = useChatStore();
   const router = useRouter();
   const { checkMediaStatus, requestWithPopup } = useAppPermissions();
 
@@ -141,13 +141,19 @@ export const useCallStore = defineStore("call", () => {
   );
   const callMembers = computed<CallMember[]>(() => {
     const currentUser: CallMember = {
-      ...profileStore.userData,
+      id: chatStore.currentUserId,
+      name: "امیر",
+      lastName: "صفری",
+      imageUrl: "",
+      phoneNumber: "09133877121",
+      nationalCode: "1234567890",
       isOnline: true,
       lastSeen: new Date(),
       isActive: false,
       unreadCount: 0,
       serviceType: "chat",
-      birthDate: profileStore.userData.birthDate || new Date(),
+      userType: [chatStore.chosenRole],
+      birthDate: chatStore.currentUserBirthDate || new Date(),
 
       // Reactive mapping from Store State
       stream: isSharingScreen.value ? screenStream.value : localStream.value,
