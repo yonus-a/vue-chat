@@ -1,6 +1,6 @@
 <template>
     <div class="bg-surface flex flex-col border border-outline-variant w-full h-full overflow-hidden">
-        <ChatListSearch class=" shrink-0" v-model="searchText" />
+        <ChatListSearch class=" shrink-0" v-model="searchTextProxy" />
 
         <div class="flex-1 w-full flex flex-col overflow-hidden">
 
@@ -17,7 +17,9 @@
                     class="h-full w-full">
                     <template #item="{ item }">
                         <ChatContactDisplay :contact="item"
-                            :loading="currentState.loading && currentState.page === 0" />
+                            :active="item.id === chatStore.activeConversationId"
+                            :loading="currentState.loading && currentState.page === 0"
+                            @select="chatStore.selectChat($event)" />
                     </template>
                 </BVirtualVerticalList>
             </div>
@@ -28,7 +30,7 @@
     </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useChatStore } from '#imports';
 import { useI18n } from '#imports';
 import type { ChatFilter, FilterKeys } from '~/types/chat';
@@ -43,12 +45,23 @@ export default defineComponent({
         ChatListSearch,
         NoDataDisplay,
     },
-    setup() {
+    props: {
+        searchText: {
+            type: String,
+            default: '',
+        },
+    },
+    emits: ['update:searchText'],
+    setup(props, { emit }) {
         const { t } = useI18n();
         const chatStore = useChatStore();
         const activeFilter = ref<FilterKeys>('');
-        const searchText = ref('');
-        const listRef = ref(null);
+        const listRef = ref<any>(null);
+
+        const searchTextProxy = computed<string>({
+            get: () => props.searchText,
+            set: (v) => emit('update:searchText', v),
+        });
 
         const currentState = computed(() => chatStore.conversationStates[activeFilter.value]);
         const isLoading = computed(() => chatStore.conversationStates[activeFilter.value].loading)
@@ -66,19 +79,14 @@ export default defineComponent({
             activeFilter.value = type;
         };
 
-        // Handle Filter Changes
         watch(activeFilter, (newFilter) => {
-            // 1. Scroll to top (Assuming Virtual List has a scroll div)
-            const scrollEl = listRef.value?.$el;
+            const scrollEl = (listRef.value as any)?.$el;
             if (scrollEl) scrollEl.scrollTop = 0;
 
-            // 2. Fetch if category is empty
             if (chatStore.conversationStates[newFilter].data.length === 0) {
                 chatStore.fetchConversations(newFilter, 1);
             }
         });
-
-
 
         const filterProps = (type: FilterKeys) => {
             return activeFilter.value === type
@@ -88,17 +96,13 @@ export default defineComponent({
 
         let searchTimeout: any = null;
 
-        watch(searchText, (newQuery) => {
-            // Clear the pending search every time a new letter is typed
+        watch(() => props.searchText, (newQuery) => {
             if (searchTimeout) clearTimeout(searchTimeout);
 
-            // Only trigger after 500ms of "silence"
             searchTimeout = setTimeout(() => {
-                // Reset to page 1 and pass the search query
                 chatStore.fetchConversations(activeFilter.value, 1, newQuery);
 
-                // Optional: Scroll the virtual list back to top for new results
-                const scrollEl = listRef.value?.$el;
+                const scrollEl = (listRef.value as any)?.$el;
                 if (scrollEl) scrollEl.scrollTop = 0;
             }, 500);
         });
@@ -111,7 +115,7 @@ export default defineComponent({
             chats,
             activeFilter,
             currentState,
-            searchText,
+            searchTextProxy,
             listRef,
             chatStore,
             currentPage,
