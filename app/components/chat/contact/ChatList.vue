@@ -13,13 +13,13 @@
             <div v-if="currentState.loading || chats.length > 0"
                 class="w-full flex-1 px-2.5 pt-2.5 overflow-hidden relative">
                 <BVirtualVerticalList ref="listRef" :items="chats" :loading="currentState.loading"
-                    :has-next-page="currentState.hasNextPage" @load-more="chatStore.loadNextPage(activeFilter)"
+                    :has-next-page="currentState.hasNextPage" @load-more="loadMore"
                     class="h-full w-full">
                     <template #item="{ item }">
                         <ChatContactDisplay :contact="item"
-                            :active="item.id === chatStore.activeConversationId"
+                            :active="item.id === selectedId"
                             :loading="currentState.loading && currentState.page === 0"
-                            @select="chatStore.selectChat($event)" />
+                            @select="selectChat" />
                     </template>
                 </BVirtualVerticalList>
             </div>
@@ -67,6 +67,10 @@ export default defineComponent({
         const isLoading = computed(() => chatStore.conversationStates[activeFilter.value].loading)
         const currentPage = computed(() => chatStore.conversationStates[activeFilter.value].page)
         const chats = computed(() => chatStore.getDisplayedContacts(activeFilter.value));
+
+        const selectedId = computed(() => chatStore.activeConversationId);
+        const selectChat = (id: number) => chatStore.selectChat(id);
+        const loadMore = () => chatStore.loadNextPage(activeFilter.value);
 
         const filters = computed<ChatFilter[]>(() => [
             { key: 'online', label: t('chat.filters.online') },
@@ -117,10 +121,12 @@ export default defineComponent({
             currentState,
             searchTextProxy,
             listRef,
-            chatStore,
             currentPage,
             NoData,
             isLoading,
+            selectedId,
+            selectChat,
+            loadMore,
         };
     }
 })
