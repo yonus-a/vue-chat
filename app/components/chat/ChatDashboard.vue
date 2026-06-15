@@ -5,7 +5,7 @@
         <div class="h-full w-full flex">
           <ChatProfileOverview :profile="selectedChat" />
           <div
-            v-show="chatId && isChatMode"
+            v-show="selectedChatId && isChatMode"
             class="flex flex-1 flex-col justify-between items-center h-full"
           >
             <div class="w-full bg-surface h-16 md:h-20">
@@ -107,7 +107,6 @@ export default defineComponent({
     const isMobile = computed(() => width.value < 768);
 
     const selectedChatId = computed(() => chatStore.activeConversationId);
-    const chatId = selectedChatId; // template alias preserved from original
     const selectedChat = computed(() =>
       selectedChatId.value ? chatStore.getContactById(selectedChatId.value) : null,
     );
@@ -130,8 +129,7 @@ export default defineComponent({
     });
 
     const showContactList = computed(() => {
-      if (!selectedChatId.value) return true;
-      if (isMobile.value) return false;
+      if (isMobile.value) return !selectedChatId.value;
       return true;
     });
 
@@ -166,13 +164,10 @@ export default defineComponent({
       t,
       searchText,
       selectedChatId,
-      chatId,
       selectedChat,
-      isProfile,
       isCallMode,
       isMobile,
       isChatMode,
-      canShowMessagingSection,
       showContactList,
       showMessagingSection,
       openProfile,
