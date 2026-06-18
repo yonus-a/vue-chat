@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType, onUnmounted, onMounted, ref, watch, computed } from 'vue';
-import { useWindowSize } from '#imports';
+import { useWindowSize } from '~/nuxt-shims';
 import BCarousel from '~/components/global/BCarousel.vue';
 
 export default defineComponent({

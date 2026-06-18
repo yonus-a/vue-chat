@@ -35,6 +35,7 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue';
 import { useDraggable, useWindowSize } from '@vueuse/core';
 import ContactAvatar from '../chat/contact/ContactAvatar.vue';
+import { useCallStore, useChatStore } from '~/nuxt-shims.js';
 
 const chatStore = useChatStore();
 const callStore = useCallStore();

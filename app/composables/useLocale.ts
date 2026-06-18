@@ -1,7 +1,19 @@
 // app/composables/useLocale.ts
 
+import { computed } from "vue";
+import { useHead, useI18n } from "~/nuxt-shims";
+
 export const useLocale = () => {
-  const { locale, setLocale, locales } = useI18n();
+  // Plain vue-i18n exposes only `locale` on the Composer. `setLocale` and
+  // `locales` are Nuxt i18n module additions; we cast through `any` so the
+  // existing API surface keeps compiling. Consumers wiring the library outside
+  // Nuxt must provide their own locale list if they need the full surface.
+  const i18n = useI18n() as unknown as {
+    locale: { value: string };
+    setLocale: (l: string) => Promise<void> | void;
+    locales: { value: Array<{ code: string; dir?: string; name?: string }> };
+  };
+  const { locale, setLocale, locales } = i18n;
 
   const localeToCountryMap: Record<string, string> = {
     en: "US",

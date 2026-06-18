@@ -118,12 +118,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, nextTick, watch, onMounted, onUnmounted } from 'vue';
-import { useI18n, useChatActionStore, useChatStore } from '#imports';
+import { useI18n, useChatActionStore, useChatStore } from '~/nuxt-shims';
 import { type Menu } from '~/types/components/menu';
 import InputAttachement from './chat-input/InputAttachement.vue';
-import { useAppPermissions } from '~/composables/useAppPermissions';
+import { PopupState, useAppPermissions } from '~/composables/useAppPermissions';
 import { useChatRecording } from '~/composables/chat/useChatRecording';
-import { useCallStore } from '#imports';
+import { useCallStore } from '~/nuxt-shims';
 import type { ExtendedMessage, Message } from '~/types/chat';
 import SafeEmojiText from '../general/SafeEmojiText.vue';
 import { parseEmojiArray } from '~/utils/emojiParser';

@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from 'vue';
-import { useI18n, useAppToast } from '#imports';
+import { useI18n, useAppToast } from '~/nuxt-shims';
 import type { Menu } from '~/types/components/menu';
 import type { Popup } from '~/types/components/popup';
 import AttachementFileDisplay from './AttachementFileDisplay.vue';

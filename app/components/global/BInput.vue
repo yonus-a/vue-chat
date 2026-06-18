@@ -193,7 +193,7 @@ const handleOptionSelect = (key: string) => {
 }
 
 onMounted(() => {
-    if (process.client) {
+    if (typeof window !== "undefined") {
         resizeObserver = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 if (entry.target === startSlotRef.value) startSlotWidth.value = entry.contentRect.width;

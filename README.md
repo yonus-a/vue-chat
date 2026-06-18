@@ -1,75 +1,59 @@
-# Nuxt Minimal Starter
+# @behayand/chat
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Reusable Vue 3 chat dashboard component extracted from the Behayand frontend.
 
-## Setup
+The package ships a single composed page component (`<ChatPage />`) plus the host-adapter wiring needed to drive it.
 
-Make sure to install dependencies:
-
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Install
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+yarn add @behayand/chat
+# peer dependencies
+yarn add vue vue-i18n pinia @vueuse/core
 ```
 
-## Production
+## Usage
 
-Build the application for production:
+```ts
+// main.ts
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import { createI18n } from "vue-i18n";
+import { BehayandChat, ChatPage } from "@behayand/chat";
+import "@behayand/chat/style.css";
+
+const app = createApp({ /* ... */ });
+
+app.use(createPinia());
+app.use(createI18n({ legacy: false, locale: "fa", messages: { fa: { /* chat.*, seo.* */ } } }));
+app.use(BehayandChat /* , { adapter: myAdapter } */);
+
+// then render <ChatPage /> wherever you want it
+```
+
+If no `adapter` is passed, `createMockAdapter()` is used so you can preview the UI without a backend. Implement the `HostAdapter` interface to plug in your real data sources:
+
+```ts
+import type { HostAdapter } from "@behayand/chat";
+
+const adapter: HostAdapter = {
+  chat: /* ChatAdapter */,
+  chatAction: /* ChatActionAdapter */,
+  service: /* ServiceAdapter */,
+  medication: /* MedicationAdapter */,
+};
+```
+
+## Build
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+yarn build       # vite build + vue-tsc typecheck
+yarn build:lib   # vite build only
+yarn dev         # vite build --watch
 ```
 
-Locally preview production build:
+Outputs land in `dist/`:
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- `dist/index.mjs` / `dist/index.cjs` — ESM and CJS bundles
+- `dist/style.css` — extracted styles (import once)
+- `dist/types/` — generated `.d.ts` tree, entry at `dist/types/index.d.ts`

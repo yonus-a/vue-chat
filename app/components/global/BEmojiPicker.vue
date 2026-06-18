@@ -26,7 +26,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 // We only import the raw category and hex data from emoji-mart
-import data from '@emoji-mart/data';
+import dataRaw from '@emoji-mart/data';
+// `@emoji-mart/data` no longer ships top-level typings for `.categories` /
+// `.emojis`; cast at the import boundary.
+const data = dataRaw as unknown as {
+  emojis: Record<string, { skins: Array<{ unified: string; native: string }> }>;
+  categories: Array<{ id: string; emojis: string[] }>;
+};
 
 const emit = defineEmits(['select']);
 const activeCategory = ref('people'); // Default starting category

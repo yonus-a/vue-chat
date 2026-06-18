@@ -29,12 +29,12 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue';
-import { useChatStore } from '#imports';
-import { useI18n } from '#imports';
+import { useChatStore } from '~/nuxt-shims';
+import { useI18n } from '~/nuxt-shims';
 import type { ChatFilter, FilterKeys } from '~/types/chat';
 import ChatContactDisplay from './ChatContactDisplay.vue';
 import ChatListSearch from './ChatListSearch.vue';
-import NoData from '/images/dashboard/no-contacts.webp'
+import NoData from '~/assets/lib-images/dashboard/no-contacts.webp'
 import NoDataDisplay from '~/components/general/NoDataDisplay.vue';
 export default defineComponent({
     name: 'ChatList',

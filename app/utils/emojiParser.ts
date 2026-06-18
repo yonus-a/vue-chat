@@ -1,4 +1,11 @@
-import emojiData from '@emoji-mart/data';
+import emojiDataRaw from '@emoji-mart/data';
+
+// `@emoji-mart/data` no longer ships typings for its top-level `.emojis` /
+// `.categories` shape, so we cast at the import boundary.
+const emojiData = emojiDataRaw as unknown as {
+    emojis: Record<string, { skins?: Array<{ native?: string; unified?: string }> }>;
+    categories: Array<{ id: string; emojis: string[] }>;
+};
 
 // 1. Build a highly optimized lookup table ONCE
 // Maps Native ('😀') -> Emoji-Mart Hex ('1f600')
@@ -6,7 +13,7 @@ const nativeToHex = new Map();
 
 if (emojiData && emojiData.emojis) {
     for (const key in emojiData.emojis) {
-        const skins = (emojiData.emojis as any)[key].skins;
+        const skins = emojiData.emojis[key].skins;
         if (skins) {
             skins.forEach((skin: any) => {
                 if (skin.native && skin.unified) {

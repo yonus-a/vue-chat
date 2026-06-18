@@ -21,7 +21,7 @@
 <script lang="ts">
 import { ref, defineComponent, computed, onMounted, watch, type PropType } from 'vue';
 import BubbleVideo from '../chat-bubbles/BubbleVideo.vue';
-import { useDevice, useCallStore } from '#imports';
+import { useDevice, useCallStore } from '~/nuxt-shims';
 
 export interface PatientRefferalExposed {
     open: () => void;

@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLocale } from '#imports';
+import { useLocale } from '~/nuxt-shims';
 
 // Destructuring all necessary logic from your refactored composable
 const {

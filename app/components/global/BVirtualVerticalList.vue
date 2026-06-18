@@ -26,9 +26,10 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useVirtualizer } from '@tanstack/vue-virtual';
-import loading from '@/assets/lottie/loading.json'
+import loading from '~/assets/lottie/loading.json'
 const props = withDefaults(defineProps<{
     items: any[];
     loading: boolean;

@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed, type PropType } from 'vue';
-import { formatBytes } from '#imports';
+import { formatBytes } from '~/nuxt-shims';
 export default defineComponent({
     name: 'AttachementFileDisplay',
     props: {

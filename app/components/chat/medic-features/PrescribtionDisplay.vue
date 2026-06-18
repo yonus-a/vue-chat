@@ -111,7 +111,7 @@
 
 <script lang="ts">
 import { defineComponent, useTemplateRef, computed, ref, watch, nextTick, onUnmounted, type SlotsType } from 'vue';
-import { useChatActionStore, useI18n, useWindowSize, useAppToast } from '#imports';
+import { useChatActionStore, useI18n, useWindowSize, useAppToast } from '~/nuxt-shims';
 import type { Popup } from '~/types/components/popup';
 import type { PrescribedMedication } from '~/types/medication';
 import type { DropdownOption } from '~/types/components/select';

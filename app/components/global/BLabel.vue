@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import { useLocale } from '#imports';
+import { useLocale } from '~/nuxt-shims';
 
 const props = defineProps({
     size: {

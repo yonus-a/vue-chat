@@ -1,4 +1,5 @@
 // app/composables/useToast.ts
+import { useState } from "~/nuxt-shims";
 import type { Toast } from "~/types/components/toast";
 
 export const useAppToast = () => {

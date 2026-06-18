@@ -45,7 +45,7 @@
 <script lang="ts">
 import { defineComponent, computed, type PropType } from 'vue';
 import type { Contact } from '~/types/chat';
-import { useI18n, useDate, useChatStore } from '#imports';
+import { useI18n, useDate, useChatStore } from '~/nuxt-shims';
 import ContactAvatar from './ContactAvatar.vue';
 import SafeEmojiText from '~/components/general/SafeEmojiText.vue';
 

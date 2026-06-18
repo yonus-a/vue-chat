@@ -24,3 +24,8 @@ logs
 !.env.example
 # Added by code-review-graph
 .code-review-graph/
+
+# Build outputs
+dist/
+auto-imports.d.ts
+

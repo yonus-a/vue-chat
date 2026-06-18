@@ -1,4 +1,4 @@
-import { useNuxtApp } from "#imports";
+import { useNuxtApp } from "~/nuxt-shims";
 import type { AppStores } from "./createStores";
 
 export const useChatStore = () => {

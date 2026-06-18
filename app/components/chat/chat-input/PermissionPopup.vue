@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, nextTick } from 'vue';
-import { useI18n } from '#imports';
+import { useCallStore, useI18n } from '~/nuxt-shims';
 import type { Popup } from '~/types/components/popup';
 import { useAppPermissions, type PopupState } from '~/composables/useAppPermissions';
 import { useEventBus } from '@vueuse/core';

@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
-import { useI18n } from '#imports';
+import { useI18n, formatBytes } from '~/nuxt-shims';
 
 export default defineComponent({
     name: 'ProfileFileDisplay',

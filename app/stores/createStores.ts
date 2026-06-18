@@ -16,7 +16,7 @@ import type { Medication } from "~/types/medication";
 import type { CallMember } from "~/types/call";
 import type { DropdownOption } from "~/types/components/select";
 import type { HostAdapter } from "~/adapter";
-import { useDate, useI18n, useAppToast, useAppPermissions } from "#imports";
+import { useDate, useI18n, useAppToast, useAppPermissions } from "~/nuxt-shims";
 import { useWindowSize } from "~/composables/useWindowSize";
 
 export interface CreateStoresOptions {
@@ -842,6 +842,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
         isActive: false,
         unreadCount: 2,
         serviceType: "chat",
+        userType: ["user"],
         birthDate: new Date(),
         stream: null,
         isScreenSharing: false,

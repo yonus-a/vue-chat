@@ -1,5 +1,5 @@
 <template>
-    <div @click="toggleTheme" :dir="dir"
+    <div @click="toggleMode" :dir="dir"
         class="cursor-pointer h-10 p-1 bg-surface border-outline-variant border-2 -outline-offset-1 flex items-center rounded-xl overflow-hidden relative transition-all duration-300">
         
         <TransitionGroup name="switch" tag="div" class="flex items-center h-full w-full">
@@ -20,25 +20,25 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useTheme, useI18n, useLocale } from '#imports';
+import { useTheme, useI18n, useLocale } from '~/nuxt-shims';
 
 const { t } = useI18n();
-const { colorMode, toggleTheme } = useTheme();
-const { dir } = useLocale(); 
+const { mode, toggleMode } = useTheme();
+const { dir } = useLocale();
 
 const isMounted = ref(false);
 onMounted(() => {
     isMounted.value = true;
 });
 
-const themeIcon = computed(() => colorMode.value === 'light' ? 'PhMoon' : 'PhSunDim');
-const themeTitle = computed(() => colorMode.value === 'light' ? t('general.themes.light') : t('general.themes.dark'));
+const themeIcon = computed(() => mode.value === 'light' ? 'PhMoon' : 'PhSunDim');
+const themeTitle = computed(() => mode.value === 'light' ? t('general.themes.light') : t('general.themes.dark'));
 
 const layoutItems = computed(() => {
     if (!isMounted.value) {
         return ['text', 'icon'];
     }
-    return colorMode.value === 'dark' ? ['icon', 'text'] : ['text', 'icon'];
+    return mode.value === 'dark' ? ['icon', 'text'] : ['text', 'icon'];
 });
 </script>
 

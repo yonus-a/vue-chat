@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, nextTick } from 'vue';
-import { useI18n } from '#imports';
+import { useI18n } from '~/nuxt-shims';
 
 export default defineComponent({
     name: 'ChatListSearch',

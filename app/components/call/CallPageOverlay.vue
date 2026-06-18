@@ -66,9 +66,9 @@
 <script lang="ts">
 import { type PropType, defineComponent, onBeforeMount, onMounted, computed } from 'vue';
 import type { Contact } from '~/types/chat';
-import { useI18n, useCallStore, useAppToast, useWindowSize, useAppPermissions, useDevice } from '#imports';
+import { useI18n, useCallStore, useAppToast, useWindowSize, useAppPermissions, useDevice } from '~/nuxt-shims';
 import CallMemberDisplay from './CallMemberDisplay.vue';
-import { formatDuration } from '@/utils/format'
+import { formatDuration } from '~/utils/format'
 import CallBoard from './CallBoard.vue';
 import MedicSelector from '../chat/medic-features/MedicSelector.vue';
 export default defineComponent({

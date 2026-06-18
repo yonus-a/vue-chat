@@ -38,7 +38,7 @@
 <script lang="ts">
 import { computed, defineComponent, type PropType } from 'vue';
 import { type Popup } from '~/types/components/popup';
-import { useI18n } from '#imports';
+import { useI18n } from '~/nuxt-shims';
 import type { ModalState } from '~/types/components/modal';
 export default defineComponent({
     name: 'TheModal',

@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, nextTick, watch, useTemplateRef } from "vue";
-import { useI18n, useWindowSize, useChatStore, useCallStore } from "#imports";
+import { defineComponent, computed, ref, nextTick, watch, useTemplateRef, type DefineComponent } from "vue";
+import { useI18n, useWindowSize, useChatStore, useCallStore } from "~/nuxt-shims";
 import ChatPageBar from "~/components/chat/ChatPageBar.vue";
 import ChatInput from "~/components/chat/ChatInput.vue";
 import { type ChatTextField } from "~/types/components/chat-input";
@@ -55,7 +55,7 @@ import CallPageOverlay from "~/components/call/CallPageOverlay.vue";
 import PermissionPopup from "~/components/chat/chat-input/PermissionPopup.vue";
 import PrescribtionDisplay from "~/components/chat/medic-features/PrescribtionDisplay.vue";
 
-export default defineComponent({
+const ChatView = defineComponent({
   name: "ChatView",
   components: {
     ChatPageBar,
@@ -173,4 +173,9 @@ export default defineComponent({
     };
   },
 });
+
+// Cast at the export boundary: Volar still uses the inferred bindings inside
+// the SFC's template, but the public type erases the deep slot-tree inference
+// that names private types from child components (and trips TS4082 on emit).
+export default ChatView as unknown as DefineComponent<{}, {}, any>;
 </script>

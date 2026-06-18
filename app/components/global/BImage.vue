@@ -3,13 +3,13 @@
         <div id="piece-of-shit" :style="[wrapperStyles, { borderRadius: 'inherit' }]" :class="wrapperClasses">
 
             <div id="not-piece-of-shit" v-if="autoAspect" :style="autoAspectStyles" :class="autoAspectContainerClasses">
-                <NuxtImg :key="displayedImage" :alt="alt" @load="loadImage" :src="displayedImage"
+                <img :key="displayedImage" :alt="alt" @load="loadImage" :src="displayedImage"
                     :class="autoAspectImageClasses" style="border-radius: inherit;" />
             </div>
 
             <template v-else>
                 <div :class="standardContainerClasses" style="border-radius: inherit;">
-                    <NuxtImg :key="displayedImage" :alt="alt" @load="loadImage" :src="displayedImage"
+                    <img :key="displayedImage" :alt="alt" @load="loadImage" :src="displayedImage"
                         style="border-radius: inherit;" :class="standardImageClasses" />
                 </div>
             </template>

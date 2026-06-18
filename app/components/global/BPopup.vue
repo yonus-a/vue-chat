@@ -141,7 +141,7 @@ export default defineComponent({
         };
 
         watch(isOpen, (val) => {
-            if (process.server) return;
+            if (typeof window === "undefined") return;
             const html = document.documentElement;
             if (val) {
                 setTimeout(() => {

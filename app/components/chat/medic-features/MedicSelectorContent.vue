@@ -47,10 +47,10 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, watch } from 'vue';
-import { useServiceStore, useI18n, useChatActionStore, useAppToast, useChatStore } from '#imports';
+import { useServiceStore, useI18n, useChatActionStore, useAppToast, useChatStore } from '~/nuxt-shims';
 import MedicDisplay from './MedicDisplay.vue';
 import NoDataDisplay from '~/components/general/NoDataDisplay.vue';
-import NoProviderImage from '/images/chat/no-provider-found.webp';
+import NoProviderImage from '~/assets/lib-images/chat/no-provider-found.webp';
 import type { Provider } from '~/types/service';
 
 export default defineComponent({

@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, nextTick, computed } from 'vue';
-import { useLocale } from '#imports';
+import { useLocale } from '~/nuxt-shims';
 
 export default defineComponent({
     name: 'BCarousel',

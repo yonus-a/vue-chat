@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, nextTick, type PropType } from 'vue';
-import { useI18n } from '#imports';
+import { useI18n } from '~/nuxt-shims';
 import { useChatActionStore } from '~/stores/chatActionStore';
 import type { Menu } from '~/types/components/menu';
 import type { ExtendedMessage } from '~/types/chat';

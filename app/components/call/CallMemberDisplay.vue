@@ -38,7 +38,7 @@
 import { type PropType, defineComponent, computed, ref, watch, onMounted } from 'vue';
 import type { CallMember } from '~/types/call';
 import ContactAvatar from '../chat/contact/ContactAvatar.vue';
-import { useChatStore } from '#imports';
+import { useChatStore } from '~/nuxt-shims';
 
 export default defineComponent({
     name: 'CallMemberDisplay',

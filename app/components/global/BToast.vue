@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useWindowSize } from '#imports';
+import { useWindowSize } from '~/nuxt-shims';
 const isOpen = ref(false);
 const toastType = ref<'success' | 'error' | 'warning' | 'info'>('info');
 const toastMessage = ref('');

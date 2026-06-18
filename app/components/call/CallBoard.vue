@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref } from 'vue';
-import { useWindowSize } from '#imports';
+import { useWindowSize } from '~/nuxt-shims';
 // CHANGE: Import the Content component specifically
 import type { Menu } from '~/types/components/menu';
 import type { Popup } from '~/types/components/popup';

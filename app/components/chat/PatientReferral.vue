@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, watch, type PropType } from 'vue';
 import type { Popup } from '~/types/components/popup';
-import { useServiceStore, useI18n, useAppToast } from '#imports';
+import { useServiceStore, useI18n, useAppToast } from '~/nuxt-shims';
 import { useEventBus } from '@vueuse/core';
 import type { Contact } from '~/types/chat';
 export interface PatientRefferalExposed {

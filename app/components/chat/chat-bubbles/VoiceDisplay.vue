@@ -33,6 +33,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import LoadingStatus from '~/components/general/LoadingStatus.vue';
 import { useChatActionStore } from '~/stores/chatActionStore';

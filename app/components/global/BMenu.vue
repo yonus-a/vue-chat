@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, nextTick, watch, type PropType, useSlots, Comment, Fragment, Text } from 'vue';
-import { useClickOutside } from '#imports';
+import { useClickOutside } from '~/nuxt-shims';
 
 const globalActiveMenuId = ref<string | null>(null);
 export interface Option {
