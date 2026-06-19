@@ -34,14 +34,14 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       return Math.floor((h - 138) / 76) + 1;
     });
 
-    const currentUserId = ref(1);
+    const currentUserId = ref<string>("");
     const chosenRole = ref<UserRoleKey>("user");
     const currentUserBirthDate = ref<Date | null>(
       new Date("1999-11-25T00:00:00Z"),
     );
-    const activeConversationId = ref<number | null>(null);
+    const activeConversationId = ref<string | null>(null);
     const profileViewOpen = ref(false);
-    const messagesMap = ref<Record<number, Message[]>>({});
+    const messagesMap = ref<Record<string, Message[]>>({});
 
     const conversationStates = ref<
       Record<
@@ -60,7 +60,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       active: { data: [], loading: false, page: 0, hasNextPage: true },
     });
 
-    const setSelectedChat = (id: number | null) => {
+    const setSelectedChat = (id: string | null) => {
       activeConversationId.value = id;
       profileViewOpen.value = false;
     };
@@ -104,6 +104,9 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       }
     };
 
+    const isSkeletonId = (id: string) => id.startsWith("skeleton-");
+    const isTempId = (id: string) => id.startsWith("tmp-");
+
     const getDisplayedContacts = (filter: FilterKeys): Contact[] => {
       const state = conversationStates.value[filter];
       if (state.loading && state.page === 0) {
@@ -111,7 +114,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
           { length: chatsPerPage.value },
           (_, i) =>
             ({
-              id: -i - 1,
+              id: `skeleton-${i}`,
               name: "در حال",
               lastName: "بارگذاری...",
               imageUrl: "https://i.pravatar.cc/150?u=loading",
@@ -122,13 +125,13 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
               serviceType: "chat",
               userType: ["user"],
               lastMessage: {
-                id: -1,
-                conversationId: -i - 1,
+                id: "skeleton-msg",
+                conversationId: `skeleton-${i}`,
                 date: new Date(),
                 type: "text",
                 text: "در حال بارگذاری پیام...",
                 isEdited: false,
-                senderId: -1,
+                senderId: "skeleton-sender",
                 isSent: true,
                 isRead: true,
               },
@@ -142,7 +145,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       });
     };
 
-    const getContactById = (id: number): Contact | null => {
+    const getContactById = (id: string): Contact | null => {
       for (const key in conversationStates.value) {
         const contact = conversationStates.value[key as FilterKeys].data.find(
           (c) => c.id === id,
@@ -152,7 +155,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       return null;
     };
 
-    const markAsRead = (conversationId: number) => {
+    const markAsRead = (conversationId: string) => {
       for (const key in conversationStates.value) {
         const contact = conversationStates.value[key as FilterKeys].data.find(
           (c) => c.id === conversationId,
@@ -165,7 +168,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       void adapter.chat.markRead(conversationId);
     };
 
-    const updateLastMessage = (conversationId: number, message: Message) => {
+    const updateLastMessage = (conversationId: string, message: Message) => {
       for (const key in conversationStates.value) {
         const state = conversationStates.value[key as FilterKeys];
         const contact = state.data.find((c) => c.id === conversationId);
@@ -174,8 +177,8 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     };
 
     const patchLastMessage = (
-      conversationId: number,
-      messageId: number,
+      conversationId: string,
+      messageId: string,
       updates: Partial<Message>,
     ) => {
       for (const key in conversationStates.value) {
@@ -193,7 +196,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     };
 
     const unreadCount = computed(() => {
-      const uniqueContacts = new Map<number, Contact>();
+      const uniqueContacts = new Map<string, Contact>();
       for (const key in conversationStates.value) {
         const state = conversationStates.value[key as FilterKeys];
         state.data.forEach((c) => {
@@ -329,35 +332,35 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     const serviceStore = useServiceStore();
 
     const uploadProgress = ref<
-      Map<number, { progress: number; uploaded: number; total: number }>
+      Map<string, { progress: number; uploaded: number; total: number }>
     >(new Map());
 
-    const processingActions = ref(new Map<number, string>());
+    const processingActions = ref(new Map<string, string>());
 
-    const isActionBusy = (messageId: number, actionKey: string) =>
+    const isActionBusy = (messageId: string, actionKey: string) =>
       processingActions.value.get(messageId) === actionKey;
 
     const isSelectMode = ref(false);
-    const selectedMessages = ref<Map<number, ExtendedMessage>>(new Map());
+    const selectedMessages = ref<Map<string, ExtendedMessage>>(new Map());
     const isMenuOpen = ref(false);
     const replyingTo = ref<ExtendedMessage | null>(null);
     const editingMessage = ref<ExtendedMessage | null>(null);
     const editWindowHours = ref(6);
 
-    const deleteBus = useEventBus<number[]>("chat-delete");
+    const deleteBus = useEventBus<string[]>("chat-delete");
     const sendBus = useEventBus<Message[]>("chat-send");
     const editBus = useEventBus<ExtendedMessage>("edit-message");
-    const personalInfoBus = useEventBus<number>("personal-info-request");
-    const prescriptionBus = useEventBus<number>("prescription");
-    const updateBus = useEventBus<{ id: number; updates: Partial<Message> }>(
+    const personalInfoBus = useEventBus<string>("personal-info-request");
+    const prescriptionBus = useEventBus<string>("prescription");
+    const updateBus = useEventBus<{ id: string; updates: Partial<Message> }>(
       "chat-update",
     );
 
-    const triggerPersonalInfoRequest = (conversationId: number) => {
+    const triggerPersonalInfoRequest = (conversationId: string) => {
       personalInfoBus.emit(conversationId);
     };
 
-    const triggerPrescription = (conversationId: number) => {
+    const triggerPrescription = (conversationId: string) => {
       prescriptionBus.emit(conversationId);
     };
 
@@ -391,7 +394,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       editingMessage.value = null;
     };
 
-    const triggerDelete = async (specificIds?: number[]) => {
+    const triggerDelete = async (specificIds?: string[]) => {
       const targets = specificIds?.length
         ? specificIds
         : selectedArray.value.map((m) => m.id);
@@ -411,7 +414,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     };
 
     const handleRemoteAction = async (
-      messageId: number,
+      messageId: string,
       actionKey: string,
       apiCall: () => Promise<void>,
     ) => {
@@ -426,7 +429,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     const sendMessage = async (messages: Message[]) => {
       const tempMessages = messages.map((m) => ({
         ...m,
-        id: Math.floor(Math.random() * -1000000),
+        id: `tmp-${crypto.randomUUID()}`,
         isSent: false,
       }));
 
@@ -471,7 +474,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       );
     };
 
-    const saveEditMessage = async (id: number, text: string) => {
+    const saveEditMessage = async (id: string, text: string) => {
       const conversationId = editingMessage.value?.conversationId;
 
       updateBus.emit({ id, updates: { text, isSent: false } });
@@ -540,8 +543,8 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     };
 
     const sendServiceRequest = (
-      conversationId: number,
-      serviceId: number,
+      conversationId: string,
+      serviceId: string,
       serviceLabel: string,
       selectedProviders: Provider[],
     ) => {
@@ -558,7 +561,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       );
 
       const newRequestMessage: Message = {
-        id: Math.floor(Math.random() * -1000000),
+        id: `tmp-${crypto.randomUUID()}`,
         conversationId,
         date: new Date(),
         type: "text",
@@ -568,7 +571,7 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
         isEdited: false,
         repliedTo: null as any,
         request: {
-          id: Math.floor(Math.random() * 10000),
+          id: `tmp-${crypto.randomUUID()}`,
           type: "add-person",
           request: {
             ...fullServiceData,
@@ -584,9 +587,9 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
       void sendMessage([newRequestMessage]);
     };
 
-    const sendPersonalInfoRequest = (conversationId: number) => {
+    const sendPersonalInfoRequest = (conversationId: string) => {
       const newRequestMessage: Message = {
-        id: Math.floor(Math.random() * -1000000),
+        id: `tmp-${crypto.randomUUID()}`,
         conversationId,
         date: new Date(),
         type: "text",
@@ -596,10 +599,10 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
         isEdited: false,
         repliedTo: null as any,
         request: {
-          id: Math.floor(Math.random() * 10000),
+          id: `tmp-${crypto.randomUUID()}`,
           type: "personal-info",
           request: {
-            id: Math.floor(Math.random() * 10000),
+            id: `tmp-${crypto.randomUUID()}`,
             date: new Date(),
             status: "pending",
           } as AccessRequest,
@@ -610,8 +613,8 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
     };
 
     const handleAccessResponse = async (
-      messageId: number,
-      conversationId: number,
+      messageId: string,
+      conversationId: string,
       key: "confirm-access" | "reject-access",
       currentRequest: any,
     ) => {
@@ -693,8 +696,8 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
 
     const getMedicationOptionById = computed(
       () =>
-        (id: number | string): DropdownOption | null => {
-          const med = medications.value.find((m) => m.id === Number(id));
+        (id: string): DropdownOption | null => {
+          const med = medications.value.find((m) => m.id === id);
           return med ? mapToDropdown(med) : null;
         },
     );
@@ -969,12 +972,13 @@ export const createStores = ({ adapter }: CreateStoresOptions) => {
 
     const startCall = async (
       contact: CallMember,
+      conversationId: string,
       serviceType: "voice-call" | "video-call",
     ) => {
       chatContact.value = contact;
       isActive.value = true;
       isPiP.value = false;
-      chatStore.setSelectedChat(contact.id);
+      chatStore.setSelectedChat(conversationId);
       startTimer();
       await syncMediaSettings(serviceType);
     };
