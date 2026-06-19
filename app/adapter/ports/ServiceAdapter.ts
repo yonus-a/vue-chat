@@ -1,7 +1,7 @@
 import type { Provider, Service } from "~/types/service";
 
 export interface FetchProvidersParams {
-  serviceId: number;
+  serviceId: string;
   page: number;
   pageSize: number;
   search?: string;

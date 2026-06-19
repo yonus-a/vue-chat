@@ -13,7 +13,7 @@ export interface ContactsPage {
 }
 
 export interface FetchMessagesParams {
-  conversationId: number;
+  conversationId: string;
   page: number;
   pageSize: number;
 }
@@ -23,5 +23,5 @@ export interface ChatAdapter {
 
   fetchMessages(params: FetchMessagesParams): Promise<Message[]>;
 
-  markRead(conversationId: number): Promise<void>;
+  markRead(conversationId: string): Promise<void>;
 }
