@@ -11,10 +11,10 @@ const getRandomBirthDate = (): Date => {
   return d;
 };
 
-const buildPool = (currentUserId: number): Contact[] => {
+const buildPool = (currentUserId: string): Contact[] => {
   const basePool: Contact[] = [
     {
-      id: 1,
+      id: "1",
       name: "امیر",
       lastName: "سعیدی",
       isOnline: true,
@@ -28,19 +28,19 @@ const buildPool = (currentUserId: number): Contact[] => {
       phoneNumber: "09134168227",
       nationalCode: "1235678901",
       lastMessage: {
-        id: 101,
-        conversationId: 1,
+        id: "101",
+        conversationId: "1",
         date: new Date(now.getTime() - 1000 * 60 * 5),
         type: "text",
         text: "سلام، وقت بخیر؟",
-        senderId: 1,
+        senderId: "1",
         isEdited: false,
         isSent: true,
         isRead: false,
       } as Message,
     },
     {
-      id: 2,
+      id: "2",
       name: "سارا",
       lastName: "احمدی",
       isOnline: false,
@@ -54,8 +54,8 @@ const buildPool = (currentUserId: number): Contact[] => {
       phoneNumber: "09134168227",
       nationalCode: "1235678901",
       lastMessage: {
-        id: 102,
-        conversationId: 2,
+        id: "102",
+        conversationId: "2",
         date: new Date(now.getTime() - 1000 * 3600 * 2),
         type: "text",
         text: "بله، فایل رو بررسی کردم.",
@@ -76,13 +76,13 @@ const buildPool = (currentUserId: number): Contact[] => {
     );
     pool.push({
       ...template,
-      id: uniqueId,
+      id: String(uniqueId),
       name: `${template.name} ${uniqueId}`,
       lastMessage: template.lastMessage
         ? ({
             ...template.lastMessage,
-            id: 10000 + uniqueId,
-            conversationId: uniqueId,
+            id: String(10000 + uniqueId),
+            conversationId: String(uniqueId),
             date: messageDate,
           } as Message)
         : undefined,
@@ -96,13 +96,13 @@ export interface ContactsSeedParams {
   page: number;
   pageSize: number;
   search?: string;
-  currentUserId?: number;
+  currentUserId?: string;
 }
 
 export const seedContacts = (
   params: ContactsSeedParams,
 ): { data: Contact[]; hasNextPage: boolean } => {
-  const { filter, page, pageSize, search, currentUserId = 1 } = params;
+  const { filter, page, pageSize, search, currentUserId = "1" } = params;
   const pool = buildPool(currentUserId);
 
   let filtered = pool;
@@ -124,22 +124,22 @@ export const seedContacts = (
 };
 
 export interface MessagesSeedParams {
-  conversationId: number;
+  conversationId: string;
   page: number;
   pageSize: number;
-  currentUserId?: number;
+  currentUserId?: string;
 }
 
 export const seedMessages = (params: MessagesSeedParams): Message[] => {
-  const { conversationId, page, pageSize, currentUserId = 1 } = params;
+  const { conversationId, page, pageSize, currentUserId = "1" } = params;
   const out: Message[] = [];
   const scenarios: MessageType[] = ["text", "text", "text", "image"];
 
   for (let i = 0; i < pageSize; i++) {
     const globalIndex = (page - 1) * pageSize + i;
-    const id = conversationId * 1000 + globalIndex;
+    const id = String(parseInt(conversationId, 10) * 1000 + globalIndex);
     const isMe = Math.floor(globalIndex / 2) % 2 === 0;
-    const senderId = isMe ? currentUserId : 2;
+    const senderId = isMe ? currentUserId : "2";
     const scenario = scenarios[globalIndex % scenarios.length]!;
     const messageDate = new Date(Date.now() - globalIndex * 5 * 60 * 1000);
 
@@ -156,7 +156,7 @@ export const seedMessages = (params: MessagesSeedParams): Message[] => {
         scenario === "image"
           ? [`https://picsum.photos/600/600?sig=${id}`]
           : undefined,
-      isEdited: id % 8 === 0,
+      isEdited: parseInt(id, 10) % 8 === 0,
       senderId,
       isSent: true,
       isRead: isMe ? true : globalIndex > 3,

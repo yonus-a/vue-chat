@@ -9,13 +9,13 @@ import { seedContacts, seedMessages, delay } from "~/mock";
 
 export interface MockChatAdapterOptions {
   latencyMs?: number;
-  currentUserId?: number;
+  currentUserId?: string;
 }
 
 export const createMockChatAdapter = (
   opts: MockChatAdapterOptions = {},
 ): ChatAdapter => {
-  const { latencyMs = 400, currentUserId = 1 } = opts;
+  const { latencyMs = 400, currentUserId = "1" } = opts;
 
   return {
     async fetchContacts(params: FetchContactsParams): Promise<ContactsPage> {

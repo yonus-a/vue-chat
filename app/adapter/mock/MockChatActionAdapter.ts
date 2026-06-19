@@ -100,27 +100,27 @@ export const createMockChatActionAdapter = (
       return { ...msg, id: randomId(), isSent: true };
     },
 
-    async editMessage(id: number, text: string): Promise<Message> {
+    async editMessage(id: string, text: string): Promise<Message> {
       await delay(latencyMs);
       return {
         id,
-        conversationId: 0,
+        conversationId: "0",
         date: new Date(),
         type: "text",
         text,
         isEdited: true,
-        senderId: 0,
+        senderId: "0",
         isSent: true,
         isRead: false,
       } as Message;
     },
 
-    async deleteMessages(_ids: number[]): Promise<void> {
+    async deleteMessages(_ids: string[]): Promise<void> {
       await delay(latencyMs);
     },
 
     async respondToAccessRequest(
-      _messageId: number,
+      _messageId: string,
       _decision: AccessDecision,
     ): Promise<void> {
       await delay(latencyMs * 1.5);

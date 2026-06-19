@@ -2,15 +2,15 @@ import type { Clinic } from "~/types/clinic";
 import type { Provider, Service, Fellowship } from "~/types/service";
 
 const FELLOWSHIPS: Fellowship[] = [
-  { id: 101, title: "فلوشیپ اینترونشنال کاردیولوژی" },
-  { id: 102, title: "فلوشیپ اکوکاردیوگرافی" },
-  { id: 103, title: "فلوشیپ جراحی زانو" },
-  { id: 104, title: "فلوشیپ سم‌شناسی" },
+  { id: "101", title: "فلوشیپ اینترونشنال کاردیولوژی" },
+  { id: "102", title: "فلوشیپ اکوکاردیوگرافی" },
+  { id: "103", title: "فلوشیپ جراحی زانو" },
+  { id: "104", title: "فلوشیپ سم‌شناسی" },
 ];
 
 const CLINICS: Clinic[] = [
-  { id: 501, title: 120, latitude: 35.7219, longitude: 51.3347 },
-  { id: 502, title: 130, latitude: 35.7, longitude: 51.4 },
+  { id: "501", title: 120, latitude: 35.7219, longitude: 51.3347 },
+  { id: "502", title: 130, latitude: 35.7, longitude: 51.4 },
 ];
 
 const FIRST_NAMES = [
@@ -42,42 +42,42 @@ const IMAGES = [
 
 export const seedServices = (): Service[] => [
   {
-    id: 1,
+    id: "1",
     label: "پزشک قلب",
     expertiseLevel: "speciality",
     fellowships: [FELLOWSHIPS[0]!, FELLOWSHIPS[1]!],
     price: 100000,
   },
   {
-    id: 2,
+    id: "2",
     label: "پزشک متخصص ریه",
     expertiseLevel: "speciality",
     fellowships: [],
     price: 200000,
   },
   {
-    id: 3,
+    id: "3",
     label: "متخصص ارتوپدی",
     expertiseLevel: "sub-speciality",
     fellowships: [FELLOWSHIPS[2]!],
     price: 300000,
   },
   {
-    id: 4,
+    id: "4",
     label: "متخصص مغز و اعصاب",
     expertiseLevel: "speciality",
     fellowships: [],
     price: 100000,
   },
   {
-    id: 5,
+    id: "5",
     label: "متخصص گوش، حلق و بینی",
     expertiseLevel: "speciality",
     fellowships: [],
     price: 200000,
   },
   {
-    id: 6,
+    id: "6",
     label: "چشم پزشک",
     expertiseLevel: "speciality",
     fellowships: [FELLOWSHIPS[3]!],
@@ -86,7 +86,7 @@ export const seedServices = (): Service[] => [
 ];
 
 export interface ProvidersSeedParams {
-  serviceId: number;
+  serviceId: string;
   page: number;
   pageSize: number;
   search?: string;
@@ -104,7 +104,7 @@ export const seedProviders = (
   const service = services.find((s) => s.id === serviceId) ?? services[0]!;
 
   const data: Provider[] = Array.from({ length: pageSize }).map(() => ({
-    id: Math.floor(Math.random() * 10000),
+    id: String(Math.floor(Math.random() * 10000)),
     name: FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)]!,
     lastName: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)]!,
     isOnline: Math.random() > 0.5,

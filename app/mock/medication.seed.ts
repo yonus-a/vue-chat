@@ -2,37 +2,37 @@ import type { Medication } from "~/types/medication";
 
 const POOL: Medication[] = [
   {
-    id: 1,
+    id: "1",
     title: "استامینوفن",
     englishTitle: "Acetaminophen",
     brands: [
-      { id: 101, title: "Calyptol" },
-      { id: 102, title: "Panadol" },
+      { id: "101", title: "Calyptol" },
+      { id: "102", title: "Panadol" },
     ],
   },
   {
-    id: 2,
+    id: "2",
     title: "ایبوپروفن",
     englishTitle: "Ibuprofen",
-    brands: [{ id: 201, title: "Advil" }],
+    brands: [{ id: "201", title: "Advil" }],
   },
   {
-    id: 3,
+    id: "3",
     title: "آموکسی‌سیلین",
     englishTitle: "Amoxicillin",
-    brands: [{ id: 301, title: "Amoxil" }],
+    brands: [{ id: "301", title: "Amoxil" }],
   },
   {
-    id: 4,
+    id: "4",
     title: "آتورواستاتین",
     englishTitle: "Atorvastatin",
-    brands: [{ id: 401, title: "Lipitor" }],
+    brands: [{ id: "401", title: "Lipitor" }],
   },
   {
-    id: 5,
+    id: "5",
     title: "متفورمین",
     englishTitle: "Metformin",
-    brands: [{ id: 501, title: "Glucophage" }],
+    brands: [{ id: "501", title: "Glucophage" }],
   },
 ];
 
