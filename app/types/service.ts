@@ -6,7 +6,7 @@ import type { Illness } from "./medic";
 export type InsitutionType = "public" | "private" | "semi-public";
 
 export interface Fellowship {
-  id: number;
+  id: string;
   title: string;
 }
 
@@ -20,7 +20,7 @@ export interface Provider extends Contact {
 }
 
 export interface Service {
-  id: number;
+  id: string;
   icon?: string;
   label: string;
   fellowships: Fellowship[];

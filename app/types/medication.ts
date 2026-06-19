@@ -1,7 +1,7 @@
 export type MedicationPeriodType = "day" | "hour";
 
 export interface MedicationBrand {
-  id: number;
+  id: string;
   title: String;
 }
 
@@ -11,14 +11,14 @@ export interface MedicationUsagePeriod {
 }
 
 export interface Medication {
-  id: number;
+  id: string;
   title: String;
   englishTitle: String;
   brands: MedicationBrand[];
 }
 
 export interface PrescribedMedication {
-  id: number;
+  id: string;
   medication: Medication;
   repetitionAmount: String;
   usageMethod: String;

@@ -7,8 +7,8 @@ export type ServicePresence = "online" | "on-site";
 export type UserRoleKey = "user" | "employee" | "business" | "support";
 
 export interface Message {
-  id: number;
-  conversationId: number;
+  id: string;
+  conversationId: string;
   date: Date;
   type: MessageType;
   text?: string;
@@ -17,7 +17,7 @@ export interface Message {
   voiceUrl?: string;
   videoUrl?: string;
   isEdited: boolean;
-  senderId: number;
+  senderId: string;
   isSent: boolean;
   isRead: boolean;
   repliedTo: Message;
@@ -25,7 +25,7 @@ export interface Message {
 }
 
 export interface Contact {
-  id: number;
+  id: string;
   name: string;
   lastName: string;
   isOnline: boolean;
@@ -56,13 +56,13 @@ export interface ExtendedMessage extends Message {
 }
 
 export interface Request {
-  id: number;
+  id: string;
   type: "personal-info" | "add-person";
   request: AccessRequest | ServiceRequest;
 }
 
 export interface AccessRequest {
-  id: number;
+  id: string;
   date: Date;
   status: status;
 }
