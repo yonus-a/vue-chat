@@ -4,6 +4,11 @@ import { createMockAdapter } from "./adapter/mock";
 import type { HostAdapter } from "./adapter";
 import { APP_STORES_KEY } from "./nuxt-shims";
 
+const globalComponents = import.meta.glob<{ default: any }>(
+  "./components/global/*.vue",
+  { eager: true },
+);
+
 export interface BehayandChatOptions {
   /**
    * Host application adapter that provides chat/service/medication ports.
@@ -22,6 +27,11 @@ export const BehayandChat = {
     const adapter: HostAdapter = options.adapter ?? createMockAdapter();
     const appStores = createStores({ adapter });
     app.provide(APP_STORES_KEY, appStores);
+
+    for (const [path, mod] of Object.entries(globalComponents)) {
+      const name = path.split("/").pop()!.replace(/\.vue$/, "");
+      app.component(name, mod.default);
+    }
   },
 };
 

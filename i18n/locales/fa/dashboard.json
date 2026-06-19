@@ -1,0 +1,107 @@
+{
+  "dashboard": {
+    "greetings": {
+      "hello": "سلام {name}",
+      "imBehno": "من بهنو هستم.",
+      "text": "همیشه کنارت هستم. وضعیت سلامتت: {state}",
+      "healthStates": {
+        "good": "عالی",
+        "medium": "متوسط",
+        "bad": "ضعیف"
+      }
+    },
+    "referral": {
+      "title": "شما یک ارجاع به {field} دارید.",
+      "reserve": "همین الان نوبت بگیرید.",
+      "priority": "اولویت ارجاع :‌ {priority}",
+      "priorities": {
+        "low": "پایین",
+        "medium": "متوسط",
+        "high": "بالا"
+      }
+    },
+    "cards": {
+      "status": {
+        "bad": "ضعیف",
+        "medium": "متوسط",
+        "good": "خوب",
+        "great": "عالی"
+      },
+      "noData": {
+        "title": "هنوز اطلاعاتی ثبت نشده",
+        "description": "با وارد کردن سابقه سلامتت، می‌تونیم دقیق تر سلامتیت رو ارزیابی کنیم.",
+        "start": "شروع"
+      },
+      "states": {
+        "all": "سلامت کلی",
+
+        "mental": {
+          "title": "سلامت روانی",
+          "fields": {
+            "stress": "اضطراب‌(استرس)",
+            "focus": "تمرکز",
+            "spiritualState": "حالات روحی",
+            "sleeplessness": "کم خوابی"
+          }
+        },
+        "physical": {
+          "title": "سلامت جسمی",
+          "fields": {
+            "bloodPressure": "فشار خون",
+            "bloodOxygen": "اکسیژن خون",
+            "bloodSugar": "قند خون",
+            "heartRate": "ضربان قلب"
+          }
+        },
+
+        "social": {
+          "title": "سلامت اجتماعی",
+          "fields": {
+            "support": "حمایت اجتماعی",
+            "interactions": "تعاملات اجتماعی",
+            "lifeMeaning": "معنای زندگی",
+            "calmness": "آرامش"
+          }
+        }
+      },
+      "total": "وضعیت کلی"
+    },
+    "score": {
+      "title": "امتیاز سلامت",
+      "level": "سطح {level}",
+      "maxScore": "از {score}",
+      "pastDays": "در {days} روز گذشته",
+      "fields": {
+        "mental": {
+          "title": "روانی",
+          "description": "اضطراب, تمرکز, حالات روحی, کم خوابی"
+        },
+        "physical": {
+          "title": "جسمی",
+          "description": "فشار خون, اکسیژن خون, قند خون, ضربان قلب"
+        },
+        "social": {
+          "title": "اجتماعی",
+          "description": "حمایت اجتماعی, تعاملات اجتماعی, معنای زندگی, آرامش"
+        }
+      }
+    },
+    "wallet": {
+      "title": "کیف پول",
+      "deposit": "افزایش موجودی",
+      "availableBalance": "موجودی قابل استفاده",
+      "currency": "تومان",
+      "insuranceType": "نوع بیمه :",
+      "insuranceCoverage": "سهم پرداختی بیمه",
+      "charityCoverage": "سهم پرداختی سازمان حامی",
+      "totalDiscount": "تخفیفات دریافت شده"
+    },
+    "services": {
+      "history": "تاریخچه خدمات",
+      "consult": "مشاوره",
+      "special": "ویژه شما",
+      "viewAll": "مشاهده {count} مورد دیگر",
+      "result": "نتیجه"
+    }
+  }
+}

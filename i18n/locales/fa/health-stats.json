@@ -1,0 +1,134 @@
+{
+  "healthStats": {
+    "types": {
+      "physical": "سلامت جسمی",
+      "medntal": "سلامت روانی",
+      "social": "سلامت اجتماعی"
+    },
+    "add":"افزودن",
+    "healthScore": "امتیاز {healthType}",
+    "stateOverral": {
+      "good": "خوب",
+      "medium": "متوسط",
+      "bad": "بد"
+    },
+    "physicalStats": {
+      "heartBeat": {
+        "title": "ضربان قلب",
+        "unit": "bpm"
+      },
+      "bloodOxygen": {
+        "title": "اکسیژن خون",
+        "unit": "%"
+      },
+      "bmi": {
+        "title": "BMI",
+        "unit": "kg/m"
+      },
+      "bloodSugar": {
+        "title": "قند خون",
+        "unit": "mg/dl"
+      },
+      "bloodPressure": {
+        "title": "فشار خون",
+        "unit": "mmHg"
+      }
+    },
+    "alertStates": {
+      "physical": {
+        "unusedMedication": {
+          "title": "داروهای مصرف نشده",
+          "unit": "مورد"
+        },
+        "sleep": {
+          "title": "خواب",
+          "unit": "ساعت"
+        },
+        "consumedWater": {
+          "title": "آب مصرفی",
+          "unit": "لیوان"
+        },
+        "activity": {
+          "title": "فعالیت",
+          "unit": "قدم"
+        }
+      },
+      "mental": {
+        "stressLevel": {
+          "title": "سطح استرس",
+          "unit": "%"
+        },
+        "mood": {
+          "title": "امتیاز خلق",
+          "unit": "/10"
+        }
+      },
+      "social": {
+        "events": {
+          "title": "رویدادهای اجتماعی",
+          "unit": "ساعت"
+        },
+        "volunteerHours": {
+          "title": "ساعات داوطلبانه",
+          "unit": "ساعت"
+        },
+        "localGroups": {
+          "title": "گروه‌های محلی",
+          "unit": "مورد"
+        }
+      }
+    },
+    "lastSubmit": "آخرین ثبت",
+    "monthAverage": "میانگین ماه",
+    "todaysAnalysis": "تحلیل امروز",
+    "cards": {
+      "unusedMedications": "داروهای مصرف نشده",
+      "sleep": "خواب",
+      "consumedWater": "آب مصرفی",
+      "activity": "فعالیت",
+      "viewAll": "مشاهده همه"
+    },
+    "trend": "روند تغییرات {field}",
+    "periods": {
+      "weekly": "هفتگی",
+      "monthly": "ماهانه",
+      "2months": "دو ماهه",
+      "yearly": "سالانه"
+    },
+    "viewMore": "مشاهده بیشتر",
+    "criticalIndices": "شاخص‌های حیاتی",
+    "warningsAndSuggestions": "هشدارهای و توصیه‌ها",
+    "social": "مشارکت در جامعه",
+    "socialActivities": {
+      "volunteer": "فعالیت‌های داوطلبانه",
+      "socialEvents": "رویدادهای اجتماعی",
+      "localGroups": "گروه‌های محلی",
+      "other": "سایر فعالیت‌ها"
+    },
+    "hourCount": "{count} ساعت",
+    "socialHistory": "تاریخچه فعالیت‌های اجتماعی",
+    "currentMonthAttendanceRate": "مشارکت در این ماه",
+    "socialCards": {
+      "events": "فعالیت‌ها و رویدادهای اجتماعی",
+      "personalSuggestions": "پیشنهادات شخصی ویژه شما",
+      "yourSocialFeelings": "احساسات اجتماعی شما",
+      "yourSocialChannel": "شبکه اجتماعی شما",
+      "relatedServices": "خدمات مرتبط"
+    },
+    "guides":"آموزش‌های ویژه شما",
+    "relationsStates": {
+      "strong": "قوی",
+      "medium": "متوسط",
+      "weak": "ضعیف"
+    },
+    "overallRelationState": "ار تباط {strength}",
+    "reserve": "نوبت گیری",
+    "register": "ثبت نام",
+    "registered":"عضو شده‌اید",
+    "view": "مشاهده",
+    "lastCall": "آخرین تماس",
+    "socialFeelings": "احساسسات اجتماعی",
+    "findOppurtinity": "پیدا کردن فرصت",
+    "viewTutorial": "مشاهده آموزش"
+  }
+}

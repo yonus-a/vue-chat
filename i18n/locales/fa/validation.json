@@ -1,0 +1,54 @@
+{
+  "validation": {
+    "required": "{field} الزامی است",
+    "must_be_persian": "{field} باید با حروف فارسی وارد شود",
+    "must_be_english": "{field} باید با حروف انگلیسی وارد شود",
+    "min_length": "{field} باید حداقل {min} کاراکتر باشد",
+    "invalid_format": "فرمت {field} نامعتبر است",
+    "phone_invalid": "شماره موبایل وارد شده معتبر نیست",
+    "email_invalid": "ایمیل وارد شده معتبر نیست",
+    "date_invalid": "تاریخ {field} نامعتبر است",
+    "date_past": "{field} باید تاریخی در گذشته باشد",
+    "date_future": "{field} باید تاریخی در آینده باشد",
+    "url_invalid": "لطفاً یک آدرس اینترنتی معتبر وارد کنید",
+    "whatsapp_invalid": "لطفاً یک لینک واتس‌اپ معتبر (wa.me) وارد کنید",
+    "username_invalid": "نام کاربری حاوی کاراکترهای غیرمجاز است",
+    "national_id_invalid": "کد ملی وارد شده نامعتبر است",
+    "foreign_id_invalid": "شناسه یکتا (کد اتباع) نامعتبر است",
+    "identifier_invalid": "لطفاً یک شماره موبایل یا کد ملی/اتباع معتبر وارد کنید",
+    "captcha_required": "لطفاً تایید کنید که ربات نیستید",
+    "phone_length_invalid": "شماره موبایل باید ۱۱ رقم باشد",
+    "national_code_length": "کد ملی باید ۱۰ رقم باشد",
+    "email": "ایمیل",
+    "phoneNumber": "شماره موبایل",
+    "only_letters": "{field} فقط باید شامل حروف باشد (اعداد مجاز نیستند).",
+    "must_be_persian_letters": "{field} فقط باید شامل حروف فارسی باشد.",
+    "must_be_english_letters": "{field} فقط باید شامل حروف انگلیسی باشد.",
+    "invalid_day": "روز نامعتبر",
+    "invalid_month": "ماه نامعتبر",
+    "invalid_year": "سال نامعتبر",
+    "invalid_date": "تاریخ نامعتبر .",
+    "future_date": "تاریخ نامعتبر .",
+    "too_old_date": "تاریخ نامعتبر .",
+    "agreeToTerms":"لطفا قوانین را مطالعه نموده و بپذیرید."
+  },
+  "addresses": {
+    "errors": {
+      "postalCodeLowlength": "کد پستی باید دقیقاً ۱۰ رقم باشد",
+      "postalCodeInvalid": "فرمت کد پستی نامعتبر است",
+      "plateInvalid": "لطفاً یک عدد مثبت برای پلاک وارد کنید",
+      "unitInvalid": "لطفاً یک عدد مثبت برای واحد وارد کنید"
+    }
+  },
+  "profile": {
+    "titles": {
+      "email": "آدرس ایمیل",
+      "phoneNumber": "شماره موبایل"
+    }
+  },
+  "auth": {
+    "login": {
+      "username": "نام کاربری"
+    }
+  }
+}

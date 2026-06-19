@@ -1,0 +1,17 @@
+{
+  "suggestions": {
+    "title": "انتقاد و پیشنهاد",
+    "subject": "عنوان",
+    "placeholder": "بنویسید ...",
+    "description": "توضیحات",
+    "attachement": "پیوست",
+    "selectFile": "انتخاب کنید",
+    "ctaTitle": "انتقادات و پیشنهادات",
+    "ctaDescription": "هرچیزی که فکر میکنی میتونه ما رو بهتر کنه برامون بنویس.",
+    "send": "ارسال",
+    "fieldRequired": "{field} الزامی میباشد.",
+    "invalidFormat": "فرمت پیوست مجاز نمیباشد.",
+    "invalidFileSize": "حداکثر حجم مجاز پیوست {size} میباشد.",
+    "deleteAttachement":"حذف پیوست"
+  }
+}

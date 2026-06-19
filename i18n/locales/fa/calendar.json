@@ -1,0 +1,145 @@
+{
+  "calendar": {
+    "moreItems": "{count} مورد دیگر",
+    "modes": {
+      "weekly": "هفتگی",
+      "daily": "روزانه",
+      "monthly": "ماهانه"
+    },
+    "addEvent": "افزودن رویداد",
+    "dayTimes": {
+      "morning": "صبح",
+      "noon": "ظهر",
+      "afternoon": "عصر",
+      "night": "شب"
+    },
+    "share": {
+      "title": "اشتراک گذاری با",
+      "link": "لینک",
+      "addUser": "افزودن فرد",
+      "copySuccess": "لینک دعوت با موفقیت الصاق شد.",
+      "noUsers": "کاربری یافت نشد.",
+      "loading": "در حال بارگذاری",
+      "types": {
+        "viewer": "بیننده",
+        "editor": "ویرایش کننده",
+        "delete": "حذف"
+      },
+      "api": {
+        "success": {
+          "edit": "سطح دسترسی با موفقیت ویرایش شد.",
+          "add": "دسترسی کاربر با موفقیت اضافه شد.",
+          "delete": "دسترسی کاربر با موفقیت حذف شد."
+        },
+        "error": "در پردازش درخواست شما مشکلی پیش آمد !"
+      }
+    },
+    "form": {
+      "fullDate": "تاریخ و ساعت",
+      "addEvent": "ایجاد رویداد",
+      "editEvent": "ویرایش رویداد",
+      "type": {
+        "title": "نوع",
+        "medicine": "دارو",
+        "event": "رویداد",
+        "task": "و‍ظیفه",
+        "service": "خدمت"
+      },
+      "validation": {
+        "positiveNumber": "مقدار باید بزرگتر از صفر باشد.",
+        "pastDate": "تاریخ نمی‌تواند در گذشته باشد.",
+        "customDaysRequired": "لطفاً حداقل یک روز را انتخاب کنید.",
+        "invalidTime": "ساعت وارد شده نامعتبر است.",
+        "invalidEndTime": "تاریخ پایان نمیتواند از تاریخ شروع زودتر باشد."
+      },
+      "checkListError": "مقادیر چک لیست وارد نشده اند!",
+      "medicineName": "نام دارو",
+      "medicineDescription": "توضیحات دارو",
+      "checkList": "چک لیست",
+      "eventTitle": "عنوان رویداد",
+      "addPerson": "افزودن شخص",
+      "attachement": "پیوست",
+      "descriptions": "توضیحات",
+      "color": "رنگ",
+      "continue": "ادامه",
+      "taskTitle": "عنوان تسک",
+      "date": "تاریخ",
+      "hour": "ساعت",
+      "wholeDay": "روز کامل",
+      "repeat": "تکرار",
+      "save": "ذخیره",
+      "back": "بازگشت",
+      "submit": "ثبت",
+      "remind": "یادآوری",
+      "startDate": "تاریخ شروع",
+      "enterCall": "ورود به گفتگو",
+      "repeatEvery": "تکرار هر",
+      "timeErrors": {
+        "past": "تاریخ رویداد نمیتواند در گذشته باشد."
+      },
+      "reminderOption": "{time} {unit} قبل",
+      "remindingTime": "زمان یادآوری",
+      "repetition": {
+        "day": "روز",
+        "hour": "ساعت",
+        "custom": "دلخواه"
+      },
+      "repeatEndDate": "تاریخ پایان تکرار",
+      "endDate": "تاریخ پایان",
+      "repeatEnding": {
+        "title": "پایان تکرار",
+        "times": "تعداد دفعات",
+        "date": "تاریخ مشخص"
+      },
+      "edit": "ویرایش",
+      "people": "افراد",
+      "deleteAttachement": "حذف پیوست",
+      "invalidFormat": "فرمت پیوست مجاز نمیباشد.",
+      "invalidFileSize": "حداکثر حجم مجاز پیوست {size} میباشد.",
+      "time": "زمان",
+      "fromTo": "از {start} تا {end}",
+      "delete": {
+        "delete": "حذف",
+        "title": "حذف رویداد",
+        "description": "از حذف رویداد مطمئن هستید ؟‌",
+        "cancel": "انصراف",
+        "success": "رویداد با موفقیت حذف شد !",
+        "error": "در پردازش درخواست شما مشکلی پیش آمد !"
+      }
+    },
+    "filters": {
+      "title": "فیلترها",
+      "calendar": {
+        "title": "تقویم",
+        "jalaali": "تقویم شمسی",
+        "georgian": "میلادی",
+        "islamic": "قمری"
+      },
+      "startOfWeek": "شروع هفته",
+      "startOfWeekOptions": {
+        "saturday": "شنبه",
+        "sunday": "یکشنبه",
+        "monday": "دوشنبه",
+        "tuesday": "سه شنبه",
+        "wednesday": "چهارشنبه",
+        "thursday": "پنجشنبه",
+        "friday": "جمعه"
+      },
+      "timeZone": "منطقه زمانی",
+      "displaySettings": {
+        "title": "تنظیمات نمایش",
+        "ai": "هوشمند",
+        "medicine": "دارو",
+        "services": "خدمات",
+        "task": "وظیفه"
+      },
+      "apply": "اعمال",
+      "showHolidays": "نمایش تعطیلات"
+    },
+    "api": {
+      "createdSuccess": "یادآور {title} با موفقیت ایجاد شد.",
+      "edittedSuccess": "یادآوری {title} با موفقیت ویرایش شد.",
+      "error": "در پردازش درخواست شما مشکلی پیش آمد !"
+    }
+  }
+}

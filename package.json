@@ -28,7 +28,8 @@
     "build": "vite build",
     "build:strict": "vite build && vue-tsc --noEmit -p tsconfig.typecheck.json",
     "typecheck": "vue-tsc --noEmit -p tsconfig.typecheck.json",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "demo": "vite --config demo/vite.config.ts"
   },
   "peerDependencies": {
     "vue": "^3.5.0",

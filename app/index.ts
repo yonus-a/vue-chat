@@ -1,3 +1,5 @@
+import "./assets/css/main.css";
+
 export { default as ChatPage } from "./components/ChatPage.vue";
 
 export { BehayandChat } from "./install";

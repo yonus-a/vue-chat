@@ -1,0 +1,235 @@
+{
+  "chat": {
+    "title": "پیام ها",
+    "filters": {
+      "active": "فعال",
+      "ended": "خاتمه یافته",
+      "online": "آنلاین ها"
+    },
+    "info": {
+      "nationalCode": "کد ملی",
+      "phoneNumber": "شماره تماس",
+      "age": "سن",
+      "ageDisplay": "{year} سال",
+      "files": "فایل ها",
+      "media": "تصاویر"
+    },
+    "lastSeen": "آخرین بازدید {time}",
+    "nationalId": "کد ملی",
+    "age": "سن",
+    "ageText": "{years} سال",
+    "attachements": "پیوست ها",
+    "options": {
+      "end": "خاتمه",
+      "refer": "ارجاع",
+      "voiceCall": "تماس",
+      "videoCall": "تصویری"
+    },
+    "attachementTypes": {
+      "image": "عکس",
+      "file": "فایل",
+      "voice": "پیام صوتی",
+      "video": "ویدیو",
+      "request": "درخواست"
+    },
+    "messageOptions": {
+      "edit": "ویرایش پیام",
+      "delete": "حذف پیام",
+      "copy": "کپی",
+      "select": "انتخاب",
+      "reply": "پاسخ",
+      "deselect": "لغو انتخاب"
+    },
+    "barOptions": {
+      "prescribeMedications": "تجویز نسخه",
+      "addPerson": "افزودن شخص",
+      "refer": "ارجاع",
+      "endChat": "خاتمه مکالمه",
+      "deleteMessages": "حذف پیام ها"
+    },
+    "placeholder": "بنویسید ...",
+    "chatLocked": "گفتگو تمام شده",
+    "noConversationSelected": "هنوز مکالمه ای انتخاب نشده",
+    "noMessages": "هیچ پیامی تبادل نشده",
+    "swipeToCancel": "برای لغو بکشید",
+    "cancel": "لغو",
+    "online": "آنلاین",
+    "file": {
+      "calculating": "در حال محاسبه",
+      "attachMedia": "عکس یا ویدیو",
+      "attachFile": "فایل",
+      "sendImage": "ارسال تصویر",
+      "sendImages": "ارسال تصاویر",
+      "sendFile": "ارسال فایل",
+      "cancel": "انصراف"
+    },
+    "permissions": {
+      "permissionTitle": "دسترسی دوربین و میکروفون",
+      "description": " برای اینکه بتونی توی تماس‌های تصویری شرکت کنی یا پیام صوتی بفرستی، نیاز داریم به دوربین و میکروفونت دسترسی داشته باشیم.",
+      "allow": "تایید دسترسی",
+      "notNow": "الان نه",
+      "retry": "تلاش مجدد",
+      "mic": {
+        "title": "دسترسی میکروفون",
+        "description": "برای ارسال پیام صوتی و برقراری تماس تصویری به دسترسی میکروفون شما نیاز داریم."
+      },
+      "cam": {
+        "title": "دسترسی دوربین",
+        "description": "برای ارسال پیام ویدیویی و برقراری تماس تصویری به دسترسی دوربین شما نیاز داریم."
+      },
+      "micError": {
+        "title": "میکروفون شما غیرفعال است",
+        "description": "برای ارسال پیام صوتی یا تماس، نیاز به تایید دسترسی میکروفون داریم."
+      },
+      "camError": {
+        "title": "خطای دسترسی به دوربین",
+        "description": "برای ارسال پیام و تماس ویدیویی نیاز به تایید دسترسی دوربین داریم."
+      },
+      "screen": {
+        "title": "دسترسی به صفحه",
+        "description": "بعد از زدن دکمه تایید لطفا صفحه یا زبانه انتخابی خویش را برای به اشتراک گذاری انتخاب نمایید."
+      },
+      "screenError": {
+        "title": "خطا در دسترسی به صفحه",
+        "description": "دسترسی به تصویر صفحه با خطا مواجه شد. برای اشتراک گذاری تصویر صفحه شما نیازمند تایید دسترسی به صفحه هستیم."
+      }
+    },
+    "you": "شما",
+    "copiedMessage": "پیام با موفقیت به کلیپ بورد الصاق شد.",
+    "unreadMessages": "خوانده نشده.",
+    "caption": "کپشن",
+    "send": "ارسال",
+    "delete": {
+      "title": "حذف پیام",
+      "singleMessage": "آیا از حذف پیام اطمینان دارید ؟",
+      "multipleMessages": "آیا از حذف {count} پیام اطمینان دارید؟",
+      "confirm": "حذف",
+      "requestTitle": "لغو درخواست",
+      "request": "آیا از لغو درخواست خود اطمینان دارید ؟"
+    },
+    "addMedic": {
+      "title": "افزودن ارایه دهنده",
+      "expertise": "تخصص",
+      "select": "انتخاب کنید...",
+      "autoSelect": "انتخاب توسط سیستم",
+      "search": "جستجو ...",
+      "available": "آماده ویزیت",
+      "online": "آنلاین",
+      "add": "افزودن",
+      "buttonText": {
+        "single": "افزودن پزشک",
+        "multiple": "افزودن ({count}) پزشک"
+      }
+    },
+    "noProviders": "ارایه دهنده ای یافت نشد.",
+    "requestCard": {
+      "addMedic": {
+        "title": "افزودن پزشک :",
+        "awaitingApproval": "در انتظار تایید بیمار...",
+        "awaitingPayment": "در انتظار پرداخت...",
+        "awaitingMedicApproval": "در انتظار تایید پزشک...",
+        "searching": "در حال پیدا کردن پزشک برای شما...",
+        "rejected": "درخواست شما مورد پذیرش قرار نگرفت.",
+        "expired": "درخواست منقضی شده است.",
+        "pending": "در انتظار تایید...",
+        "awaitingPatientPayment": "در انتظار نوبت گیری و پرداخت بیمار...",
+        "cancel": "لغو",
+        "confirmRequest": "تایید و نوبت گیری",
+        "reject": "رد",
+        "pay": "پرداخت",
+        "retry": "درخواست مجدد",
+        "error": {
+          "maxMedics": "حداکثر میتوانید {count} فرد را اضافه کنید."
+        }
+      },
+      "infoAccess": {
+        "patientTitle": "اجازه اشتراک ‌گذاری کد ملی",
+        "medicTitle": "در انتظار تایید دسترسی توسط بیمار",
+        "patientDescription": "برای اینکه پزشک بتواند نسخه نویسی شما را انجام دهد بایستی به کد ملی شما دسترسی داشته باشد.",
+        "medicDescription": "به محض اینکه بیمار کد ملی خود را تایید کند، اطلاعات در اینجا نمایش داده می‌شود.",
+        "cancel": "لغو",
+        "confirmAndShare": "تایید و اشتراک گذاری",
+        "cancelRequest": "لغو درخواست",
+        "medicSuccess": "دسترسی کد ملی بیمار با موفقیت تایید شد",
+        "patientSuccess": "کد ملی در اختیار پزشک قرار گرفت",
+        "medicReject": "درخواست نمایش کد ملی رد شد.",
+        "requestExpired": "درخواست نمایش کد ملی منقضی شده است.",
+        "copySuccess": "کد ملی با موفقیت الصاق شد.",
+        "requestModal": {
+          "title": "دسترسی به کد ملی",
+          "description": "شما دسترسی به کد ملی ندارید. برای دسترسی به کد ملی بیمار برای نوشتن نسخه در سایر نرم افزارها بایستی آن را از گیرنده دریافت نمایید.",
+          "action": "ارسال درخواست دسترسی"
+        },
+        "rejectModal": {
+          "title": "هشدار",
+          "description": "بدون کد ملی پزشک قادر به نسخه نویسی برای شما نخواهد بود.",
+          "reject": "رد کردن"
+        }
+      }
+    },
+    "patientReferral": {
+      "referTo": "ارجاع به",
+      "speciality": "تخصص",
+      "select": "انتخاب کنید...",
+      "priority": {
+        "title": "اولویت",
+        "high": "بالا",
+        "low": "پایین",
+        "medium": "متوسط"
+      },
+      "write": "بنویسید...",
+      "submit": "ثبت",
+      "description": "توضیحات",
+      "submitSuccess": "ارجاع با موفقیت ثبت شد.",
+      "submitFail": "در پردازش درخواست ارجاع مشکلی پیش آمد."
+    },
+    "call": {
+      "title": "تماس",
+      "you": "شما",
+      "deviceDoesntSupport": "دستگاه شما از این قابلیت پشتیبانی نمیکند."
+    },
+    "board": {
+      "title": "تخته",
+      "selectColor": "انتخاب رنگ",
+      "page": "صفحه {page}",
+      "addPage": "صفحه جدید",
+      "confirm": "تایید",
+      "savedSuccessfully": "تصویر با موفقیت ذخیره سازی شد."
+    },
+    "prescription": {
+      "title": "نسخه نویسی",
+      "medicine": "داروها",
+      "initialDetection": "تشخیص اولیه",
+      "medicationName": "نام دارو",
+      "brands": "برند",
+      "dose": "دوز مصرف",
+      "usageLimit": "مقدار استفاده",
+      "repetitionAmount": "تعداد تکرار",
+      "usageMethod": "شیوه استفاده",
+      "addMedications": "افزودن دارو",
+      "warning": "خطا",
+      "repeat": "تکرار",
+      "usage": "هر {count} {time}",
+      "period": "دوره",
+      "timePeriod": "مدت زمان",
+      "descriptions": "توضیحات",
+      "submit": "ثبت",
+      "back": "بازگشت",
+      "continue": "ادامه",
+      "periodOptions": {
+        "hospitalization": "بستری کلینیک",
+        "prescriptionDrugs": "تجویز نسخه"
+      },
+      "priority": {
+        "title": "اولویت",
+        "high": "بالا",
+        "medium": "متوسط",
+        "low": "پایین"
+      },
+      "success": "با موفقیت ثبت شد",
+      "hospitalizationSuccess": "فرم بستری با موفقیت ارسال شد",
+      "emptyList": "هیچ دارویی اضافه نشده است",
+      "medicineSearch": "دارویی"
+    }
+  }
+}

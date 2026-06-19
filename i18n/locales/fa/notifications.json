@@ -1,0 +1,17 @@
+{
+  "notifications": {
+    "title": "اعلانات",
+    "detailsTitle": "اعلان",
+    "types": {
+      "request": "درخواست",
+      "wallet": "کیف پول",
+      "reminder": "یادآوری",
+      "announcement": "اطلاعیه"
+    },
+    "time": "تاریخ",
+    "subject": "موضوع",
+    "seen": "خوانده شده",
+    "noNotifications": "هیچ اعلانی ندارید.",
+    "noNotificationSelected":"هیچ اعلانی انتخاب نشده."
+  }
+}

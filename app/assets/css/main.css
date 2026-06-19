@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../**/*.{vue,ts,tsx,js,jsx}";
 @import "./theme.css";
 @import "./components.css";
 
@@ -30,25 +31,25 @@
 /* --- Standard IranYekan (Latin Numbers) --- */
 @font-face {
   font-family: "IranYekan";
-  src: url("@/assets/fonts/iran-yekan-regular.woff") format("woff");
+  src: url("../fonts/iran-yekan-regular.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekan";
-  src: url("@/assets/fonts/iran-yekan-medium.woff") format("woff");
+  src: url("../fonts/iran-yekan-medium.woff") format("woff");
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekan";
-  src: url("@/assets/fonts/iran-yekan-bold.woff") format("woff");
+  src: url("../fonts/iran-yekan-bold.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekan";
-  src: url("@/assets/fonts/iran-yekan-extrabold.woff") format("woff");
+  src: url("../fonts/iran-yekan-extrabold.woff") format("woff");
   font-weight: 800;
   font-display: swap;
 }
@@ -56,43 +57,43 @@
 /* --- IranYekan FaNum (Persian Numbers) --- */
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebthinfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebthinfanum.woff") format("woff");
   font-weight: 100;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanweblightfanum.woff") format("woff");
+  src: url("../fonts/iranyekanweblightfanum.woff") format("woff");
   font-weight: 300;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebregularfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebregularfanum.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebmediumfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebmediumfanum.woff") format("woff");
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebboldfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebboldfanum.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebextraboldfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebextraboldfanum.woff") format("woff");
   font-weight: 800;
   font-display: swap;
 }
 @font-face {
   font-family: "IranYekanFaNum";
-  src: url("@/assets/fonts/iranyekanwebblackfanum.woff") format("woff");
+  src: url("../fonts/iranyekanwebblackfanum.woff") format("woff");
   font-weight: 900;
   font-display: swap;
 }

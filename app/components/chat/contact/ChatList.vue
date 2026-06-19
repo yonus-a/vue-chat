@@ -50,6 +50,12 @@ export default defineComponent({
         const searchText = ref('');
         const listRef = ref(null);
 
+        onMounted(() => {
+            if (chatStore.conversationStates[activeFilter.value].data.length === 0) {
+                chatStore.fetchConversations(activeFilter.value, 1);
+            }
+        });
+
         const currentState = computed(() => chatStore.conversationStates[activeFilter.value]);
         const isLoading = computed(() => chatStore.conversationStates[activeFilter.value].loading)
         const currentPage = computed(() => chatStore.conversationStates[activeFilter.value].page)

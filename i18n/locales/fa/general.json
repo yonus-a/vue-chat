@@ -1,0 +1,70 @@
+{
+  "general": {
+    "themes": {
+      "light": "روشن",
+      "dark": "تاریک"
+    },
+    "all":"همه",
+    "back": "بازگشت",
+    "loading":"در حال بارگذاری",
+    "save": "ذخیره",
+    "relationshipStatus": {
+      "title": "وضعیت تاهل",
+      "married": "متاهل",
+      "single": "مجرد"
+    },
+    "todaysDate": "امروز {date}",
+    "gender": {
+      "male": "مرد",
+      "female": "زن"
+    },
+    "nationality": {
+      "iranian": "ایرانی",
+      "foreigner": "اتباع خارجه"
+    },
+    "viewAll": "مشاهده همه",
+    "search": "جستجو",
+    "roles": {
+      "user": "گیرنده خدمت",
+      "employee": "ارائه دهنده خدمت",
+      "business": "کسب و کار"
+    },
+    "pagination": {
+      "next": "بعدی",
+      "prev": "قبلی"
+    },
+    "cancel": "لغو",
+    "confirm": "تایید",
+    "currency": "تومان",
+    "select": "انتخاب کنید...",
+    "write": "بنویسید...",
+    "colors": {
+      "red": "قرمز",
+      "green": "سبز",
+      "black": "مشکی",
+      "gray": "خاکستری",
+      "yellow": "زرد",
+      "white": "سفید"
+    },
+    "timeframes": {
+      "seconds": "ثانیه",
+      "minutes": "دقیقه",
+      "hours": "ساعت",
+      "days": "روز",
+      "week": "هفته",
+      "month": "ماه",
+      "year": "سال"
+    },
+    "datePicker": {
+      "title": "انتخاب تاریخ"
+    },
+    "result": "نتیجه ای",
+    "noResultFound": "هیچ {item} برای '{search}' یافت نشد !",
+    "onlineReservations": "نوبت آنلاین",
+    "less": "کمتر",
+    "more": "بیشتر",
+    "lastMonth": "ماه قبل",
+    "percent":"درصد",
+    "comparedTo": "{amount} {compare} از {period}"
+  }
+}

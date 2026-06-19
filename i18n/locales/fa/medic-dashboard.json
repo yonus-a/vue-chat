@@ -1,0 +1,95 @@
+{
+  "medicDashboard": {
+    "greetings": "خوش آمدی دکتر {lastName}",
+    "patient": "بیمار",
+    "reservation": "نوبت",
+    "cardState": "{amount} {unit}",
+    "reservations": {
+      "reservationTypes": {
+        "online": "آنلاین",
+        "physical": "حضوری",
+        "all": "همه"
+      },
+      "noData": {
+        "noHighRiskPatient": "بیمار پر خطری یافت نشد",
+        "noReservation": "هیچ نوبتی رزرو نشده!",
+        "noOnlineReservation": "هیچ نوبت آنلاینی ندارید.",
+        "noPhysicalReservation": "مراجع حضوری ندارید."
+      }
+    },
+    "chart": {
+      "title": "نمودار مراجعات",
+      "periods": {
+        "daily": "روزانه",
+        "monthly": "ماهانه",
+        "yearly": "سالانه"
+      }
+    },
+    "stateCards": {
+      "clinicalWarnings": "هشدارهای بالینی",
+      "todaysVisits": "نوبت های امروز",
+      "todaysReservations": "مراجعات حضوری",
+      "givenReservations": "نوبت های داده شده",
+      "onlineVisits": "مراجعات آنلاین امروز",
+      "highRiskPatients": "بیماران پرخطر",
+      "coveredPatients": "بیماران تحت پوشش"
+    },
+    "patientStats": {
+      "title": "وضعیت بیماری های مزمن",
+      "viewFullReport": "مشاهده گزارش کامل",
+      "stats": {
+        "copd": "COPD",
+        "bloodFat": "چربی خون",
+        "bloodPressure": "فشار خون",
+        "diabetes": "دیابت"
+      },
+      "controlledPercentage": "{percentage} کنترل شده",
+      "people": "{count} نفر"
+    },
+    "wallet": {
+      "title": "کیف پول",
+      "balance": "موجودی قابل برداشت",
+      "fee": "کارمزد به آیند",
+      "supportingOrganizationShare": "سهم سازمان حامی",
+      "recievedDiscounts": "تخفیفات دریافت شده",
+      "deposit": "افزایش موجودی",
+      "withdraw": "برداشت"
+    },
+    "assistant": {
+      "title": "موارد پیگیری",
+      "description": "پیشنهادات هوشمند برای امروز",
+      "edit": "ویرایش",
+      "view": "مشاهده",
+      "settings": {
+        "title": "موارد پیگیری",
+        "save":"ذخیره",
+        "api":{
+          "success":"تغییرات با موفقیت ذخیره شد",
+          "fail":"مشکلی در ذخیره تنظیمات پیش آمده"
+        },
+        "settings": {
+          "first": {
+            "title": "بیماران نیاز به پیگیری",
+            "description": "بیمارانی که نیاز به پیگیری دارند"
+          },
+          "second": {
+            "title": "تداخلات دارویی",
+            "description": "تداخل دارویی در نسخه های شما"
+          },
+          "third": {
+            "title": "بیماران نیاز به آزمایش",
+            "description": "بیمارانی که نیاز به آزمایش دوره ای دارند"
+          },
+          "fourth": {
+            "title": "بیماران نیاز به پیگیری",
+            "description": "بیمارانی که نیاز به پیگیری دارند"
+          },
+          "fifth": {
+            "title": "تداخلات دارویی",
+            "description": "تداخل دارویی در نسخه های شما"
+          }
+        }
+      }
+    }
+  }
+}

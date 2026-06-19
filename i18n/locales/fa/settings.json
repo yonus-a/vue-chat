@@ -1,0 +1,60 @@
+{
+    "settings":{
+        "title":"تنظیمات",
+        "theme":"تم سایت",
+        "language":"زبان",
+        "password":"رمز عبور",
+        "installApp":"دریافت وب اپلیکیشن",
+        "pwa":{
+            "cta":"وب اپلیکیشن به آیند را به صفحه اصلی تلفن همراه خود اضافه کنید",
+            "understand":"متوجه شدم.",
+            "ios":{
+                "steps":{
+                    "first":{
+                        "title":"Share",
+                        "description":"انتخاب این گزینه از نوار پایین"
+                    },
+                    "second":{
+                        "title":"Add to homescreen",
+                        "description":"انتخاب این گزینه از منوی ظاهر شده"
+                    },
+                    "third":{
+                        "title":"Add",
+                        "description":"زدن این گزینه"
+                    }
+                }
+            },
+                  "android": {
+        "steps": {
+          "first": {
+            "title": "منو",
+            "description": "روی سه نقطه بالا سمت راست کلیک کنید"
+          },
+          "second": {
+            "title": "افزودن به صفحه اصلی",
+            "description": "انتخاب این گزینه از منوی باز شده"
+          },
+          "third": {
+            "title": "افزودن",
+            "description": "تأیید در پنجره باز شده"
+          }
+        }
+      }
+        },
+        "passwordForm":{
+            "title":"تغییر رمز عبور",
+            "currentPassword":"رمز عبور فعلی",
+            "continue":"ادامه",
+            "enterPassword":"رمز عبور را وارد کنید.",
+            "enterRepeatPassword":"رمز عبور را دوباره وارد کنید.",
+            "password":"رمز عبور جدید",
+            "repeatPassword":"تکرار رمز عبور جدید",
+            "save":"ذخیره",
+            "api":{
+                "passwordChangeSuccess":"رمز عبور با موفقیت تغییر کرد",
+                "passwordChangeFail":"تغییر رمز عبور با خطا مواجه شد",
+                "passwordInvalid":"رمز عبور اشتباه است."
+            }
+        }
+    }
+}

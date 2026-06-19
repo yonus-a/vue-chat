@@ -1,19 +1,33 @@
 // app/composables/useLocale.ts
 
-import { computed } from "vue";
-import { useHead, useI18n } from "~/nuxt-shims";
+import { computed, watchEffect } from "vue";
+import { useI18n } from "~/nuxt-shims";
+import flagUs from "~/assets/flags/us.svg";
+import flagIr from "~/assets/flags/ir.svg";
+import flagAe from "~/assets/flags/ae.svg";
+
+const FLAG_BY_COUNTRY: Record<string, string> = {
+  US: flagUs,
+  IR: flagIr,
+  AE: flagAe,
+};
+
+const DEFAULT_LOCALES: Array<{ code: string; dir: "ltr" | "rtl"; name: string }> = [
+  { code: "fa", dir: "rtl", name: "فارسی" },
+  { code: "en", dir: "ltr", name: "English" },
+  { code: "ar", dir: "rtl", name: "العربية" },
+];
 
 export const useLocale = () => {
   // Plain vue-i18n exposes only `locale` on the Composer. `setLocale` and
-  // `locales` are Nuxt i18n module additions; we cast through `any` so the
-  // existing API surface keeps compiling. Consumers wiring the library outside
-  // Nuxt must provide their own locale list if they need the full surface.
+  // `locales` are Nuxt-i18n module additions; treat them as optional so the
+  // library works in both Nuxt and plain Vite hosts.
   const i18n = useI18n() as unknown as {
     locale: { value: string };
-    setLocale: (l: string) => Promise<void> | void;
-    locales: { value: Array<{ code: string; dir?: string; name?: string }> };
+    setLocale?: (l: string) => Promise<void> | void;
+    locales?: { value: Array<{ code: string; dir?: string; name?: string }> };
   };
-  const { locale, setLocale, locales } = i18n;
+  const locale = i18n.locale;
 
   const localeToCountryMap: Record<string, string> = {
     en: "US",
@@ -27,50 +41,58 @@ export const useLocale = () => {
     ar: "العربية",
   };
 
+  const sourceLocales = computed(() =>
+    i18n.locales?.value?.length ? i18n.locales.value : DEFAULT_LOCALES,
+  );
+
   const languages = computed(() => {
-    return locales.value.map((loc: any) => {
+    return sourceLocales.value.map((loc: any) => {
       const countryCode = localeToCountryMap[loc.code] || "US";
       return {
         ...loc,
         title: localeTitles[loc.code] || loc.name || loc.code,
         countryCode: countryCode.toUpperCase(),
-        flag: `/flags/${countryCode.toLowerCase()}.svg`,
+        flag: FLAG_BY_COUNTRY[countryCode] ?? FLAG_BY_COUNTRY.US,
       };
     });
   });
 
-  // Updated currentCountry to include the native title
   const currentCountry = computed(() => {
     return (
       languages.value.find((lang) => lang.code === locale.value) ||
-      languages.value
+      languages.value[0]
     );
   });
 
-  const flagUrl = computed(() => {
-    return currentCountry.value?.code
-      ? `/flags/${currentCountry.value.code.toLowerCase()}.svg`
-      : "";
-  });
+  const flagUrl = computed(() => currentCountry.value?.flag ?? "");
 
   const dir = computed(() => {
-    const currentLocaleObj = locales.value.find(
+    const currentLocaleObj = sourceLocales.value.find(
       (l: any) => l.code === locale.value,
     );
-    return currentLocaleObj?.dir || "ltr";
+    return (currentLocaleObj?.dir as "ltr" | "rtl" | undefined) || "ltr";
   });
 
-  useHead({
-    htmlAttrs: {
-      dir: dir,
-      lang: locale,
-    },
-  });
+  // useHead is a no-op shim in plain-Vite hosts, so apply html attrs directly.
+  if (typeof document !== "undefined") {
+    watchEffect(() => {
+      document.documentElement.setAttribute("dir", dir.value);
+      document.documentElement.setAttribute("lang", locale.value);
+    });
+  }
 
   const switchLocale = async (newLocale: string) => {
-    await setLocale(newLocale);
-    localStorage.setItem("user-locale", newLocale);
-    window.location.reload();
+    if (i18n.setLocale) {
+      await i18n.setLocale(newLocale);
+    } else {
+      locale.value = newLocale;
+    }
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("user-locale", newLocale);
+    }
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   };
 
   const otherLanguages = computed(() => {

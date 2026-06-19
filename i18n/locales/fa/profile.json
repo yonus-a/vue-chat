@@ -1,0 +1,141 @@
+{
+  "profile": {
+    "routes": {
+      "profile": "پروفایل",
+      "addresses": "آدرس ها",
+      "settings": "تنظیمات",
+      "logout": "خروج"
+    },
+    "profile": {
+      "title": "اطلاعات شخصی",
+      "edit": "ویرایش",
+      "foreignCode": "کد کمسیرا",
+      "pending": "اطلاعات شما در انتظار تایید می‌باشند.",
+      "image": {
+        "image": "تصویر پروفایل",
+        "edit": "ویرایش",
+        "add": "اضافه کردنس",
+        "uploadSuccess": "تصویر پروفایل با موفقیت به‌روز شد",
+        "uploadFail": "خطا در آپلود تصویر"
+      },
+      "enterPlaceholder": "{field} خود را وارد کنید...",
+      "fields": {
+        "name": "نام",
+        "lastName": "نام خانوادگی",
+        "nationalCode": "کد ملی",
+        "email": "آدرس ایمیل",
+        "birthDate": "تاریخ تولد",
+        "placeOfBirth": "محل تولد",
+        "province": "استان",
+        "city": "شهر",
+        "relationShipStatus": "وضعیت تاهل",
+        "nationality": "ملیت",
+        "bloodType": "گروه خونی (اختیاری)"
+      },
+      "api": {
+        "updateSuccess": "اطلاعات شما با موفقیت به‌روزرسانی شد.",
+        "updateFail": "در به‌روزرسانی اطلاعات خطایی رخ داد. لطفاً دوباره تلاش کنید."
+      }
+    },
+    "address": {
+      "title": "آدرس ها",
+      "noAddress": "هیچ آدرسی ثبت نشده",
+      "options": {
+        "edit": "ویرایش",
+        "delete": "حذف",
+        "add": "افزودن آدرس",
+        "selectAsMain": "انتخاب بعنوان آدرس اصلی"
+      },
+      "submit": "ثبت",
+      "location": {
+        "title": "دسترسی به موقعیت",
+        "description": "برای پیدا کردن خودکار موقعیت شما نیاز به دسترسی موقعیت مکانی داریم",
+        "allow": "تایید دسترسی",
+        "deny": "فعلا نه",
+        "error": "در دریافت دسترسی موقعیت مشکلی پیش آمده!",
+        "success": "دسترسی موقعیت با موفقیت ایجاد شد."
+      },
+      "mainAddress": "آدرس اصلی",
+      "postalCode": "کد پستی",
+      "form": {
+        "addressTitle": "عنوان آدرس",
+        "province": "استان",
+        "city": "شهر",
+        "postalCode": "کد پستی",
+        "address": "آدرس",
+        "selectAsMain": "انتخاب بعنوان آدرس اصلی",
+        "submitFail": "مشکلی در ذخیره آدرس پیش آمده!",
+        "submitSuccess": "آدرس با موفقیت ذخیره شد."
+      },
+      "modal": {
+        "title": "هشدار",
+        "description": "آیا از حذف آدرس اطمینان دارید؟",
+        "delete": "حذف",
+        "cancel": "انصراف"
+      },
+      "api": {
+        "mainSelectionFail": "خطایی در پردازش درخواست شما پیش آمده!",
+        "mainSelectionSuccess": "آدرس با موفقیت بعنوان آدرس اصلی انتخاب شد.",
+        "addressUpdateFail": "خطایی در ویرایش آدرس پیش آمده!",
+        "addressUpdateSuccess": "آدرس با موفقیت ویرایش شد.",
+        "addressSubmitFail": "مشکلی در ذخیره آدرس پیش آمده!",
+        "addressSubmitSuccess": "آدرس با موفقیت ثبت شد.",
+        "addressDeleteFail": "مشکلی در حذف آدرس پیش آمده!",
+        "addressDeleteSuccess": "آدرس با موفقیت حذف شد."
+      }
+    },
+    "familyMembers": {
+      "title": "اعضای خانواده",
+      "addFamilyMember": "اضافه کردن شخص",
+      "relation": "نسبت",
+      "name": "نام",
+      "lastName": "نام خانوادگی",
+      "nationalCode": "کد ملی",
+      "gender": "جنسیت",
+      "role": "نقش",
+      "noMembers": "هیچ عضوی ثبت نشده",
+      "selectAsHouseHoldHead": "انتخاب بعنوان سرپرست خانوار",
+      "livesWithMe": "با من زندگی میکند.",
+      "houseHoldHead": "سرپرست",
+      "add": "افزودن",
+      "options": {
+        "setAsHouseHoldHead": "تنظیم بعنوان سرپرست",
+        "delete": "حذف"
+      },
+      "relations": {
+        "mother": "مادر",
+        "father": "پدر",
+        "brother": "برادر",
+        "sister": "خواهر",
+        "child": "فرزند",
+        "spouse": "همسر"
+      },
+      "roles": {
+        "caretaker": "مراقب",
+        "mainCaretaker": "مراقب اصلی"
+      },
+      "api": {
+        "addSuccess": "عضو خانواده با موفقیت اضافه شد.",
+        "addFail": "خطا در افزودن عضو خانواده.",
+        "updateSuccess": "اطلاعات عضو خانواده به‌روزرسانی شد.",
+        "updateFail": "خطا در به‌روزرسانی عضو خانواده.",
+        "deleteSuccess": "عضو خانواده حذف شد.",
+        "deleteFail": "خطا در حذف عضو خانواده."
+      },
+      "modal": {
+        "title": "هشدار",
+        "description": "آیا از حذف عضو خانواده اطمینان دارید؟",
+        "delete": "حذف",
+        "cancel": "انصراف"
+      }
+    },
+    "logout": {
+      "modal": {
+        "title": "خروج از حساب",
+        "description": "آیا از خروج از حساب کاربری اطمینان دارید؟",
+        "exit": "خروج",
+        "cancel": "انصراف"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "chat": {
+    "you": "شما",
+    "noConversationSelected": "گفتگویی را انتخاب کنید",
+    "noMessages": "هنوز گفتگویی نیست",
+    "copiedMessage": "کپی شد",
+    "filters": {
+      "online": "آنلاین",
+      "ended": "پایان‌یافته",
+      "active": "فعال"
+    }
+  }
+}
