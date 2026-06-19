@@ -121,7 +121,7 @@ const ChatView = defineComponent({
       chatMessagesRef.value?.addMessages(newMsgs);
     };
 
-    const handleEditMessage = (_payload: { id: number; text: string }) => {
+    const handleEditMessage = (_payload: { id: string; text: string }) => {
       // hook for future use
     };
 

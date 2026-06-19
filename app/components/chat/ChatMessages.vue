@@ -452,7 +452,7 @@ export default defineComponent({
             }
         };
 
-        const handleDeleteMessages = (idsToDelete: number[]) => {
+        const handleDeleteMessages = (idsToDelete: string[]) => {
             selectedToDelete.value = idsToDelete;
 
             const isRequestDeletion = idsToDelete.length === 1 &&

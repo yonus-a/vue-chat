@@ -123,7 +123,7 @@ export default defineComponent({
             }
 
             // 2. Set default expertise if none selected
-            if (field.value === -1 && serviceStore.services.length > 0) {
+            if (!field.value && serviceStore.services.length > 0) {
                 field.value = serviceStore.services[0].id;
             }
             await serviceStore.fetchProviders(false);
@@ -145,7 +145,7 @@ export default defineComponent({
         const selectedMedics = ref<Provider[]>([]);
 
         const toggleSelect = (medic: Provider) => {
-            if (isLoading.value || medic.id === -1) return;
+            if (isLoading.value || !medic.id) return;
 
             const index = selectedMedics.value.findIndex(p => p.id === medic.id);
 
@@ -160,7 +160,7 @@ export default defineComponent({
             }
         };
 
-        const isSelected = (id: number) => selectedMedics.value.some(p => p.id === id);
+        const isSelected = (id: string) => selectedMedics.value.some(p => p.id === id);
 
         const buttonProps = computed(() => {
             let buttonText = t('chat.addMedic.buttonText.single')
@@ -189,7 +189,7 @@ export default defineComponent({
 
 
         const selectMedic = () => {
-            if (field.value === -1) return;
+            if (!field.value) return;
             if (!autoSelect.value && selectedMedics.value.length === 0) return;
 
             // Directly use the stored objects
