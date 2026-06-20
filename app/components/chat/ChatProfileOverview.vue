@@ -283,7 +283,9 @@ export default defineComponent({
                     break;
                 case 'voice-call':
                 case 'video-call':
-                    callStore.startCall(props.profile, props.profile?.serviceType)
+                    if (chatStore.activeConversationId && props.profile) {
+                        callStore.startCall(props.profile, chatStore.activeConversationId, action.key)
+                    }
                     break;
             }
         }

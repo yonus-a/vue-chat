@@ -220,8 +220,13 @@ export default defineComponent({
         })
 
         const initCall = () => {
-            if (props.contact?.isActive) {
-                callStore.startCall(props.contact, props.contact.serviceType)
+            const kind = props.contact?.serviceType
+            if (
+                props.contact?.isActive &&
+                currentConversationId.value &&
+                (kind === 'voice-call' || kind === 'video-call')
+            ) {
+                callStore.startCall(props.contact, currentConversationId.value, kind)
             }
         }
 
