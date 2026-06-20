@@ -3,8 +3,8 @@
 @import "./theme.css";
 @import "./components.css";
 
-/* --- Base Styles --- */
-[class*="backdrop-blur"] {
+/* --- Base Styles (scoped to .behayand-chat-scope to avoid host-page leak) --- */
+.behayand-chat-scope [class*="backdrop-blur"] {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-perspective: 1000;
@@ -18,12 +18,14 @@
   scrollbar-width: none;
 }
 
-::-webkit-scrollbar {
+.behayand-chat-scope ::-webkit-scrollbar,
+.behayand-chat-scope::-webkit-scrollbar {
   width: 2px;
   height: 2px;
 }
 
-::-webkit-scrollbar-thumb {
+.behayand-chat-scope ::-webkit-scrollbar-thumb,
+.behayand-chat-scope::-webkit-scrollbar-thumb {
   background: var(--background-image-gradient-primary-secondary);
   border-radius: 10px;
 }
@@ -98,38 +100,38 @@
   font-display: swap;
 }
 
-/* --- Global Font Logic --- */
-
-/* Default font (Latin Numbers for EN or others) */
-html {
+/* --- Scoped Font Logic ---
+   Was globally applied with !important on html/body/input/textarea/button —
+   that leaked the library font onto every host-app page. Now confined to
+   .behayand-chat-scope and its descendants. */
+.behayand-chat-scope {
   interpolate-size: allow-keywords;
 }
-html,
-body,
-input,
-textarea,
-button,
-.chat-bubble,
-.contact-name {
+.behayand-chat-scope,
+.behayand-chat-scope input,
+.behayand-chat-scope textarea,
+.behayand-chat-scope button,
+.behayand-chat-scope .chat-bubble,
+.behayand-chat-scope .contact-name {
   font-family:
     "IranYekanFaNum", "IranYekan", "AppleColorEmoji", sans-serif !important;
 }
-/* Persian/Arabic font (Force Persian Numbers) */
-html[lang="fa"],
-html[lang="ar"] {
+/* Persian/Arabic font (Force Persian Numbers) — :lang() reads inherited html[lang]. */
+.behayand-chat-scope:lang(fa),
+.behayand-chat-scope:lang(ar) {
   font-family:
-    "IranYekanFaNum", "AppleColorEmoji", sans-serif; /* Added AppleColorEmoji here */
+    "IranYekanFaNum", "AppleColorEmoji", sans-serif;
 }
 
-/* Force font on stubborn form elements */
-html[lang="fa"] input,
-html[lang="fa"] textarea,
-html[lang="fa"] button,
-html[lang="ar"] input,
-html[lang="ar"] textarea,
-html[lang="ar"] button {
+/* Force font on stubborn form elements inside the scope. */
+.behayand-chat-scope:lang(fa) input,
+.behayand-chat-scope:lang(fa) textarea,
+.behayand-chat-scope:lang(fa) button,
+.behayand-chat-scope:lang(ar) input,
+.behayand-chat-scope:lang(ar) textarea,
+.behayand-chat-scope:lang(ar) button {
   font-family:
-    "IranYekanFaNum", "AppleColorEmoji", sans-serif; /* Added AppleColorEmoji here */
+    "IranYekanFaNum", "AppleColorEmoji", sans-serif;
 }
 
 .border-diamond {
@@ -152,7 +154,7 @@ html[lang="ar"] button {
   font-family: "IranYekan", "AppleColorEmoji", sans-serif !important;
 }
 
-.maplibregl-map {
+.behayand-chat-scope .maplibregl-map {
   font-family:
     "IranYekanFaNum", "IranYekan", "AppleColorEmoji", sans-serif !important;
 }
