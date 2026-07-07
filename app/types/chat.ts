@@ -84,3 +84,7 @@ export interface ServiceRequest extends Service {
   serviceType?: ServicePresence;
   invoice?: Invoice;
 }
+
+export interface ChatProvider {
+  fetchContacts: () => Promise<Contact[]>
+}

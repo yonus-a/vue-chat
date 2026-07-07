@@ -1,4 +1,4 @@
-# @behayand/chat
+# @yonus_amire01/chat
 
 Reusable Vue 3 chat dashboard component extracted from the Behayand frontend.
 
@@ -7,7 +7,7 @@ The package ships a single composed page component (`<ChatPage />`) plus the hos
 ## Install
 
 ```bash
-yarn add @behayand/chat
+yarn add @yonus_amire01/chat
 # peer dependencies
 yarn add vue vue-i18n pinia @vueuse/core
 ```
@@ -19,8 +19,8 @@ yarn add vue vue-i18n pinia @vueuse/core
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
-import { BehayandChat, ChatPage } from "@behayand/chat";
-import "@behayand/chat/style.css";
+import { BehayandChat, ChatPage } from "@yonus_amire01/chat";
+import "@yonus_amire01/chat/style.css";
 
 import App from "./App.vue";
 // Required message keys — see "i18n keys" below.
@@ -46,7 +46,7 @@ Then render `<ChatPage />` anywhere.
 If no `adapter` is passed, `createMockAdapter()` is used so you can preview the UI without a backend.
 
 ```ts
-import type { HostAdapter } from "@behayand/chat";
+import type { HostAdapter } from "@yonus_amire01/chat";
 
 const adapter: HostAdapter = {
   chat: /* ChatAdapter */,
@@ -61,8 +61,8 @@ const adapter: HostAdapter = {
 Create `app/plugins/behayand-chat.ts`:
 
 ```ts
-import { BehayandChat } from "@behayand/chat";
-import "@behayand/chat/style.css";
+import { BehayandChat } from "@yonus_amire01/chat";
+import "@yonus_amire01/chat/style.css";
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(BehayandChat /* , { adapter } */);
@@ -102,7 +102,7 @@ Translations for additional message types (file/voice/request bubbles, medicatio
 
 ## Styles
 
-`import "@behayand/chat/style.css"` ships:
+`import "@yonus_amire01/chat/style.css"` ships:
 
 - Tailwind v4 base + utilities (scoped to the package's class usage),
 - Theme tokens (`--color-primary-*`, `--color-surface`, gradient utilities, etc.),

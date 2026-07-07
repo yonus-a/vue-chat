@@ -22,7 +22,7 @@ export type {
 } from "./adapter";
 
 export { createMockAdapter } from "./adapter/mock";
-
+export { provideChatAdapter } from "./providers/chatProviders";
 export { useChatPushPort } from "./adapter/PushPort";
 export type { ChatPushPort } from "./adapter/PushPort";
 
