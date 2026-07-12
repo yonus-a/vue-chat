@@ -1,384 +1,476 @@
 <template>
-    <div :class="[disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100 ']"
-        class=" w-full max-w-90 flex flex-col outline-none" :tabindex="tabindex" @keyup.tab="openOnTab"
-        @keydown.down.prevent="highlightNext" @keydown.up.prevent="highlightPrev"
-        @keydown.enter.prevent="selectHighlighted" @keydown.esc.prevent="closeDropdown">
+  <div
+    :class="[disabled ? 'cursor-not-allowed opacity-50' : 'opacity-100']"
+    class="flex w-full max-w-90 flex-col outline-none"
+    :tabindex="tabindex"
+    @keyup.tab="openOnTab"
+    @keydown.down.prevent="highlightNext"
+    @keydown.up.prevent="highlightPrev"
+    @keydown.enter.prevent="selectHighlighted"
+    @keydown.esc.prevent="closeDropdown"
+  >
+    <span
+      v-if="title"
+      class="pointer-events-none mb-1.5 select-none text-label-md text-on-surface"
+    >
+      {{ title }}
+    </span>
 
-        <span v-if="title" class=" pointer-events-none text-label-md mb-1.5 select-none text-on-surface">
-            {{ title }}
-        </span>
+    <div ref="dropdownRef" class="relative w-full">
+      <div @click="toggleDropdown" :class="containerClasses">
+        <div
+          class="flex h-full flex-1 items-center gap-x-2 overflow-x-auto overflow-y-hidden hide-scrollbar"
+        >
+          <BImage
+            v-if="selectedItem?.image"
+            :src="selectedItem.image"
+            class="h-6 w-6 min-h-6 min-w-6 max-h-6 max-w-6 overflow-hidden rounded-full"
+          />
+          <div
+            v-else-if="selectedItem?.color"
+            class="aspect-square h-6 w-6 shrink-0 rounded-full"
+            :style="{ background: selectedItem.color }"
+          />
 
-        <div ref="dropdownRef" class="relative w-full">
+          <span
+            v-if="selectedItem && (!searchable || !isOpen)"
+            class="truncate select-none text-sm font-medium text-on-surface opacity-100 shrink-0"
+          >
+            {{ selectedItem.label }}
+          </span>
 
-            <div @click="toggleDropdown"
-                class="h-12 w-full px-3 py-2.5 rounded-[10px] border flex items-center gap-x-1.5 transition-all duration-300 cursor-pointer "
-                :class="containerClasses">
+          <span
+            v-if="showPlaceholder"
+            class="truncate select-none text-sm font-medium text-on-surface opacity-50 shrink-0"
+          >
+            {{ placeholder }}
+          </span>
 
-                <div class="flex-1 flex items-center gap-x-2 overflow-x-auto overflow-y-hidden hide-scrollbar h-full">
-
-                    <BImage class=" max-w-6 max-h-6 min-w-6 min-h-6 w-6 h-6 rounded-full overflow-hidden"
-                        v-if="selectedItem?.image && selectedItem" :src="selectedItem.image" />
-                    <div v-if="selectedItem?.color && selectedItem"
-                        class="w-6 aspect-square rounded-full shrink-0" :style="{ background: selectedItem.color }">
-                    </div>
-                    <span v-if="selectedItem && (!searchable || !isOpen)"
-                        class="text-sm font-medium select-none truncate text-on-surface opacity-100 shrink-0">
-                        {{ selectedItem.label }}
-                    </span>
-
-                    <span v-if="showPlaceholder"
-                        class="text-sm font-medium select-none truncate text-on-surface opacity-50 shrink-0">
-                        {{ placeholder }}
-                    </span>
-
-                    <input v-if="searchable && isOpen" ref="searchInput" v-model="searchQuery" @click.stop
-                        @keydown.down.prevent="highlightNext" @keydown.up.prevent="highlightPrev"
-                        @keydown.enter.prevent="selectHighlighted"
-                        class="flex-1 min-w-15 max-w-full bg-transparent outline-none text-sm font-medium text-on-surface placeholder:text-on-surface/50 h-full"
-                        :placeholder="placeholder" />
-                </div>
-
-                <BIcon icon="PhCaretDown"
-                    class="w-5 h-5 fill-on-surface/50 shrink-0 fill-on-surface transition-transform duration-300"
-                    :class="[isOpen ? 'rotate-180' : '', disabled ? 'opacity-40' : '']" />
-            </div>
-
-            <transition name="dropdown-fade">
-                <div v-if="isOpen" :class="[
-                    'absolute border overflow-hidden border-outline left-0 right-0 bg-surface rounded-xl z-50 flex flex-col shadow-[0_12px_16px_-4px_rgba(13,13,18,0.08)] dark:shadow-[0_12px_16px_-4px_rgba(0,0,0,0.4)]',
-                    openDirection === 'up' ? 'bottom-[calc(100%+6px)] origin-bottom' : 'top-[calc(100%+6px)] origin-top'
-                ]">
-
-                    <div v-if="isLoading" class="flex items-center justify-center h-18.75 w-full">
-                        <BIcon icon="PhCircleNotch" class="w-7 h-7 animate-spin fill-outline" />
-                    </div>
-
-                    <template v-else>
-                        <div v-if="filteredOptions.length === 0 && !isLoading"
-                            class="flex items-center justify-center gap-x-2 py-6 text-on-surface/50">
-                            <span class="text-sm select-none font-medium">{{
-                                t('general.noResultFound', {
-                                    search: searchQuery, item: noResultText !== '' ? noResultText :
-                                        t('general.result')
-                                }) }}</span>
-                        </div>
-
-                        <div v-if="filteredOptions.length > 0" class="overflow-y-auto  max-h-50 " ref="optionsListRef">
-                            <div
-                                :style="{ height: `${virtualizer.getTotalSize()}px`, position: 'relative', width: '100%' }">
-                                <div v-for="virtualRow in virtualizer.getVirtualItems()" :key="virtualRow.key" :style="{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    width: '100%',
-                                    height: `${virtualRow.size - 2}px`,
-                                    transform: `translateY(${virtualRow.start}px)`
-                                }" @click.stop="toggleOption(filteredOptions[virtualRow.index])" :class="[
-                                    'flex items-center gap-x-2 px-2  cursor-pointer transition-colors duration-200 ease-in-out',
-                                    isSelected(filteredOptions[virtualRow.index]) || highlightedIndex === virtualRow.index ? ' bg-surface-variant-2' : 'bg-transparent'
-                                ]">
-
-                                    <BImage v-if="filteredOptions[virtualRow.index].image"
-                                        :src="filteredOptions[virtualRow.index].image"
-                                        class="w-6 max-w-6 max-h-6 min-h-6 min-w-6 rounded-sm h-6 shrink-0 object-cover" />
-                                    <div v-else-if="filteredOptions[virtualRow.index]?.color"
-                                        class="rounded-full overflow-hidden w-6 aspect-square shrink-0"
-                                        :style="{ background: filteredOptions[virtualRow.index]?.color }">
-                                    </div>
-                                    <BIcon v-else-if="filteredOptions[virtualRow.index].icon"
-                                        :icon="filteredOptions[virtualRow.index].icon" class="w-6 h-6 shrink-0"
-                                        :class="isSelected(filteredOptions[virtualRow.index]) ? 'fill-primary' : 'fill-on-surface'" />
-
-                                    <span class="text-sm font-medium line-clamp-1 text-ellipsis overflow-hidden flex-1"
-                                        :class="isSelected(filteredOptions[virtualRow.index]) ? 'text-primary' : 'text-on-surface'">
-                                        {{ filteredOptions[virtualRow.index].label }}
-                                    </span>
-
-                                    <BIcon v-if="isSelected(filteredOptions[virtualRow.index])" icon="PhCheck"
-                                        class="w-5 h-5 fill-primary ms-auto shrink-0" />
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </transition>
+          <input
+            v-if="searchable && isOpen"
+            ref="searchInput"
+            v-model="searchQuery"
+            @click.stop
+            @keydown.down.prevent="highlightNext"
+            @keydown.up.prevent="highlightPrev"
+            @keydown.enter.prevent="selectHighlighted"
+            class="h-full min-w-15 max-w-full flex-1 bg-transparent text-sm font-medium text-on-surface outline-none placeholder:text-on-surface/50"
+            :placeholder="placeholder"
+          />
         </div>
 
-        <div class="w-full overflow-hidden transition-all h-5 duration-300 ease-in-out"
-            :class="[message ? ' opacity-100 mt-1.5' : ' opacity-0 mt-0']">
-            <div class="flex items-center gap-x-1.5">
-                <BIcon v-if="message" :icon="messageIcon" class="w-4 h-4 shrink-0" :class="messageColorClass" />
-                <span class="text-xs select-none" :class="messageColorClass">{{ message }}</span>
-            </div>
-        </div>
+        <BIcon
+          icon="PhCaretDown"
+          class="h-5 w-5 shrink-0 fill-on-surface/50 transition-transform duration-300"
+          :class="[isOpen ? 'rotate-180' : '', disabled ? 'opacity-40' : '']"
+        />
+      </div>
 
+      <transition name="dropdown-fade">
+        <div
+          v-if="isOpen"
+          :class="[
+            'absolute left-0 right-0 z-50 flex flex-col overflow-hidden rounded-xl border border-outline bg-surface shadow-[0_12px_16px_-4px_rgba(13,13,18,0.08)] dark:shadow-[0_12px_16px_-4px_rgba(0,0,0,0.4)]',
+            openDirection === 'up'
+              ? 'bottom-[calc(100%+6px)] origin-bottom'
+              : 'top-[calc(100%+6px)] origin-top',
+          ]"
+        >
+          <div
+            v-if="isLoading"
+            class="flex h-18.75 w-full items-center justify-center"
+          >
+            <BIcon
+              icon="PhCircleNotch"
+              class="h-7 w-7 animate-spin fill-outline"
+            />
+          </div>
+
+          <template v-else>
+            <div
+              v-if="filteredOptions.length === 0"
+              class="flex items-center justify-center gap-x-2 py-6 text-on-surface/50"
+            >
+              <span class="select-none text-sm font-medium">
+                {{
+                  t("general.noResultFound", {
+                    search: searchQuery,
+                    item: noResultText || t("general.result"),
+                  })
+                }}
+              </span>
+            </div>
+
+            <div
+              v-if="filteredOptions.length > 0"
+              ref="optionsListRef"
+              class="max-h-50 overflow-y-auto"
+            >
+              <div
+                :style="{
+                  height: `${virtualizer.getTotalSize()}px`,
+                  position: 'relative',
+                  width: '100%',
+                }"
+              >
+                <div
+                  v-for="virtualRow in virtualizer.getVirtualItems()"
+                  :key="virtualRow.index"
+                  :style="{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size - 2}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }"
+                  :class="[
+                    'flex cursor-pointer items-center gap-x-2 px-2 transition-colors duration-200 ease-in-out',
+                    isSelected(filteredOptions[virtualRow.index]) ||
+                    highlightedIndex === virtualRow.index
+                      ? 'bg-surface-variant-2'
+                      : 'bg-transparent',
+                  ]"
+                  @click.stop="toggleOption(filteredOptions[virtualRow.index])"
+                >
+                  <BImage
+                    v-if="filteredOptions[virtualRow.index].image"
+                    :src="filteredOptions[virtualRow.index].image"
+                    class="h-6 w-6 min-h-6 min-w-6 max-h-6 max-w-6 shrink-0 object-cover rounded-sm"
+                  />
+                  <div
+                    v-else-if="filteredOptions[virtualRow.index]?.color"
+                    class="aspect-square h-6 w-6 shrink-0 overflow-hidden rounded-full"
+                    :style="{
+                      background: filteredOptions[virtualRow.index]?.color,
+                    }"
+                  />
+                  <BIcon
+                    v-else-if="filteredOptions[virtualRow.index].icon"
+                    :icon="filteredOptions[virtualRow.index].icon"
+                    class="h-6 w-6 shrink-0"
+                    :class="
+                      isSelected(filteredOptions[virtualRow.index])
+                        ? 'fill-primary'
+                        : 'fill-on-surface'
+                    "
+                  />
+
+                  <span
+                    class="flex-1 truncate overflow-hidden text-ellipsis text-sm font-medium"
+                    :class="
+                      isSelected(filteredOptions[virtualRow.index])
+                        ? 'text-primary'
+                        : 'text-on-surface'
+                    "
+                  >
+                    {{ filteredOptions[virtualRow.index].label }}
+                  </span>
+
+                  <BIcon
+                    v-if="isSelected(filteredOptions[virtualRow.index])"
+                    icon="PhCheck"
+                    class="ms-auto h-5 w-5 shrink-0 fill-primary"
+                  />
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </transition>
     </div>
+
+    <div
+      class="h-5 w-full overflow-hidden transition-all duration-300 ease-in-out"
+      :class="[message ? 'mt-1.5 opacity-100' : 'mt-0 opacity-0']"
+    >
+      <div class="flex items-center gap-x-1.5">
+        <BIcon
+          v-if="message"
+          :icon="messageIcon"
+          class="h-4 w-4 shrink-0"
+          :class="messageColorClass"
+        />
+        <span class="select-none text-xs" :class="messageColorClass">{{
+          message
+        }}</span>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script lang="ts">
-// @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
-import { defineComponent, ref, computed, watch, onMounted, onUnmounted, type PropType, nextTick } from 'vue';
-import { useI18n } from '~/nuxt-shims';
-import { useVirtualizer } from '@tanstack/vue-virtual';
-import type { DropdownOption } from '~/types/components/select';
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { useVirtualizer } from "@tanstack/vue-virtual";
+import type { DropdownOption } from "~/types/components/select";
+import { useI18n } from "vue-i18n";
 
-export default defineComponent({
-    name: 'DopeDropDown',
-    emits: ['update:modelValue', 'search'],
-    props: {
-        modelValue: {
-            type: [String, Number] as PropType<any>,
-            default: ''
-        },
-        options: {
-            type: Array as PropType<DropdownOption[]>,
-            default: () => []
-        },
-        tabindex: { type: Number, default: 0 },
-        title: { type: String, default: '' },
-        placeholder: { type: String, default: 'Select...' },
-        message: { type: String, default: '' },
-        disabled: { type: Boolean, default: false },
-        searchable: { type: Boolean, default: false },
-        hasError: { type: Boolean, default: false },
-        color: { type: String, default: 'primary' },
-        loading: { type: Boolean, default: false },
-        remoteSearch: { type: Boolean, default: false },
-        noResultText: { type: String, default: '' },
-    },
-    setup(props, { emit }) {
-        const { t } = useI18n();
-        const isOpen = ref(false);
-        const searchQuery = ref('');
-        const dropdownRef = ref<HTMLElement | null>(null);
-        const searchInput = ref<HTMLInputElement | null>(null);
-        const optionsListRef = ref<HTMLElement | null>(null);
-        const isLoading = computed(()=> props.loading)
-        const highlightedIndex = ref(-1);
-        let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+defineOptions({
+  name: "DopeDropDown",
+});
 
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | number;
+    options?: DropdownOption[];
+    tabindex?: number;
+    title?: string;
+    placeholder?: string;
+    message?: string;
+    disabled?: boolean;
+    searchable?: boolean;
+    hasError?: boolean;
+    color?: "primary" | "error" | "warning" | "success" | "secondary" | string;
+    loading?: boolean;
+    remoteSearch?: boolean;
+    noResultText?: string;
+  }>(),
+  {
+    modelValue: "",
+    options: () => [],
+    tabindex: 0,
+    title: "",
+    placeholder: "Select...",
+    message: "",
+    disabled: false,
+    searchable: false,
+    hasError: false,
+    color: "primary",
+    loading: false,
+    remoteSearch: false,
+    noResultText: "",
+  },
+);
 
-        const openDirection = ref<'down' | 'up'>('down');
+const emit = defineEmits<{
+  "update:modelValue": [value: string | number];
+  search: [query: string];
+}>();
 
-        const calculatePosition = () => {
-            if (!dropdownRef.value) return;
-            const rect = dropdownRef.value.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            const requiredSpace = 260;
+const { t } = useI18n();
 
-            if (spaceBelow < requiredSpace && rect.top > requiredSpace) {
-                openDirection.value = 'up';
-            } else {
-                openDirection.value = 'down';
-            }
-        };
+const isOpen = ref(false);
+const searchQuery = ref("");
+const dropdownRef = ref<HTMLElement | null>(null);
+const searchInput = ref<HTMLInputElement | null>(null);
+const optionsListRef = ref<HTMLElement | null>(null);
+const highlightedIndex = ref(-1);
+const openDirection = ref<"down" | "up">("down");
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-        const messageColorClass = computed(() => {
-            if (props.hasError || props.color === 'error') return 'text-error fill-error';
-            if (props.color === 'success') return 'text-secondary fill-secondary';
-            if (props.color === 'warning') return 'text-warning fill-warning';
-            return 'text-on-surface/50 fill-on-surface/50';
-        });
+const isLoading = computed(() => props.loading);
 
-        const messageIcon = computed(() => {
-            if (props.hasError || props.color === 'error') return 'PhWarningCircle';
-            if (props.color === 'success') return 'PhCheckCircle';
-            if (props.color === 'warning') return 'PhWarning';
-            return 'PhInfo';
-        });
+const calculatePosition = () => {
+  if (!dropdownRef.value) return;
+  const rect = dropdownRef.value.getBoundingClientRect();
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const requiredSpace = 260;
 
-        watch(searchQuery, (newVal) => {
-            highlightedIndex.value = -1;
-            if (props.remoteSearch && props.searchable) {
-                if (searchTimeout) clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => { emit('search', newVal); }, 300);
-            }
-        });
+  openDirection.value =
+    spaceBelow < requiredSpace && rect.top > requiredSpace ? "up" : "down";
+};
 
-        const filteredOptions = computed(() => {
-            if (!props.searchable || props.remoteSearch || !searchQuery.value) return props.options;
-            const query = searchQuery.value.toLowerCase();
-            return props.options.filter(opt => opt.label.toLowerCase().includes(query));
-        });
+const messageColorClass = computed(() => {
+  if (props.hasError || props.color === "error") return "fill-error text-error";
+  if (props.color === "success") return "fill-secondary text-secondary";
+  if (props.color === "warning") return "fill-warning text-warning";
+  return "fill-on-surface/50 text-on-surface/50";
+});
 
-        const virtualizerOptions = computed(() => {
-            const el = optionsListRef.value;
-            return {
-                count: filteredOptions.value.length,
-                getScrollElement: () => el,
-                estimateSize: () => 42,
-                overscan: 5,
-            };
-        });
+const messageIcon = computed(() => {
+  if (props.hasError || props.color === "error") return "PhWarningCircle";
+  if (props.color === "success") return "PhCheckCircle";
+  if (props.color === "warning") return "PhWarning";
+  return "PhInfo";
+});
 
-        const virtualizer = useVirtualizer(virtualizerOptions);
+watch(searchQuery, (newVal) => {
+  highlightedIndex.value = -1;
+  if (props.remoteSearch && props.searchable) {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => emit("search", newVal), 300);
+  }
+});
 
-        const highlightNext = () => {
-            if (!isOpen.value) return toggleDropdown();
-            if (highlightedIndex.value < filteredOptions.value.length - 1) {
-                highlightedIndex.value++;
-                scrollToHighlighted();
-            }
-        };
+const filteredOptions = computed(() => {
+  if (!props.searchable || props.remoteSearch || !searchQuery.value)
+    return props.options;
+  const query = searchQuery.value.toLowerCase();
+  return props.options.filter((opt) => opt.label.toLowerCase().includes(query));
+});
 
-        const highlightPrev = () => {
-            if (!isOpen.value) return;
-            if (highlightedIndex.value > 0) {
-                highlightedIndex.value--;
-                scrollToHighlighted();
-            }
-        };
+const virtualizerOptions = computed(() => ({
+  count: filteredOptions.value.length,
+  getScrollElement: () => optionsListRef.value as HTMLElement | null,
+  estimateSize: () => 42,
+  overscan: 5,
+}));
 
-        const selectHighlighted = () => {
-            if (!isOpen.value) return;
-            if (highlightedIndex.value >= 0 && filteredOptions.value[highlightedIndex.value]) {
-                toggleOption(filteredOptions.value[highlightedIndex.value]);
-            }
-        };
+const virtualizer = useVirtualizer(virtualizerOptions);
 
-        const scrollToHighlighted = () => {
-            nextTick(() => {
-                if (highlightedIndex.value >= 0 && virtualizer.value) {
-                    virtualizer.value.scrollToIndex(highlightedIndex.value, { align: 'auto' });
-                }
-            });
-        };
-
-        const isSelected = (option: DropdownOption) => {
-            return props.modelValue === option.value;
-        };
-
-        const selectedItem = computed(() => {
-            return props.options.find(opt => opt.value === props.modelValue) || null;
-        });
-
-        const showPlaceholder = computed(() => {
-            if (props.searchable && isOpen.value) return false;
-            return !selectedItem.value;
-        });
-
-        const toggleDropdown = () => {
-            if (props.disabled) return;
-            if (!isOpen.value) {
-                calculatePosition();
-                isOpen.value = true;
-
-                if (selectedItem.value) {
-                    const idx = filteredOptions.value.findIndex(opt => opt.value === selectedItem.value!.value);
-                    highlightedIndex.value = idx >= 0 ? idx : 0;
-                } else {
-                    highlightedIndex.value = 0;
-                }
-
-                if (props.searchable) {
-                    setTimeout(() => searchInput.value?.focus(), 50);
-                    if (props.remoteSearch && !searchQuery.value) emit('search', '');
-                }
-
-                nextTick(() => {
-                    scrollToHighlighted();
-                });
-            } else {
-                closeDropdown();
-            }
-        };
-
-        const closeDropdown = () => {
-            isOpen.value = false;
-            searchQuery.value = '';
-            highlightedIndex.value = -1;
-        };
-
-        const toggleOption = (option: DropdownOption) => {
-            emit('update:modelValue', option.value);
-            closeDropdown();
-        };
-
-        const handleClickOutside = (event: MouseEvent) => {
-            if (isOpen.value && dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-                closeDropdown();
-            }
-        };
-
-        onMounted(() => document.addEventListener('mousedown', handleClickOutside));
-        onUnmounted(() => document.removeEventListener('mousedown', handleClickOutside));
-        const openOnTab = () => {
-            if (!isOpen.value) toggleDropdown();
-        };
-
-        const containerClasses = computed(() => {
-            const classes = [];
-            const c = props.color;
-            const isError = props.hasError || c === 'error';
-
-            if (isOpen.value) {
-                classes.push('bg-surface');
-            } else if (isError) {
-                classes.push('bg-error/10');
-            } else if (c === 'warning') {
-                classes.push('bg-warning/10');
-            } else if (c === 'success' || c === 'secondary') {
-                classes.push('bg-secondary/10');
-            } else {
-                classes.push('bg-surface-rest');
-            }
-
-            if (isError) {
-                classes.push('border-error');
-            } else if (c === 'warning') {
-                classes.push('border-warning');
-            } else if (c === 'success' || c === 'secondary') {
-                classes.push('border-secondary');
-            } else if (isOpen.value) {
-                classes.push('border-primary');
-            } else {
-                classes.push('border-outline');
-            }
-
-            if (isOpen.value) {
-                classes.push('shadow-[0_8px_10px_-3px_rgba(13,13,18,0.05)] dark:shadow-[0_8px_10px_-3px_rgba(0,0,0,0.26)]');
-            } else {
-                classes.push('shadow-none');
-            }
-
-            if (props.disabled) {
-                classes.push('opacity-50 pointer-events-none');
-            }
-
-            return classes;
-        });
-
-        return {
-            t, isOpen, searchQuery, dropdownRef, searchInput, optionsListRef, highlightedIndex,
-            filteredOptions, isSelected,
-            selectedItem, showPlaceholder,
-            messageColorClass, messageIcon, virtualizer,
-            toggleDropdown, closeDropdown, toggleOption,
-            highlightNext, highlightPrev, selectHighlighted, openOnTab, containerClasses,
-            openDirection,isLoading,
-        };
+const scrollToHighlighted = () => {
+  nextTick(() => {
+    if (highlightedIndex.value >= 0) {
+      virtualizer.value.scrollToIndex(highlightedIndex.value, {
+        align: "auto",
+      });
     }
+  });
+};
+
+const highlightNext = () => {
+  if (!isOpen.value) return toggleDropdown();
+  if (highlightedIndex.value < filteredOptions.value.length - 1) {
+    highlightedIndex.value++;
+    scrollToHighlighted();
+  }
+};
+
+const highlightPrev = () => {
+  if (!isOpen.value) return;
+  if (highlightedIndex.value > 0) {
+    highlightedIndex.value--;
+    scrollToHighlighted();
+  }
+};
+
+const selectHighlighted = () => {
+  if (!isOpen.value) return;
+  if (
+    highlightedIndex.value >= 0 &&
+    filteredOptions.value[highlightedIndex.value]
+  ) {
+    toggleOption(filteredOptions.value[highlightedIndex.value]);
+  }
+};
+
+const isSelected = (option: DropdownOption) =>
+  props.modelValue === option.value;
+
+const selectedItem = computed(
+  () => props.options.find((opt) => opt.value === props.modelValue) || null,
+);
+
+const showPlaceholder = computed(() => {
+  if (props.searchable && isOpen.value) return false;
+  return !selectedItem.value;
+});
+
+const toggleDropdown = () => {
+  if (props.disabled) return;
+
+  if (!isOpen.value) {
+    calculatePosition();
+    isOpen.value = true;
+
+    if (selectedItem.value) {
+      const idx = filteredOptions.value.findIndex(
+        (opt) => opt.value === selectedItem.value!.value,
+      );
+      highlightedIndex.value = idx >= 0 ? idx : 0;
+    } else {
+      highlightedIndex.value = 0;
+    }
+
+    if (props.searchable) {
+      setTimeout(() => searchInput.value?.focus(), 50);
+      if (props.remoteSearch && !searchQuery.value) emit("search", "");
+    }
+
+    nextTick(scrollToHighlighted);
+  } else {
+    closeDropdown();
+  }
+};
+
+const closeDropdown = () => {
+  isOpen.value = false;
+  searchQuery.value = "";
+  highlightedIndex.value = -1;
+};
+
+const toggleOption = (option: DropdownOption) => {
+  emit("update:modelValue", option.value);
+  closeDropdown();
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    isOpen.value &&
+    dropdownRef.value &&
+    !dropdownRef.value.contains(event.target as Node)
+  ) {
+    closeDropdown();
+  }
+};
+
+const openOnTab = () => {
+  if (!isOpen.value) toggleDropdown();
+};
+
+const containerClasses = computed(() => {
+  const c = props.color;
+  const isError = props.hasError || c === "error";
+
+  const bg = isOpen.value
+    ? "bg-surface"
+    : isError
+      ? "bg-error/10"
+      : c === "warning"
+        ? "bg-warning/10"
+        : c === "success" || c === "secondary"
+          ? "bg-secondary/10"
+          : "bg-surface-rest";
+
+  const border = isError
+    ? "border-error"
+    : c === "warning"
+      ? "border-warning"
+      : c === "success" || c === "secondary"
+        ? "border-secondary"
+        : isOpen.value
+          ? "border-primary"
+          : "border-outline";
+
+  const shadow = isOpen.value
+    ? "shadow-[0_8px_10px_-3px_rgba(13,13,18,0.05)] dark:shadow-[0_8px_10px_-3px_rgba(0,0,0,0.26)]"
+    : "shadow-none";
+
+  return [
+    "flex h-12 w-full cursor-pointer items-center gap-x-1.5 rounded-[10px] border px-3 py-2.5 transition-all duration-300",
+    bg,
+    border,
+    shadow,
+    props.disabled && "pointer-events-none opacity-50",
+  ];
+});
+
+onMounted(() => document.addEventListener("mousedown", handleClickOutside));
+
+onUnmounted(() => {
+  document.removeEventListener("mousedown", handleClickOutside);
+  if (searchTimeout) clearTimeout(searchTimeout);
 });
 </script>
 
 <style scoped>
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
-    transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .dropdown-fade-enter-from,
 .dropdown-fade-leave-to {
-    opacity: 0;
-    transform: scaleY(0.95);
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
+  opacity: 0;
+  transform: scaleY(0.95);
 }
 
 .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 </style>

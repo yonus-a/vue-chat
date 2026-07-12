@@ -1,87 +1,37 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import dts from "vite-plugin-dts";
 import AutoImport from "unplugin-auto-import/vite";
 import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 import { resolve } from "node:path";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      imports: [
-        "vue",
-        {
-          "@vueuse/core": ["useWindowSize", "useEventBus"],
-          "vue-i18n": ["useI18n"],
-        },
-      ],
-      dts: "./auto-imports.d.ts",
-      vueTemplate: true,
+      imports: ["vue", "@vueuse/core"],
+      dts: fileURLToPath(new URL("./auto-imports.d.ts", import.meta.url)),
     }),
     dts({
-      include: ["app/**/*.ts", "app/**/*.vue", "app/**/*.d.ts"],
       outDir: "dist/types",
-      entryRoot: "app",
-      tsconfigPath: "./tsconfig.json",
-      copyDtsFiles: true,
-      logLevel: "warn",
-      compilerOptions: {
-        noCheck: true,
-        skipLibCheck: true,
-      },
+      insertTypesEntry: true,
     }),
   ],
+  publicDir: false,
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./app", import.meta.url)),
     },
   },
-  publicDir: false,
   build: {
     lib: {
+      name: "VueChat",
       entry: resolve(__dirname, "app/index.ts"),
-      name: "BehayandChat",
       formats: ["es", "cjs"],
-      fileName: (format) =>
-        format === "es" ? "index.mjs" : "index.cjs",
+      fileName: (format) => (format === "es" ? "index.mjs" : "index.cjs"),
     },
     rollupOptions: {
-      external: [
-        "vue",
-        "vue-i18n",
-        "pinia",
-        "@vueuse/core",
-        "@primevue/themes",
-        "@phosphor-icons/vue",
-        "chart.js",
-        "maplibre-gl",
-        "signature_pad",
-        "vue-advanced-cropper",
-        "vue3-lottie",
-        "@emoji-mart/data",
-        "emoji-mart",
-        "@twemoji/api",
-        "@tanstack/vue-virtual",
-        "altcha",
-      ],
-      output: {
-        globals: {
-          vue: "Vue",
-          "vue-i18n": "VueI18n",
-          pinia: "Pinia",
-          "@vueuse/core": "VueUse",
-        },
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name && /\.css$/.test(assetInfo.name)) {
-            return "style.css";
-          }
-          return "assets/[name]-[hash][extname]";
-        },
-      },
+      external: ["vue", "vue-i18n", "pinia", "@vueuse/core"],
     },
-    sourcemap: true,
-    cssCodeSplit: false,
-    emptyOutDir: true,
   },
 });

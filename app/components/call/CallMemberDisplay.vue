@@ -1,102 +1,118 @@
 <template>
-    <div class=" w-full h-full relative rounded-2xl p-2 flex flex-col bg-black-600 gap-y-2 items-center border-2 overflow-hidden justify-center transition-all duration-200 ease-in-out"
-        :class="[contact.isSpeaking ? ' border-primary' : ' border-primary/0']">
+  <div
+    class="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl border-2 bg-black-600 p-2 transition-all duration-200 ease-in-out"
+    :class="[contact.isSpeaking ? 'border-primary' : 'border-primary/0']"
+  >
+    <!-- Video Background Feature -->
+    <video
+      v-show="hasActiveStream"
+      ref="videoRef"
+      autoplay
+      playsinline
+      :muted="isMine"
+      class="absolute inset-0 z-0 h-full w-full object-cover"
+    />
 
-        <!-- Video Background Feature -->
-        <video v-show="hasActiveStream" ref="videoRef" autoplay playsinline :muted="isMine"
-            class="absolute inset-0 w-full h-full object-cover "></video>
-
-        <div class=" absolute p-2 w-full h-full z-0 top-0 left-0  flex flex-col justify-between" >
-            <div class=" w-full flex justify-end items-center">
-                <div :class="[contact.isSpeaking ? 'opacity-100' : 'opacity-0']"
-                    class="cursor-pointer rounded-full bg-black-500 transition-all duration-200 ease-in-out w-10 h-10 flex items-center justify-center">
-                    <BIcon icon="PhWaveform" class=" w-4 h-4 fill-white" />
-                </div>
-            </div>
-            <div class=" w-full flex items-center">
-                <div @click="toggleFullScreen"
-                    class=" rounded-full w-10 h-10 cursor-pointer flex items-center justify-center bg-black-500">
-                    <BIcon :icon="!isFullScreen ? 'PhFrameCorners' : 'PhCornersIn'" class="  w-4 h-4 fill-white" />
-                </div>
-            </div>
+    <!-- Controls Overlay -->
+    <div
+      class="absolute left-0 top-0 z-10 flex h-full w-full flex-col justify-between p-2"
+    >
+      <div class="flex w-full items-center justify-end">
+        <div
+          :class="[contact.isSpeaking ? 'opacity-100' : 'opacity-0']"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black-500 transition-all duration-200 ease-in-out"
+        >
+          <BIcon icon="PhWaveform" class="h-4 w-4 fill-white" />
         </div>
-
-        <!-- Avatar Fallback Logic -->
-        <div v-if="!hasActiveStream" class=" w-18 h-18">
-            <ContactAvatar :showOnline="false" :contact="contact" />
+      </div>
+      <div class="flex w-full items-center">
+        <div
+          @click="toggleFullScreen"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black-500"
+        >
+          <BIcon
+            :icon="!isFullScreen ? 'PhFrameCorners' : 'PhCornersIn'"
+            class="h-4 w-4 fill-white"
+          />
         </div>
-
-        <!-- Name Label (Z-index ensures visibility over video) -->
-        <div :class="{ 'absolute bottom-4 left-4 z-20': hasActiveStream }"
-            class=" text-white text-label-md sm:text-title-lg select-none">
-            {{ contact.name }} {{ contact.lastName }}
-        </div>
+      </div>
     </div>
+
+    <!-- Avatar Fallback Logic -->
+    <div v-if="!hasActiveStream" class="h-18 w-18">
+      <ContactAvatar :contact="contact" :show-online="false" />
+    </div>
+
+    <!-- Name Label (Z-index ensures visibility over video) -->
+    <div
+      :class="{ 'absolute bottom-4 left-4 z-20': hasActiveStream }"
+      class="select-none text-white text-label-md sm:text-title-lg"
+    >
+      {{ contact.name }} {{ contact.lastName }}
+    </div>
+  </div>
 </template>
 
-<script lang="ts">
-import { type PropType, defineComponent, computed, ref, watch, onMounted } from 'vue';
-import type { CallMember } from '~/types/call';
-import ContactAvatar from '../chat/contact/ContactAvatar.vue';
-import { useChatStore } from '~/nuxt-shims';
+<script setup lang="ts">
+import ContactAvatar from "../chat/contact/ContactAvatar.vue";
+import { computed, ref, watch, onMounted } from "vue";
+import { useChatStore } from "~/stores/chatStore.js";
+import type { CallMember } from "~/types/call";
 
-export default defineComponent({
-    name: 'CallMemberDisplay',
-    props: {
-        contact: {
-            type: Object as PropType<CallMember>,
-            required: true,
-        },
-        isFullScreen: {
-            type: Boolean,
-            default: false
-        }
-    },
-    components: {
-        ContactAvatar,
-    },
-    emits: ['toggle-fullscreen'],
-    setup(props, { emit }) {
-        const chatStore = useChatStore();
-        const videoRef = ref<HTMLVideoElement | null>(null);
-        const isMine = computed(() => chatStore.currentUserId === props.contact.id);
+defineOptions({
+  name: "CallMemberDisplay",
+});
 
-        // Detect if camera is on or screen is being shared
-        const hasActiveStream = computed(() => {
-            return props.contact.stream !== null && (props.contact.isCameraOn || props.contact.isScreenSharing);
-        });
+const props = withDefaults(
+  defineProps<{
+    contact: CallMember;
+    isFullScreen?: boolean;
+  }>(),
+  {
+    isFullScreen: false,
+  },
+);
 
-        const toggleFullScreen = () => {
-            emit('toggle-fullscreen');
-        };
+const emit = defineEmits<{
+  "toggle-fullscreen": [];
+}>();
 
-        //  watch(() => hasActiveStream.value, () => {
-        //      if (hasActiveStream.value) {
-        //          toggleFullScreen()
-        //      } else {
-        //          if (!isMine.value && props.isFullScreen) {
-        //              toggleFullScreen()
-        //          }
-        //      }
-        //  })
+const chatStore = useChatStore();
+const videoRef = ref<HTMLVideoElement | null>(null);
 
-        // Manual binding for the MediaStream object
-        const updateStream = () => {
-            if (videoRef.value) {
-                videoRef.value.srcObject = props.contact.stream;
-            }
-        };
+const isMine = computed(() => chatStore.currentUserId === props.contact.id);
 
-        // Handle stream changes (e.g., swapping camera to screen share)
-        watch(() => props.contact.stream, updateStream);
-        onMounted(updateStream);
+// Detect if camera is on or screen is being shared
+const hasActiveStream = computed(() => {
+  return (
+    props.contact.stream !== null &&
+    (props.contact.isCameraOn || props.contact.isScreenSharing)
+  );
+});
 
-        return {
-            isMine,
-            videoRef,
-            hasActiveStream,
-            toggleFullScreen,
-        };
-    }
-})
+const toggleFullScreen = () => {
+  emit("toggle-fullscreen");
+};
+
+// Preserved in case this auto-fullscreen logic is needed later
+// watch(hasActiveStream, (isActive) => {
+//     if (isActive) {
+//         toggleFullScreen();
+//     } else {
+//         if (!isMine.value && props.isFullScreen) {
+//             toggleFullScreen();
+//         }
+//     }
+// });
+
+// Manual binding for the MediaStream object
+const updateStream = () => {
+  if (videoRef.value) {
+    videoRef.value.srcObject = props.contact.stream;
+  }
+};
+
+// Handle stream changes (e.g., swapping camera to screen share)
+watch(() => props.contact.stream, updateStream);
+onMounted(updateStream);
 </script>

@@ -118,7 +118,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, nextTick, watch, onMounted, onUnmounted } from 'vue';
-import { useI18n, useChatActionStore, useChatStore } from '~/nuxt-shims';
+import { useI18n, useChatActionStore, useMessagesStore, useChatStore } from '~/nuxt-shims';
 import { type Menu } from '~/types/components/menu';
 import InputAttachement from './chat-input/InputAttachement.vue';
 import { PopupState, useAppPermissions } from '~/composables/useAppPermissions';
@@ -137,6 +137,7 @@ export default defineComponent({
         const { t } = useI18n();
         const { requestWithPopup, checkMediaStatus } = useAppPermissions();
         const chatActionStore = useChatActionStore();
+        const messagesStore = useMessagesStore();
         const chatStore = useChatStore()
         const callStore = useCallStore()
         const savedRange = ref<Range | null>(null);
@@ -201,7 +202,7 @@ export default defineComponent({
             });
         }
 
-        watch(() => chatActionStore.replyingTo, (msg) => {
+        watch(() => messagesStore.replyingTo, (msg) => {
             if (msg) {
                 textMode.value = 'reply';
                 replyingToMessageData.value = msg;
@@ -281,7 +282,7 @@ export default defineComponent({
                 senderId: chatStore.currentUserId,
                 isSent: false,
                 isRead: false, // Mine are always read
-                repliedTo: chatActionStore.replyingTo || undefined // Inject reply data if active
+                repliedTo: messagesStore.replyingTo || undefined // Inject reply data if active
             } as Message;
         };
 
@@ -349,7 +350,7 @@ export default defineComponent({
             if (event.key === 'Escape') {
                 if (textMode.value !== 'normal') {
                     cancelAction();
-                } else if (chatActionStore.selectedArray.length > 0) {
+                } else if (messagesStore.selectedArray.length > 0) {
                     cancelAction()
                 }
                 else {

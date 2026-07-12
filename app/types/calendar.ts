@@ -1,4 +1,3 @@
-import type { ServiceRequest } from "./chat";
 import type { Contact } from "./chat";
 
 export type ShareTypes = "viewer" | "owner" | "editor";
@@ -65,7 +64,6 @@ export interface CalendarEventPayload {
   repetition?: EventRepetitionConfig;
   endDate?: Date;
   duration?: number;
-  service?: ServiceRequest;
   accesss?: EventAccess[];
 }
 

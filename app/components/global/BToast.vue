@@ -1,142 +1,192 @@
 <template>
-    <Teleport to="body">
-        <ClientOnly>
-            <div class="w-full bg-transparent pointer-events-none md:max-w-203 max-w-dvw p-5 fixed bottom-0 z-10000 ">
-                <!-- 
-                OUTER DIV: Preserves your exact original positioning and mount animation.
-                This prevents the drag logic from breaking Tailwind's coordinate system.
-            -->
-                <div class="transition-all duration-300 ease-in-out pointer-events-auto"
-                    :class="isOpen ? 'translate-y-0 opacity-100' : 'translate-y-15 opacity-0'">
-                    <!-- 
-                    INNER DIV: Handles the drag transform, background color, and touch events.
+  <Teleport to="body">
+    <ClientOnly>
+      <div
+        class="pointer-events-none fixed bottom-0 z-10000 w-full max-w-dvw p-5 bg-transparent md:max-w-203"
+      >
+        <!-- 
+                    OUTER DIV: Preserves exact original positioning and mount animation.
+                    This prevents the drag logic from breaking Tailwind's coordinate system.
                 -->
-                    <div class="py-3 px-4 rounded-xl flex items-center pointer-events-auto gap-x-2 touch-none select-none cursor-grab active:cursor-grabbing md:cursor-default md:active:cursor-default"
-                        :class="[
-                            backgroundColor,
-                            isDragging ? 'transition-none' : 'transition-transform duration-300 ease-in-out'
-                        ]" :style="{ transform: `translateY(${dragY}px)` }" @pointerdown="onPointerDown"
-                        @pointermove="onPointerMove" @pointerup="onPointerUp" @pointercancel="onPointerUp">
-                        <BIcon :icon="toastIcon" class="w-5 h-5 fill-white shrink-0" />
-                        <div class="flex-1 select-none text-white text-label-md">{{ toastMessage }}</div>
-                        <BIcon icon="PhX" @click="closeToast"
-                            class="cursor-pointer w-5 h-5 fill-white shrink-0 hover:opacity-70 transition-opacity" />
-                    </div>
-                </div>
+        <div
+          class="pointer-events-auto transition-all duration-300 ease-in-out"
+          :class="
+            isOpen ? 'translate-y-0 opacity-100' : 'translate-y-15 opacity-0'
+          "
+        >
+          <!-- 
+                        INNER DIV: Handles the drag transform, background color, and touch events.
+                    -->
+          <div
+            :class="[
+              backgroundColor,
+              isDragging
+                ? 'transition-none'
+                : 'transition-transform duration-300 ease-in-out',
+            ]"
+            :style="{ transform: `translateY(${dragY}px)` }"
+            class="flex cursor-grab items-center gap-x-2 rounded-xl px-4 py-3 select-none touch-none pointer-events-auto active:cursor-grabbing md:cursor-default md:active:cursor-default"
+            @pointerdown="onPointerDown"
+            @pointermove="onPointerMove"
+            @pointerup="onPointerUp"
+            @pointercancel="onPointerUp"
+          >
+            <BIcon :icon="toastIcon" class="h-5 w-5 shrink-0 fill-white" />
+            <div class="flex-1 select-none text-label-md text-white">
+              {{ toastMessage }}
             </div>
-        </ClientOnly>
-    </Teleport>
+            <BIcon
+              icon="PhX"
+              class="hover:opacity-70 h-5 w-5 shrink-0 cursor-pointer fill-white transition-opacity"
+              @click="closeToast"
+            />
+          </div>
+        </div>
+      </div>
+    </ClientOnly>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useWindowSize } from '~/nuxt-shims';
+import { ref, computed, onBeforeUnmount } from "vue";
+
+defineOptions({
+  name: "TheToast",
+});
+
+type ToastType = "success" | "error" | "warning" | "info";
+
 const isOpen = ref(false);
-const toastType = ref<'success' | 'error' | 'warning' | 'info'>('info');
-const toastMessage = ref('');
-let timer: any = null;
+const toastType = ref<ToastType>("info");
+const toastMessage = ref("");
 const currentDuration = ref(4000);
-const { width } = useWindowSize()
+let timer: ReturnType<typeof setTimeout> | null = null;
+
 // Drag State
 const dragY = ref(0);
 const isDragging = ref(false);
 let startY = 0;
-const threshold = 50; // Drag down 50px to close
-const isMobile = computed(() => width.value < 768)
-const onPointerDown = (e: PointerEvent) => {
-    if (!isMobile.value) return
-    isDragging.value = true;
-    startY = e.clientY;
+const threshold = 50;
 
-    // Pause auto-close timer while holding
-    if (timer) clearTimeout(timer);
+const { width } = useWindowSize();
+const isMobile = computed(() => width.value < 768);
 
-    // Capture pointer so fast swipes don't break tracking
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+const clearTimer = () => {
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
+  }
 };
 
+const startTimer = () => {
+  clearTimer();
+  timer = setTimeout(() => {
+    closeToast();
+  }, currentDuration.value);
+};
+
+const onPointerDown = (e: PointerEvent) => {
+  if (!isMobile.value) return;
+
+  isDragging.value = true;
+  startY = e.clientY;
+
+  // Pause auto-close timer while holding
+  clearTimer();
+
+  // Capture pointer so fast swipes don't break tracking
+  (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+};
 
 const onPointerMove = (e: PointerEvent) => {
-    if (!isMobile.value) return
-    if (!isDragging.value) return;
+  if (!isMobile.value || !isDragging.value) return;
 
-    const deltaY = e.clientY - startY;
-    // Only allow dragging downwards to dismiss
-    if (deltaY > 0) {
-        dragY.value = deltaY;
-    }
+  const deltaY = e.clientY - startY;
+
+  // Only allow dragging downwards to dismiss
+  if (deltaY > 0) {
+    dragY.value = deltaY;
+  }
 };
 
-const onPointerUp = () => {
-    if (!isMobile.value) return
-    if (!isDragging.value) return;
-    isDragging.value = false;
+const onPointerUp = (e: PointerEvent) => {
+  if (!isMobile.value || !isDragging.value) return;
 
-    // Check if user dragged past the closing threshold
-    if (dragY.value > threshold) {
-        closeToast();
-    } else {
-        // Snap back to original position
-        dragY.value = 0;
+  isDragging.value = false;
 
-        // Resume the auto-close timer
-        timer = setTimeout(() => {
-            closeToast();
-        }, currentDuration.value);
-    }
+  // Release capture
+  (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+
+  // Check if user dragged past the closing threshold
+  if (dragY.value > threshold) {
+    closeToast();
+  } else {
+    // Snap back to original position
+    dragY.value = 0;
+
+    // Resume the auto-close timer
+    startTimer();
+  }
 };
 
 const openToast = (
-    message: string,
-    type: 'success' | 'error' | 'warning' | 'info' = 'info',
-    duration: number = 4000
+  message: string,
+  type: ToastType = "info",
+  duration: number = 4000,
 ) => {
-    if (timer) clearTimeout(timer);
+  clearTimer();
 
-    currentDuration.value = duration;
-    dragY.value = 0;
-    isDragging.value = false;
+  currentDuration.value = duration;
+  dragY.value = 0;
+  isDragging.value = false;
 
-    toastType.value = type;
-    toastMessage.value = message;
-    isOpen.value = true;
+  toastType.value = type;
+  toastMessage.value = message;
+  isOpen.value = true;
 
-    timer = setTimeout(() => {
-        closeToast();
-    }, duration);
+  startTimer();
 };
 
 const closeToast = () => {
-    isOpen.value = false;
-    if (timer) clearTimeout(timer);
-    setTimeout(() => {
-        dragY.value = 0;
-    }, 300);
+  isOpen.value = false;
+  clearTimer();
+
+  setTimeout(() => {
+    dragY.value = 0;
+  }, 300);
 };
 
 const backgroundColor = computed(() => {
-    switch (toastType.value) {
-        case 'success': return 'bg-primary';
-        case 'error': return 'bg-error';
-        case 'warning': return 'bg-orange-500';
-        case 'info': return 'bg-on-surface';
-        default: return 'bg-on-surface';
-    }
+  switch (toastType.value) {
+    case "success":
+      return "bg-primary";
+    case "error":
+      return "bg-error";
+    case "warning":
+      return "bg-orange-500";
+    case "info":
+      return "bg-on-surface";
+  }
 });
 
 const toastIcon = computed(() => {
-    switch (toastType.value) {
-        case 'success': return 'PhCheckCircle';
-        case 'error': return 'PhWarningOctagon';
-        case 'warning': return 'PhWarning';
-        case 'info': return 'PhInfo';
-        default: return 'PhInfo';
-    }
+  switch (toastType.value) {
+    case "success":
+      return "PhCheckCircle";
+    case "error":
+      return "PhWarningOctagon";
+    case "warning":
+      return "PhWarning";
+    case "info":
+      return "PhInfo";
+  }
 });
 
-// Expose methods for the composable
+// Cleanup timer if the component is destroyed while a toast is active
+onBeforeUnmount(clearTimer);
+
 defineExpose({
-    openToast,
-    closeToast
+  openToast,
+  closeToast,
 });
 </script>

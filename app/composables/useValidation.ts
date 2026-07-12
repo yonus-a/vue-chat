@@ -1,4 +1,5 @@
-import { useI18n, useDate } from "~/nuxt-shims";
+import { useI18n } from "vue-i18n";
+import { useDate } from "./useDate";
 
 export const useValidation = () => {
   const { t, locale } = useI18n();

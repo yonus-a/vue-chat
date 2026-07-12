@@ -115,7 +115,7 @@
 <script lang="ts">
 // @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch, type PropType, nextTick } from 'vue';
-import { useI18n, useChatActionStore, useChatStore, useCallStore, useDate } from '~/nuxt-shims';
+import { useI18n, useChatActionStore, useMessagesStore, useChatStore, useCallStore, useDate } from '~/nuxt-shims';
 import { useVirtualizer } from '@tanstack/vue-virtual';
 import ChatBubble from './ChatBubble.vue';
 import type { Message, MessageType, Contact, ExtendedMessage } from '~/types/chat';
@@ -148,6 +148,7 @@ export default defineComponent({
         const callStore = useCallStore()
         const { t } = useI18n();
         const chatActionStore = useChatActionStore();
+        const messagesStore = useMessagesStore();
         const { formatDateShort } = useDate();
         const chatId = computed(() => chatStore.activeConversationId)
         const hasCall = computed(() => callStore.isActive)
@@ -182,7 +183,7 @@ export default defineComponent({
         onMounted(() => {
 
             console.log('id')
-            if (chatId.value) chatStore.markAsRead(chatId.value);
+            if (chatId.value) messagesStore.markAsRead(chatId.value);
             fetchMessages(1);
 
             // 1. Listen for new messages to send
@@ -352,7 +353,7 @@ export default defineComponent({
         let animationFrame: number | null = null;
         const showOptionsBar = ref(false);
         let lastScrollTop = 0;
-        const lockScroll = computed(() => chatActionStore.isMenuOpen)
+        const lockScroll = computed(() => messagesStore.isOptionMenuOpen)
 
         const handleScroll = () => {
             if (lockScroll.value) return
@@ -513,9 +514,9 @@ export default defineComponent({
                             : null;
 
                         if (newLastMessage) {
-                            chatStore.updateLastMessage(chatId.value, newLastMessage);
+                            messagesStore.updateLastMessage(chatId.value, newLastMessage);
                         } else {
-                            chatStore.patchLastMessage(chatId.value, -1, { text: '', date: new Date() } as any);
+                            messagesStore.patchLastMessage(chatId.value, -1, { text: '', date: new Date() } as any);
                         }
                     }
 
@@ -536,7 +537,7 @@ export default defineComponent({
             () => chatId.value,
             (newId, oldId) => {
                 if (newId && newId !== oldId) {
-                    chatStore.markAsRead(chatId.value);
+                    messagesStore.markAsRead(chatId.value);
 
                     messages.value = [];
                     currentPage.value = 1;

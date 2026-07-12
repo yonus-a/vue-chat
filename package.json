@@ -10,15 +10,12 @@
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    },
-    "./style.css": "./dist/style.css",
-    "./package.json": "./package.json"
+    }
   },
   "files": [
     "dist",
@@ -26,7 +23,6 @@
   ],
   "scripts": {
     "build": "vite build",
-    "build:strict": "vite build && vue-tsc --noEmit -p tsconfig.typecheck.json",
     "typecheck": "vue-tsc --noEmit -p tsconfig.typecheck.json",
     "dev": "vite build --watch",
     "demo": "vite --config demo/vite.config.ts",
@@ -57,7 +53,7 @@
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.3.0",
     "vue": "^3.5.31",
-    "vue-i18n": "^11.0.0",
+    "vue-i18n": "^11.4.5",
     "vue-tsc": "^2.2.0"
   }
 }

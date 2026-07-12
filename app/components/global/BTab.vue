@@ -1,96 +1,111 @@
 <template>
-    <div class="flex flex-col gap-y-2">
-        <div class="flex items-center gap-x-5 select-none text-label-md relative">
-            <div v-for="(tab, index) in tabs" :key="index" ref="tabRefs" @click="setTab(index)"
-                class="cursor-pointer transition-colors duration-200 py-1"
-                :class="[modelValue === index ? 'text-on-surface' : 'text-on-surface/50']">
-                {{ tab }}
-            </div>
-        </div>
-
-        <div class="w-full relative h-0.5 rounded-full bg-outline-variant">
-            <div class="absolute bottom-0 h-full bg-gradient-primary-secondary rounded-full transition-all duration-200 ease-in-out"
-                :style="indicatorStyle"></div>
-        </div>
+  <div ref="containerRef" class="flex flex-col gap-y-2">
+    <div class="relative flex select-none items-center gap-x-5 text-label-md">
+      <div
+        v-for="(tab, index) in tabs"
+        :key="index"
+        :ref="
+          (el) => {
+            if (el) tabRefs[index] = el as HTMLElement;
+          }
+        "
+        class="cursor-pointer py-1 transition-colors duration-200"
+        :class="[
+          modelValue === index ? 'text-on-surface' : 'text-on-surface/50',
+        ]"
+        @click="setTab(index)"
+      >
+        {{ tab }}
+      </div>
     </div>
+
+    <div class="relative h-0.5 w-full rounded-full bg-outline-variant">
+      <div
+        class="bg-gradient-primary-secondary absolute bottom-0 h-full rounded-full transition-all duration-200 ease-in-out"
+        :style="indicatorStyle"
+      ></div>
+    </div>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType, ref, watch, onMounted, nextTick, onBeforeUnmount } from 'vue';
+<script setup lang="ts">
+import { ref, watch, onMounted, nextTick, onBeforeUnmount } from "vue";
 
-export default defineComponent({
-    name: 'TheTab',
-    props: {
-        modelValue: {
-            type: Number,
-            default: 0
-        },
-        tabs: {
-            type: Array as PropType<string[]>,
-            default: () => []
-        }
-    },
-    emits: ['update:modelValue'],
-    setup(props, { emit }) {
-        const tabRefs = ref<HTMLElement[]>([]);
-        const indicatorStyle = ref({
-            width: '0px',
-            left: '0px'
-        });
+defineOptions({
+  name: "TheTab",
+});
 
-        const updateIndicator = () => {
-            const activeEl = tabRefs.value[props.modelValue];
-            if (activeEl) {
-                const width = activeEl.offsetWidth;
-                const left = activeEl.offsetLeft;
+const props = withDefaults(
+  defineProps<{
+    modelValue?: number;
+    tabs: string[];
+  }>(),
+  {
+    modelValue: 0,
+  },
+);
 
-                indicatorStyle.value = {
-                    width: `${width}px`,
-                    left: `${left}px`
-                };
-            }
-        };
+const emit = defineEmits<{
+  "update:modelValue": [value: number];
+}>();
 
-        const setTab = (index: number) => {
-            emit('update:modelValue', index);
-        };
+const containerRef = ref<HTMLElement | null>(null);
+const tabRefs = ref<HTMLElement[]>([]);
+const indicatorStyle = ref({
+  width: "0px",
+  left: "0px",
+});
 
-        watch(() => props.modelValue, () => {
-            nextTick(() => {
-                updateIndicator();
-            });
-        });
+let resizeObserver: ResizeObserver | null = null;
 
-        onMounted(() => {
-            nextTick(() => {
-                updateIndicator();
-            });
+const updateIndicator = () => {
+  const activeEl = tabRefs.value[props.modelValue];
+  if (activeEl) {
+    indicatorStyle.value = {
+      width: `${activeEl.offsetWidth}px`,
+      left: `${activeEl.offsetLeft}px`,
+    };
+  }
+};
 
-            setTimeout(updateIndicator, 100);
+const setTab = (index: number) => {
+  emit("update:modelValue", index);
+};
 
-            window.addEventListener('resize', updateIndicator);
-        });
+watch(
+  () => props.modelValue,
+  () => {
+    nextTick(updateIndicator);
+  },
+);
 
-        onBeforeUnmount(() => {
-            window.removeEventListener('resize', updateIndicator);
-        });
+onMounted(() => {
+  // Initial position calculation
+  nextTick(updateIndicator);
 
-        return {
-            setTab,
-            tabRefs,
-            indicatorStyle
-        };
-    }
-})
+  // Fallback for late-rendering layouts or web fonts loading
+  setTimeout(updateIndicator, 100);
+
+  // Using ResizeObserver instead of window.resize for better accuracy
+  // if the container changes size independently of the viewport
+  if (containerRef.value) {
+    resizeObserver = new ResizeObserver(updateIndicator);
+    resizeObserver.observe(containerRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+});
 </script>
 
 <style scoped>
 .bg-gradient-primary-secondary {
-    min-height: 2px;
-    z-index: 10;
+  min-height: 2px;
+  z-index: 10;
 }
 
 .transition-all {
-    will-change: left, width;
+  will-change: left, width;
 }
 </style>

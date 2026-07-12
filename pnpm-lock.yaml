@@ -58,7 +58,7 @@ importers:
         specifier: ^3.5.31
         version: 3.5.38(typescript@5.9.3)
       vue-i18n:
-        specifier: ^11.0.0
+        specifier: ^11.4.5
         version: 11.4.5(vue@3.5.38(typescript@5.9.3))
       vue-tsc:
         specifier: ^2.2.0

@@ -1,192 +1,254 @@
 <template>
-    <div ref="menuWrapper" id="menu" class="relative">
-        <div @click.stop="toggleMenu" class="cursor-pointer relative" :class="[overlay ? 'z-10100' : '']">
-            <slot name="trigger" :isOpen="isOpen" />
-        </div>
-
-        <div v-if="overlay" @click="closeMenu"
-            class="w-dvw h-dvh fixed top-0 left-0 transition-all duration-300 ease-in-out z-10060"
-            :class="[isOpen ? 'bg-on-background/20 backdrop-blur-sm pointer-events-auto' : 'backdrop-blur-none bg-on-background/0 pointer-events-none']">
-        </div>
-
-        <div ref="panelRef" @click="handleContentClick"
-            class="absolute z-10110  bg-surface shadow-floating rounded-xl border border-outline-variant transition-all duration-200 ease-in-out"
-            :style="panelPositionStyles"
-            :class="[isOpen ? 'shadow-[0px_8px_24px_rgba(149,157,165,0.2)]' : 'shadow-none', !hasCustomContent && options && options.length > 0 ? 'w-50' : '']">
-
-            <div v-if="hasCustomContent" key="menu-custom">
-                <slot :isOpen="isOpen" :close="closeMenu" />
-            </div>
-
-            <div v-else-if="options && options.length > 0" key="menu-list"
-                class="flex p-3 max-h-75 overflow-y-auto flex-col gap-y-1">
-                <template v-for="(opt, idx) in options" :key="opt.key">
-                    <div class="pointer-events-auto">
-                        <div @click="handleSelect(opt.key)"
-                            class="bg-surface-variant-2/0 hover:bg-surface-variant-2 transition-all duration-200 ease-in-out h-11 flex items-center cursor-pointer rounded-lg px-2 gap-x-2 w-full">
-                            <BIcon v-if="opt.icon" :icon="opt.icon" class="w-5 h-5"
-                                :class="[opt.color ? `fill-${opt.color}` : 'fill-on-surface/50']" />
-                            <div class="select-none text-label-sm"
-                                :class="[opt.color ? `text-${opt.color}` : 'text-on-surface/50']">
-                                {{ opt.label }}
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="idx < options.length - 1" class="px-2">
-                        <div class="h-px w-full bg-outline-container" />
-                    </div>
-                </template>
-            </div>
-        </div>
+  <div ref="menuWrapper" class="relative">
+    <div
+      class="relative cursor-pointer"
+      :class="[overlay ? 'z-10100' : '']"
+      @click.stop="toggleMenu"
+    >
+      <slot name="trigger" :isOpen="isOpen" />
     </div>
+
+    <div
+      v-if="overlay"
+      class="fixed top-0 left-0 h-dvh w-dvw z-10060 transition-all duration-300 ease-in-out"
+      :class="[
+        isOpen
+          ? 'pointer-events-auto bg-on-background/20 backdrop-blur-sm'
+          : 'pointer-events-none bg-on-background/0 backdrop-blur-none',
+      ]"
+      @click="closeMenu"
+    />
+
+    <div
+      ref="panelRef"
+      class="absolute z-10110 rounded-xl border border-outline-variant bg-surface transition-all duration-200 ease-in-out"
+      :class="[
+        isOpen ? 'shadow-[0px_8px_24px_rgba(149,157,165,0.2)]' : 'shadow-none',
+        !hasCustomContent && options.length > 0 ? 'w-50' : '',
+      ]"
+      :style="panelPositionStyles"
+      @click="handleContentClick"
+    >
+      <div v-if="hasCustomContent" key="menu-custom">
+        <slot :isOpen="isOpen" :close="closeMenu" />
+      </div>
+
+      <div
+        v-else-if="options.length > 0"
+        key="menu-list"
+        class="flex max-h-75 flex-col gap-y-1 overflow-y-auto p-3"
+      >
+        <template v-for="(opt, idx) in options" :key="opt.key">
+          <div class="pointer-events-auto">
+            <div
+              class="flex h-11 w-full cursor-pointer items-center gap-x-2 rounded-lg bg-transparent px-2 transition-all duration-200 ease-in-out hover:bg-surface-variant-2"
+              @click="handleSelect(opt.key)"
+            >
+              <BIcon
+                v-if="opt.icon"
+                :icon="opt.icon"
+                class="h-5 w-5"
+                :class="[
+                  opt.color ? `fill-${opt.color}` : 'fill-on-surface/50',
+                ]"
+              />
+              <div
+                class="select-none text-label-sm"
+                :class="[
+                  opt.color ? `text-${opt.color}` : 'text-on-surface/50',
+                ]"
+              >
+                {{ opt.label }}
+              </div>
+            </div>
+          </div>
+          <div v-if="idx < options.length - 1" class="px-2">
+            <div class="h-px w-full bg-outline-container" />
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
 </template>
 
+<!-- Normal script block used to export the interface for other components to import -->
 <script lang="ts">
-import { defineComponent, ref, computed, nextTick, watch, type PropType, useSlots, Comment, Fragment, Text } from 'vue';
-import { useClickOutside } from '~/nuxt-shims';
-
-const globalActiveMenuId = ref<string | null>(null);
 export interface Option {
-    key: string;
-    label: string;
-    icon?: string;
-    color?: string;
+  key: string;
+  label: string;
+  icon?: string;
+  color?: string;
 }
+</script>
 
-export default defineComponent({
-    name: 'BMenu',
-    props: {
-        options: { type: Array as PropType<Option[]>, default: () => [] },
-        overlay: { type: Boolean, default: false },
-        autoClose: {
-            type: Boolean, default: true,
-        },
-        align: {
-            type: String as PropType<'top' | null>,
-            default: null
-        },
-        ignoreGlobal: { type: Boolean, default: false },
-    },
-    emits: ['select', 'open', 'close'],
-    setup(props, { emit, expose }) {
-        const isOpen = ref(false);
-        const menuWrapper = ref<HTMLElement | null>(null);
-        const panelRef = ref<HTMLElement | null>(null);
+<script setup lang="ts">
+import {
+  ref,
+  computed,
+  nextTick,
+  watch,
+  useId,
+  useSlots,
+  type CSSProperties,
+} from "vue";
+import { useClickOutside } from "~/composables/useClickOutside";
 
-        const slots = useSlots(); // Add this
+// Shared state across all BMenu instances to handle global auto-closing
+const globalActiveMenuId = ref<string | null>(null);
 
-        const hasCustomContent = computed(() => {
-            return !props.options || props.options.length === 0;
-        });
+defineOptions({
+  name: "BMenu",
+});
 
+const props = withDefaults(
+  defineProps<{
+    options?: Option[];
+    overlay?: boolean;
+    autoClose?: boolean;
+    align?: "top" | null;
+    ignoreGlobal?: boolean;
+  }>(),
+  {
+    options: () => [],
+    overlay: false,
+    autoClose: true,
+    align: null,
+    ignoreGlobal: false,
+  },
+);
 
+const emit = defineEmits<{
+  select: [key: string];
+  open: [];
+  close: [];
+}>();
 
-        // New reactive alignment states
-        const verticalAlign = ref<'bottom' | 'top'>('bottom');
-        const horizontalAlign = ref<'left' | 'right'>('left');
+const slots = useSlots();
+const instanceId = useId();
 
-        const instanceId = useId();
+const isOpen = ref(false);
+const menuWrapper = ref<HTMLElement | null>(null);
+const panelRef = ref<HTMLElement | null>(null);
 
-        const calculateAlignment = async () => {
-            await nextTick();
-            if (!menuWrapper.value || !panelRef.value) return;
+const verticalAlign = ref<"bottom" | "top">("bottom");
+const horizontalAlign = ref<"left" | "right">("left");
 
-            const triggerRect = menuWrapper.value.getBoundingClientRect();
-            const panelWidth = panelRef.value.offsetWidth;
-            const panelHeight = panelRef.value.offsetHeight;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+const hasCustomContent = computed(
+  () => !props.options || props.options.length === 0,
+);
 
-            // 1. VERTICAL CHECK: If opening below hits bottom, and there's room above, go TOP.
-            if (triggerRect.bottom + panelHeight > viewportHeight && triggerRect.top > panelHeight) {
-                verticalAlign.value = 'top';
-            } else {
-                verticalAlign.value = 'bottom';
-            }
+const calculateAlignment = async () => {
+  await nextTick();
+  if (!menuWrapper.value || !panelRef.value) return;
 
-            // 2. HORIZONTAL CHECK: If opening to the right hits edge, go RIGHT (meaning align right edges).
-            if (triggerRect.left + panelWidth > viewportWidth) {
-                horizontalAlign.value = 'right';
-            } else {
-                horizontalAlign.value = 'left';
-            }
-        };
+  const triggerRect = menuWrapper.value.getBoundingClientRect();
+  const panelWidth = panelRef.value.offsetWidth;
+  const panelHeight = panelRef.value.offsetHeight;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
 
-        const toggleMenu = () => {
-            if (!isOpen.value) {
-                globalActiveMenuId.value = instanceId;
-                emit('open')
-                isOpen.value = true;
-                calculateAlignment();
-            } else {
-                closeMenu();
-            }
-        };
+  // 1. VERTICAL CHECK: If opening below hits bottom, and there's room above, go TOP.
+  if (
+    triggerRect.bottom + panelHeight > viewportHeight &&
+    triggerRect.top > panelHeight
+  ) {
+    verticalAlign.value = "top";
+  } else {
+    verticalAlign.value = "bottom";
+  }
 
-        const panelPositionStyles = computed(() => {
-            const isVisible = isOpen.value;
+  // 2. HORIZONTAL CHECK: If opening to the right hits edge, align to the right edge.
+  if (triggerRect.left + panelWidth > viewportWidth) {
+    horizontalAlign.value = "right";
+  } else {
+    horizontalAlign.value = "left";
+  }
+};
 
-            const v = props.align === 'top' ? 'top' : verticalAlign.value;
-            const h = horizontalAlign.value;
+const toggleMenu = () => {
+  if (!isOpen.value) {
+    globalActiveMenuId.value = instanceId;
+    emit("open");
+    isOpen.value = true;
+    calculateAlignment();
+  } else {
+    closeMenu();
+  }
+};
 
-            const styles: any = {
-                opacity: isVisible ? '1' : '0',
-                pointerEvents: isVisible ? 'auto' : 'none',
-                visibility: isVisible ? 'visible' : 'hidden',
-                whiteSpace: 'nowrap',
-                position: 'absolute'
-            };
+const closeMenu = () => {
+  isOpen.value = false;
+  emit("close");
+  if (globalActiveMenuId.value === instanceId) {
+    globalActiveMenuId.value = null;
+  }
+};
 
-            // Vertical Positioning
-            if (v === 'bottom') {
-                styles.top = '100%';
-                styles.bottom = 'auto';
-                styles.transform = isVisible ? 'translateY(12px)' : 'translateY(0px)';
-            } else {
-                styles.bottom = '100%';
-                styles.top = 'auto';
-                styles.transform = isVisible ? 'translateY(-12px)' : 'translateY(0px)';
-            }
+const panelPositionStyles = computed<CSSProperties>(() => {
+  const isVisible = isOpen.value;
+  const v = props.align === "top" ? "top" : verticalAlign.value;
+  const h = horizontalAlign.value;
 
-            if (h === 'left') {
-                styles.left = '0';
-                styles.right = 'auto';
-            } else {
-                styles.right = '0';
-                styles.left = 'auto';
-            }
+  const styles: CSSProperties = {
+    opacity: isVisible ? 1 : 0,
+    pointerEvents: isVisible ? "auto" : "none",
+    visibility: isVisible ? "visible" : "hidden",
+    whiteSpace: "nowrap",
+    position: "absolute",
+  };
 
-            return styles;
-        });
+  // Vertical Positioning
+  if (v === "bottom") {
+    styles.top = "100%";
+    styles.bottom = "auto";
+    styles.transform = isVisible ? "translateY(12px)" : "translateY(0px)";
+  } else {
+    styles.bottom = "100%";
+    styles.top = "auto";
+    styles.transform = isVisible ? "translateY(-12px)" : "translateY(0px)";
+  }
 
-        // Rest of your logic...
-        const closeMenu = () => {
-            isOpen.value = false;
-            emit('close');
-            if (globalActiveMenuId.value === instanceId) globalActiveMenuId.value = null;
-        };
-        watch(globalActiveMenuId, (newId) => {
-            if (props.ignoreGlobal) return;
+  // Horizontal Positioning
+  if (h === "left") {
+    styles.left = "0";
+    styles.right = "auto";
+  } else {
+    styles.right = "0";
+    styles.left = "auto";
+  }
 
-            if (newId !== instanceId && isOpen.value) {
-                closeMenu();
-            }
-        });
+  return styles;
+});
 
-        useClickOutside(menuWrapper, () => {
-            if (props.autoClose) {
-                closeMenu()
-            }
-        });
-        const handleSelect = (key: string) => { emit('select', key); closeMenu(); };
+watch(globalActiveMenuId, (newId) => {
+  if (props.ignoreGlobal) return;
+  if (newId !== instanceId && isOpen.value) {
+    closeMenu();
+  }
+});
 
-        const handleContentClick = () => {
-            if (hasCustomContent.value) return
-        }
+useClickOutside(menuWrapper, () => {
+  if (props.autoClose) {
+    closeMenu();
+  }
+});
 
-        expose({ open: () => { globalActiveMenuId.value = instanceId; isOpen.value = true; calculateAlignment(); }, close: closeMenu });
+const handleSelect = (key: string) => {
+  emit("select", key);
+  closeMenu();
+};
 
-        return { isOpen, handleContentClick, menuWrapper, panelRef, toggleMenu, closeMenu, handleSelect, panelPositionStyles, hasCustomContent };
-    }
+// Prevents the panel from closing when interacting with custom slot content
+const handleContentClick = () => {
+  if (hasCustomContent.value) return;
+};
+
+defineExpose({
+  open: () => {
+    globalActiveMenuId.value = instanceId;
+    isOpen.value = true;
+    calculateAlignment();
+  },
+  close: closeMenu,
 });
 </script>

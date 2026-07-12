@@ -18,7 +18,7 @@ export type CssVariables = {
 export type ThemePresetName = "default" | "midnight" | "warm";
 
 export type Theme = {
-  mode: ColorModeInstance;
+  mode: ColorModeInstance | any;
   cssVariable: CssVariables;
   styleVars: Record<string, string>;
   toggleMode: () => void;

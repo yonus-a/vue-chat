@@ -1,151 +1,204 @@
 <template>
-    <BPopup @closed="handleOnClosed" :auto-close="!isLoading" ref="popup" no-padding>
-        <div v-if="!card" class=" p-6  w-dvw md:max-w-120 flex flex-col items-center text-wrap">
-            <div class=" w-16 h-16 rounded-full flex items-center justify-center " :class="[modalColorings?.bgColor]">
-                <BIcon :icon="modalIcon" class=" w-8 h-8" :class="[modalColorings?.iconColor]" weight="fill" />
-            </div>
-            <div class=" mt-4 flex flex-col w-full gap-y-3 items-center select-none">
-                <div v-if="modalTitle.trim().length > 0" class=" text-label-lg text-on-surface">{{ modalTitle }}</div>
-                <div class=" text-body-md text-on-surface/50" v-if="modalText.trim().length > 0">{{ modalText }}</div>
-            </div>
-            <div class=" w-full min-w-full flex items-center mt-8 gap-x-3">
-                <div :class="[hasAction ? 'basis-1/2' : 'basis-full']">
-                    <BButton class=" max-w-full w-full min-w-full" @click="handleAction" :loading="isLoading"
-                        :text="actionButtonText" :type="primaryButtonMode.type" :color="primaryButtonMode.color" />
-                </div>
-                <div :class="[hasAction ? 'basis-1/2' : 'basis-0']">
-                    <BButton class=" max-w-full w-full min-w-full" @click="closeModal" type="outline" color="primary"
-                        :text="t('general.cancel')" />
-                </div>
-            </div>
+  <BPopup
+    ref="popup"
+    :auto-close="!isLoading"
+    no-padding
+    @closed="handleOnClosed"
+  >
+    <!-- Standard Modal Layout -->
+    <div
+      v-if="!card"
+      class="flex w-dvw flex-col items-center p-6 text-wrap md:max-w-120"
+    >
+      <div
+        class="flex h-16 w-16 items-center justify-center rounded-full"
+        :class="[modalColorings?.bgColor]"
+      >
+        <BIcon
+          :icon="modalIcon"
+          weight="fill"
+          class="h-8 w-8"
+          :class="[modalColorings?.iconColor]"
+        />
+      </div>
+      <div class="mt-4 flex w-full flex-col items-center gap-y-3 select-none">
+        <div v-if="modalTitle.trim()" class="text-label-lg text-on-surface">
+          {{ modalTitle }}
         </div>
-        <div v-else class=" w-dvw max-w-120">
-            <div class=" flex items-center p-5 gap-x-2 w-full border-b border-b-outline-variant">
-                <BIcon :icon="modalIcon" :class="[modalColorings?.iconColor]" class=" w-7 h-7" weight="fill" />
-                <div class=" select-none  text-on-surface text-label-lg">{{ modalTitle }}</div>
-            </div>
-            <div class="border-b text-wrap border-b-outline-variant w-full p-5 select-none">
-                <p class=" text-body-md text-on-surface/50">{{ modalText }}</p>
-            </div>
-            <div class=" w-full flex items-center p-5 gap-x-3">
-                <BButton :text="actionButtonText" :type="primaryButtonMode.type" :color="primaryButtonMode.color"
-                    :loading="isLoading" @click="handleAction" />
-                <BButton @click="closeModal" color="secondary" type="outline" :text="t('chat.permissions.notNow')" />
-            </div>
+        <div v-if="modalText.trim()" class="text-body-md text-on-surface/50">
+          {{ modalText }}
         </div>
-    </BPopup>
+      </div>
+      <div class="mt-8 flex w-full min-w-full items-center gap-x-3">
+        <div :class="[hasAction ? 'basis-1/2' : 'basis-full']">
+          <BButton
+            class="w-full min-w-full max-w-full"
+            :loading="isLoading"
+            :text="actionButtonText"
+            :type="primaryButtonMode.type"
+            :color="primaryButtonMode.color"
+            @click="handleAction"
+          />
+        </div>
+        <div :class="[hasAction ? 'basis-1/2' : 'basis-0']">
+          <BButton
+            class="w-full min-w-full max-w-full"
+            type="outline"
+            color="primary"
+            :text="t('general.cancel')"
+            @click="closeModal"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Modal Layout -->
+    <div v-else class="w-dvw max-w-120">
+      <div
+        class="flex w-full items-center gap-x-2 border-b border-b-outline-variant p-5"
+      >
+        <BIcon
+          :icon="modalIcon"
+          weight="fill"
+          class="h-7 w-7"
+          :class="[modalColorings?.iconColor]"
+        />
+        <div class="select-none text-label-lg text-on-surface">
+          {{ modalTitle }}
+        </div>
+      </div>
+      <div
+        class="w-full select-none border-b border-b-outline-variant p-5 text-wrap"
+      >
+        <p class="text-body-md text-on-surface/50">{{ modalText }}</p>
+      </div>
+      <div class="flex w-full items-center gap-x-3 p-5">
+        <BButton
+          :text="actionButtonText"
+          :type="primaryButtonMode.type"
+          :color="primaryButtonMode.color"
+          :loading="isLoading"
+          @click="handleAction"
+        />
+        <BButton
+          color="secondary"
+          type="outline"
+          :text="t('chat.permissions.notNow')"
+          @click="closeModal"
+        />
+      </div>
+    </div>
+  </BPopup>
 </template>
-<script lang="ts">
-import { computed, defineComponent, type PropType } from 'vue';
-import { type Popup } from '~/types/components/popup';
-import { useI18n } from '~/nuxt-shims';
-import type { ModalState } from '~/types/components/modal';
-export default defineComponent({
-    name: 'TheModal',
-    props: {
-        loading: {
-            type: Boolean,
-            default: false,
-        },
-        card: {
-            type: Boolean,
-            default: false
-        }
-    },
-    emits: ['cancel', 'action', 'closed'],
-    setup(props, { emit, expose }) {
-        const { t } = useI18n()
-        const popup = ref<Popup | null>(null)
-        const modalState = ref<ModalState>('success')
-        const modalText = ref('')
-        const modalTitle = ref('')
-        const hasAction = ref(false)
-        const actionButtonText = ref(t('general.confirm'))
-        const isLoading = computed(() => props.loading)
 
-        const modalIcon = computed(() => {
-            switch (modalState.value) {
-                case 'error':
-                    return 'PhWarningOctagon'
-                case 'warning':
-                    return 'PhWarning'
-                case 'success':
-                    return 'PhCheckCircle'
-            }
-        })
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import type { Popup } from "~/types/components/popup";
+import type { ModalState } from "~/types/components/modal";
+import { useI18n } from "vue-i18n";
 
-        const primaryButtonMode = computed(() => {
-            let buttonType = ''
-            let buttonColor = ''
-            if (hasAction.value && modalState.value !== 'success') {
-                buttonType = 'outline'
-                buttonColor = modalState.value
-            } else {
-                buttonType = 'fill'
-                buttonColor = 'primary'
-            }
-            return {
-                color: buttonColor,
-                type: buttonType
-            }
-        })
+defineOptions({
+  name: "TheModal",
+});
 
-        const modalColorings = computed(() => {
-            let finalColor = modalState.value === 'success' ? 'secondary' : modalState.value
-            return {
-                bgColor: `bg-${finalColor}/10`,
-                iconColor: `fill-${finalColor}`
-            }
-        })
+const props = withDefaults(
+  defineProps<{
+    loading?: boolean;
+    card?: boolean;
+  }>(),
+  {
+    loading: false,
+    card: false,
+  },
+);
 
-        const closeModal = () => {
-            popup.value?.close()
-        }
+const emit = defineEmits<{
+  cancel: [];
+  action: [];
+  closed: [];
+}>();
 
-        const openModal = (title: string, description: string, color: ModalState, action: boolean = false, actionText?: string
-        ) => {
-            modalText.value = description
-            modalTitle.value = title;
-            modalState.value = color;
-            hasAction.value = action;
-            actionButtonText.value = actionText || t('general.confirm')
-            popup.value?.open()
-        }
+const { t } = useI18n();
 
-        expose({
-            openModal, closeModal
-        })
+const popup = ref<Popup | null>(null);
+const modalState = ref<ModalState>("success");
+const modalText = ref("");
+const modalTitle = ref("");
+const hasAction = ref(false);
+const actionButtonText = ref(t("general.confirm"));
 
-        const handleAction = () => {
-            if (hasAction.value) {
-                emit('action')
-            } else {
-                closeModal()
-                emit('cancel')
-            }
-        }
+const isLoading = computed(() => props.loading);
 
+const modalIcon = computed(() => {
+  switch (modalState.value) {
+    case "error":
+      return "PhWarningOctagon";
+    case "warning":
+      return "PhWarning";
+    case "success":
+      return "PhCheckCircle";
+  }
+});
 
-        const handleOnClosed = () => {
-            emit('closed')
-        }
+const primaryButtonMode = computed(() => {
+  if (hasAction.value && modalState.value !== "success") {
+    return {
+      type: "outline" as const,
+      color: modalState.value,
+    };
+  }
+  return {
+    type: "fill" as const,
+    color: "primary",
+  };
+});
 
+// ⚠️ Pro-Tip: Dynamic Tailwind classes like `bg-${finalColor}/10` are NOT
+// compiled by Tailwind's JIT engine and will fail at runtime unless those exact
+// strings are explicitly safelisted in your `tailwind.config.js` file.
+const modalColorings = computed(() => {
+  const finalColor =
+    modalState.value === "success" ? "secondary" : modalState.value;
+  return {
+    bgColor: `bg-${finalColor}/10`,
+    iconColor: `fill-${finalColor}`,
+  };
+});
 
-        return {
-            popup,
-            modalColorings,
-            modalIcon,
-            isLoading,
-            primaryButtonMode,
-            modalTitle,
-            modalText,
-            actionButtonText,
-            t,
-            handleAction,
-            closeModal,
-            hasAction,
-            handleOnClosed,
-        }
-    }
-}) 
+const closeModal = () => {
+  popup.value?.close();
+};
+
+const openModal = (
+  title: string,
+  description: string,
+  color: ModalState,
+  action: boolean = false,
+  actionText?: string,
+) => {
+  modalText.value = description;
+  modalTitle.value = title;
+  modalState.value = color;
+  hasAction.value = action;
+  actionButtonText.value = actionText || t("general.confirm");
+  popup.value?.open();
+};
+
+const handleAction = () => {
+  if (hasAction.value) {
+    emit("action");
+  } else {
+    closeModal();
+    emit("cancel");
+  }
+};
+
+const handleOnClosed = () => {
+  emit("closed");
+};
+
+defineExpose({
+  openModal,
+  closeModal,
+});
 </script>

@@ -1,11 +1,8 @@
-import type { Service } from "./service";
-import type { Provider } from "./service";
-import type { Invoice } from "./invoice";
-export type MessageType = "text" | "image" | "file" | "voice" | "video";
 export type status = "pending" | "approved" | "rejected" | "expired";
 export type ServicePresence = "online" | "on-site";
 export type UserRoleKey = "user" | "employee" | "business" | "support";
-
+export type StateKeys = "" | "online" | "ended" | "active";
+export type MessageType = "text" | "image" | "file" | "voice" | "video";
 export interface Message {
   id: string;
   conversationId: string;
@@ -20,8 +17,7 @@ export interface Message {
   senderId: string;
   isSent: boolean;
   isRead: boolean;
-  repliedTo: Message;
-  request?: Request;
+  repliedTo: Message; 
 }
 
 export interface Contact {
@@ -41,10 +37,8 @@ export interface Contact {
   userType: UserRoleKey[];
 }
 
-export type FilterKeys = "" | "online" | "ended" | "active";
-
 export interface ChatFilter {
-  key: FilterKeys;
+  key: StateKeys;
   label: string;
 }
 
@@ -55,36 +49,6 @@ export interface ExtendedMessage extends Message {
   contact?: Contact;
 }
 
-export interface Request {
-  id: string;
-  type: "personal-info" | "add-person";
-  request: AccessRequest | ServiceRequest;
-}
-
-export interface AccessRequest {
-  id: string;
-  date: Date;
-  status: status;
-}
-
-export interface RequestProvider extends Provider {
-  status: "pending" | "approved" | "payment" | "rejected" | "expired";
-}
-
-export interface ServiceRequest extends Service {
-  status?:
-    | "searching"
-    | "pending"
-    | "approved"
-    | "payment"
-    | "rejected"
-    | "expired";
-  provider?: RequestProvider[];
-  service?: Service;
-  serviceType?: ServicePresence;
-  invoice?: Invoice;
-}
-
 export interface ChatProvider {
-  fetchContacts: () => Promise<Contact[]>
+  fetchContacts: () => Promise<Contact[]>;
 }

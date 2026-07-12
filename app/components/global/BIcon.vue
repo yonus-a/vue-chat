@@ -1,47 +1,50 @@
-<template>
-  <component 
-    :is="iconComponent" 
-    :weight="weight" 
-    :size="size" 
-    v-bind="$attrs" 
-    :class="[
-      'inline-block fill-current transition-all duration-200',
-      $attrs.class
-    ]" 
-  />
-</template>
-
 <script setup lang="ts">
-import { computed } from "vue";
-// This imports the whole library so any string will work
+import { computed, useAttrs, type Component } from "vue";
 import * as PhosphorIcons from "@phosphor-icons/vue";
 
-const props = defineProps({
-  icon: {
-    type: String,
-    required: true
+const props = withDefaults(
+  defineProps<{
+    icon: string;
+    weight?: string;
+    size?: string | number;
+  }>(),
+  {
+    weight: "regular",
+    size: "1em",
   },
-  weight: {
-    type: String,
-    default: "regular"
-  },
-  size: {
-    type: [String, Number],
-    default: "1em"
-  }
+);
+
+const attrs = useAttrs();
+
+// Filter out 'class' to handle it separately and avoid duplication
+const filteredAttrs = computed(() => {
+  const { class: _, ...rest } = attrs;
+  return rest;
 });
 
-const iconComponent = computed(() => {
+type PhosphorComponent = Component & { name?: string };
+
+const iconComponent = computed<PhosphorComponent | string>(() => {
   if (!props.icon) return "span";
 
-  let name = props.icon;
-  // Ensure the name matches the Phosphor component naming (e.g., PhUser)
-  if (!name.startsWith('Ph')) {
-    name = 'Ph' + name.charAt(0).toUpperCase() + name.slice(1);
-  } else {
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-  }
-
-  return (PhosphorIcons as any)[name] || "span";
+  const name = normalizeIconName(props.icon);
+  return (PhosphorIcons as Record<string, PhosphorComponent>)[name] ?? "span";
 });
+
+function normalizeIconName(icon: string): string {
+  // Remove any "Ph" prefix and normalize
+  const withoutPrefix = icon.startsWith("Ph") ? icon.slice(2) : icon;
+
+  // Capitalize first letter and prepend "Ph"
+  return "Ph" + withoutPrefix.charAt(0).toUpperCase() + withoutPrefix.slice(1);
+}
 </script>
+<template>
+  <component
+    :is="iconComponent"
+    :weight="weight"
+    :size="size"
+    v-bind="filteredAttrs"
+    :class="['inline-block fill-current transition-all duration-200']"
+  />
+</template>

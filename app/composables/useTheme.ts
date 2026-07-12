@@ -1,7 +1,7 @@
 import { inject, provide, type InjectionKey } from "vue";
-import { useColorMode, useHead } from "~/nuxt-shims";
 import { getTheme } from "../themes/factory";
 import type { CssVariables, Theme, ThemeInput } from "../types/theme";
+import { useColorMode } from "@vueuse/core";
 
 const THEME_KEY: InjectionKey<Theme> = Symbol("app_theme");
 const GLOBAL_STYLE_ID = "app-theme-vars";
@@ -35,18 +35,12 @@ export const provideTheme = (input: ThemeInput = {}): Theme => {
 
   if (input.global) injectGlobal(styleVars);
 
-  useHead({
-    htmlAttrs: {
-      class: () => mode.value,
-    },
-  });
-
   const theme: Theme = {
     mode,
     cssVariable,
     styleVars,
     toggleMode: () => {
-      mode.preference = mode.value === "light" ? "dark" : "light";
+      (mode as any).preference = mode.value === "light" ? "dark" : "light";
     },
   };
 

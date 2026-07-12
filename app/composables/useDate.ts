@@ -1,6 +1,7 @@
-import { useI18n, useLocale } from "~/nuxt-shims";
 import type { CalendarEventPayload } from "~/types/calendar";
 import { replaceDigitsByLocale } from "~/utils/format";
+import { useLocale } from "./useLocale";
+import { useI18n } from "vue-i18n";
 
 export interface DateFormatOptions {
   showWeekday?: boolean;
@@ -248,7 +249,7 @@ export const useDate = () => {
     } else {
       body = new Intl.DateTimeFormat(lang === "ar" ? "ar-EG" : "en-US", {
         day: "numeric",
-        month: (opts.monthFormat ?? "long") as "short" | "long",
+        month: opts.monthFormat as any,
         year: "numeric",
       }).format(date);
     }

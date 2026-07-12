@@ -65,7 +65,7 @@
 <script lang="ts">
 // @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 import { defineComponent, ref, computed, type PropType, useTemplateRef } from 'vue';
-import { useCallStore, useChatActionStore, useChatStore, useI18n, useDate } from '~/nuxt-shims';
+import { useCallStore, useChatActionStore, useMessagesStore, useChatStore, useI18n, useDate } from '~/nuxt-shims';
 import type { Menu } from '~/types/components/menu';
 import type { Contact } from '~/types/chat';
 import type { Popup } from '~/types/components/popup';
@@ -94,6 +94,7 @@ export default defineComponent({
     emits: ['call', 'open-profile'],
     setup(props, { emit }) {
         const chatActionStore = useChatActionStore()
+        const messagesStore = useMessagesStore()
         const { formatRelativeDate } = useDate();
         const { t } = useI18n();
         const callStore = useCallStore()
@@ -107,8 +108,8 @@ export default defineComponent({
         const selectedChat = computed(() => props.contact)
         const menuMode = ref<'medic' | 'options'>('options')
 
-        const isSelectMode = computed(() => chatActionStore.isSelectMode)
-        const canDelete = computed(() => chatActionStore.canDelete)
+        const isSelectMode = computed(() => messagesStore.isSelectMode)
+        const canDelete = computed(() => messagesStore.canDelete)
         // Template Ref for the Menu
 
 
@@ -172,12 +173,12 @@ export default defineComponent({
         }
 
         const copy = () => {
-            chatActionStore.copyMessageText()
+            messagesStore.copyMessageText()
         }
 
         const deleteMessages = () => {
             if (!canDelete.value) return
-            chatActionStore.triggerDelete();
+            messagesStore.triggerDelete();
         }
 
         const isTransitioning = ref(false)

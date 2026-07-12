@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { Contact } from "~/types/chat";
-import { useI18n, useDate, useChatStore } from "~/nuxt-shims";
 import SafeEmojiText from "~/components/general/SafeEmojiText.vue";
+import { useChatStore } from "~/stores/chatStore.js";
 import ContactAvatar from "./ContactAvatar.vue";
+import type { Contact } from "~/types/chat";
+import { computed } from "vue";
 
 const props = defineProps<{
   contact: Contact;
@@ -11,7 +11,6 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const { formatRelativeDate } = useDate();
 const chatStore = useChatStore();
 
 const isActive = computed(
@@ -113,7 +112,7 @@ const lastMessageColor = computed(() => {
           class="flex gap-x-1.5 items-center shrink-0"
         >
           <div v-loading="isLoading" class="text-on-surface/50 text-[11px]">
-            {{ formatRelativeDate(contact.lastMessage.date) }}
+            {{ contact.lastMessage.date }}
           </div>
           <BIcon
             v-if="lastMessageIcon.icon !== ''"

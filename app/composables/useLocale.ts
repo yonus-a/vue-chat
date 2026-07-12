@@ -1,10 +1,10 @@
 // app/composables/useLocale.ts
 
 import { computed, watchEffect } from "vue";
-import { useI18n } from "~/nuxt-shims";
 import flagUs from "~/assets/flags/us.svg";
 import flagIr from "~/assets/flags/ir.svg";
 import flagAe from "~/assets/flags/ae.svg";
+import { useI18n } from "vue-i18n";
 
 const FLAG_BY_COUNTRY: Record<string, string> = {
   US: flagUs,
@@ -19,9 +19,6 @@ const DEFAULT_LOCALES: Array<{ code: string; dir: "ltr" | "rtl"; name: string }>
 ];
 
 export const useLocale = () => {
-  // Plain vue-i18n exposes only `locale` on the Composer. `setLocale` and
-  // `locales` are Nuxt-i18n module additions; treat them as optional so the
-  // library works in both Nuxt and plain Vite hosts.
   const i18n = useI18n() as unknown as {
     locale: { value: string };
     setLocale?: (l: string) => Promise<void> | void;
