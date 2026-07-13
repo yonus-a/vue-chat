@@ -128,14 +128,9 @@ export const useMessagesStore = defineStore("messages-store", () => {
   const deleteBus = useEventBus<string[]>("chat-delete");
   const sendBus = useEventBus<Message[]>("chat-send");
   const editBus = useEventBus<ExtendedMessage>("edit-message");
-  const personalInfoBus = useEventBus<string>("personal-info-request");
   const updateBus = useEventBus<{ id: string; updates: Partial<Message> }>(
     "chat-update",
   );
-
-  const triggerPersonalInfoRequest = (conversationId: string) => {
-    personalInfoBus.emit(conversationId);
-  };
 
   const canReply = computed(() => selectedMessages.value.size <= 1);
 
@@ -331,8 +326,6 @@ export const useMessagesStore = defineStore("messages-store", () => {
     messagesHasNextPage,
     clearActions,
     editBus,
-    triggerPersonalInfoRequest,
-    personalInfoBus,
     processingActions,
     isActionBusy,
     handleRemoteAction,
