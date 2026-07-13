@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
 import BIcon from "~/components/global/BIcon.vue";
+import { nextTick, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const model = defineModel<string>({ default: "" });
 

@@ -1,40 +1,3 @@
-<template>
-  <div class="flex w-full select-none items-center gap-x-2">
-    <div class="flex min-w-0 flex-1 flex-col gap-y-0.5 text-left">
-      <div v-loading="isLoading" class="truncate text-label-md text-on-surface">
-        {{ fileName }}
-      </div>
-      <div
-        v-loading="isLoading"
-        dir="ltr"
-        class="text-body-sm text-on-surface/70"
-      >
-        {{ formattedSize }}
-      </div>
-    </div>
-
-    <div
-      v-loading="isLoading"
-      class="relative shrink-0 cursor-pointer transition-transform active:scale-95"
-    >
-      <BIcon
-        icon="PhFile"
-        weight="fill"
-        class="h-10 w-10 fill-surface-variant-3"
-      />
-      <div
-        class="absolute bottom-2 right-0 flex items-center justify-center rounded-sm bg-error px-1 py-0.5"
-      >
-        <div
-          class="text-center text-[7px] font-bold uppercase leading-none tracking-wide text-white"
-        >
-          {{ fileExt }}
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
@@ -104,3 +67,40 @@ onMounted(() => {
   getFileSize();
 });
 </script>
+
+<template>
+  <div class="flex w-full select-none items-center gap-x-2">
+    <div class="flex min-w-0 flex-1 flex-col gap-y-0.5 text-left">
+      <div v-loading="isLoading" class="truncate text-label-md text-on-surface">
+        {{ fileName }}
+      </div>
+      <div
+        v-loading="isLoading"
+        dir="ltr"
+        class="text-body-sm text-on-surface/70"
+      >
+        {{ formattedSize }}
+      </div>
+    </div>
+
+    <div
+      v-loading="isLoading"
+      class="relative shrink-0 cursor-pointer transition-transform active:scale-95"
+    >
+      <BIcon
+        icon="PhFile"
+        weight="fill"
+        class="h-10 w-10 fill-surface-variant-3"
+      />
+      <div
+        class="absolute bottom-2 right-0 flex items-center justify-center rounded-sm bg-error px-1 py-0.5"
+      >
+        <div
+          class="text-center text-[7px] font-bold uppercase leading-none tracking-wide text-white"
+        >
+          {{ fileExt }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

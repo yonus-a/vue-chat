@@ -55,6 +55,7 @@ import ChatMessages from "~/components/chat/ChatMessages.vue";
 import ChatPageBar from "~/components/chat/ChatPageBar.vue";
 import ChatInput from "~/components/chat/ChatInput.vue";
 import { useChatStore } from "~/stores/chatStore";
+import { useCallStore } from "~/stores/callStore";
 import { useI18n } from "vue-i18n";
 
 defineOptions({

@@ -1,21 +1,206 @@
+<script setup lang="ts">
+import ImageGroupDisplay from "./chat-bubbles/ImageGroupDisplay.vue";
+import { computed, ref, onBeforeUnmount, useTemplateRef } from "vue";
+import type { Contact, ExtendedMessage } from "~/types/chat";
+import BubbleOptions from "./chat-bubbles/BubbleOptions.vue";
+import { useMessagesStore } from "~/stores/messageStores.js";
+import VoiceDisplay from "./chat-bubbles/VoiceDisplay.vue";
+import BubbleVideo from "./chat-bubbles/BubbleVideo.vue";
+import FileDisplay from "./chat-bubbles/FileDisplay.vue";
+import SafeEmojiText from "../general/SafeEmojiText.vue";
+import ContactAvatar from "./contact/ContactAvatar.vue";
+import { useChatStore } from "~/stores/chatStore.js";
+import { useDate } from "~/composables/useDate.js";
+import { useI18n } from "vue-i18n";
+
+const props = withDefaults(
+  defineProps<{
+    message: ExtendedMessage;
+    contact: Contact;
+    isFirstUnread?: boolean;
+    isDeleting?: boolean;
+  }>(),
+  {
+    isFirstUnread: false,
+    isDeleting: false,
+  },
+);
+
+const { t } = useI18n();
+const chatStore = useChatStore();
+const messagesStore = useMessagesStore();
+const { formatDateShort, formatTime } = useDate();
+
+// Isolate the `openMenu` TS error to this specific ref instead of disabling TS checks globally
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type BubbleOptionsInstance = any;
+type ImageDisplayInstance = InstanceType<typeof ImageGroupDisplay>;
+
+const imageDisplayRef = useTemplateRef<ImageDisplayInstance>("imageDisplayRef");
+const bubbleOptionsRef =
+  useTemplateRef<BubbleOptionsInstance>("bubbleOptionsRef");
+
+const isMine = computed(
+  () => props.message.senderId === chatStore.currentUserId,
+);
+
+const isSelected = computed(() =>
+  messagesStore.selectedMessages.has(props.message.id),
+);
+const isSelectMode = computed(() => messagesStore.isSelectMode);
+
+const messageType = computed(() => {
+  if (props.message.voiceUrl?.trim()) return "voice";
+  if (props.message.imageUrl && props.message.imageUrl.length > 1)
+    return "multiImage";
+  if (props.message.imageUrl?.length === 1 && props.message.imageUrl[0]?.trim())
+    return "image";
+  if (props.message.videoUrl?.trim()) return "video";
+  if (props.message.fileUrl?.trim()) return "file";
+  return "text";
+});
+
+const isSameDayNext = computed(() => {
+  if (!props.message.nextMessage) return false;
+  return (
+    new Date(props.message.date).toDateString() ===
+    new Date(props.message.nextMessage.date).toDateString()
+  );
+});
+
+const roundingClasses = computed(() => {
+  const isPrevSameSender =
+    props.message.prevMessage?.senderId === props.message.senderId;
+  if (isMine.value)
+    return isPrevSameSender ? "rounded-r-none" : "rounded-br-none";
+  return isPrevSameSender ? "rounded-l-none" : "rounded-bl-none";
+});
+
+const shouldShowStatus = computed(() => {
+  const nextMsg = props.message.nextMessage;
+  if (!nextMsg) return true;
+  const isNextSameSender = nextMsg.senderId === props.message.senderId;
+  if (!isNextSameSender || !isSameDayNext.value) return true;
+  const currentTime = new Date(props.message.date).getTime();
+  const nextTime = new Date(nextMsg.date).getTime();
+  return nextTime - currentTime > 2 * 60 * 1000; // 2 minutes threshold
+});
+
+const isSameSenderNext = computed(
+  () => props.message.nextMessage?.senderId === props.message.senderId,
+);
+
+const displayedImages = computed(
+  () => props.message.imageUrl?.slice(0, 3) || [],
+);
+
+const checkIcon = computed(() => {
+  if (props.message.isSent)
+    return props.message.isRead ? "PhChecks" : "PhCheck";
+  return "PhClock";
+});
+
+const replyName = computed(() => {
+  if (!props.message.repliedTo) return "";
+  return props.message.repliedTo.senderId === chatStore.currentUserId
+    ? t("chat.you")
+    : props.contact.name;
+});
+
+const replyContent = computed(() => {
+  const msg = props.message.repliedTo;
+  if (!msg) return "";
+  if (msg.videoUrl?.trim()) return t("chat.attachementTypes.video");
+  if (msg.voiceUrl?.trim()) return t("chat.attachementTypes.voice");
+  if (msg.fileUrl?.trim()) return t("chat.attachementTypes.file");
+  if (msg.imageUrl?.length > 0) return t("chat.attachementTypes.image");
+  return msg.text;
+});
+
+const uploadData = computed(() =>
+  messagesStore.uploadProgress.get(props.message.id),
+);
+
+// --- Actions ---
+const previewImage = (index: number) => {
+  imageDisplayRef.value?.open(index);
+};
+
+const handleRightClick = (event: MouseEvent) => {
+  if (props.message.request || !props.message.isSent) return;
+  if (!messagesStore.isSelectMode) {
+    messagesStore.selectedMessages.clear();
+    messagesStore.toggleSelection(props.message);
+  }
+  bubbleOptionsRef.value?.openMenu(event.clientX, event.clientY);
+};
+
+const handleLeftClick = () => {
+  if (messagesStore.isSelectMode) {
+    messagesStore.toggleSelection(props.message);
+  }
+};
+
+// --- Long Press / Touch Logic ---
+const longPressTimer = ref<ReturnType<typeof setTimeout> | null>(null);
+const touchStartPos = ref({ x: 0, y: 0 });
+
+const onPointerDown = (event: PointerEvent) => {
+  if (event.button !== 0 && event.pointerType === "mouse") return;
+  if (messagesStore.isSelectMode) return;
+
+  touchStartPos.value = { x: event.clientX, y: event.clientY };
+
+  longPressTimer.value = setTimeout(() => {
+    if ("vibrate" in navigator) navigator.vibrate(50);
+    handleRightClick(event as unknown as MouseEvent);
+    longPressTimer.value = null;
+  }, 1000);
+};
+
+const onPointerMove = (event: PointerEvent) => {
+  if (!longPressTimer.value) return;
+  const deltaX = Math.abs(event.clientX - touchStartPos.value.x);
+  const deltaY = Math.abs(event.clientY - touchStartPos.value.y);
+  if (deltaX > 10 || deltaY > 10) {
+    clearTimeout(longPressTimer.value);
+    longPressTimer.value = null;
+  }
+};
+
+const onPointerUp = () => {
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value);
+    longPressTimer.value = null;
+  }
+};
+
+// Cleanup timer if component unmounts while holding
+onBeforeUnmount(() => {
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value);
+  }
+});
+</script>
+
 <template>
   <div
     @contextmenu.prevent="handleRightClick"
     class="w-full transition-all duration-300 ease-in-out"
     :class="[
       isDeleting
-        ? 'max-h-0 opacity-0 overflow-hidden'
+        ? 'max-h-0 overflow-hidden opacity-0'
         : 'max-h-250 opacity-100',
     ]"
   >
     <div
       v-if="message.isFirstInDate || isFirstUnread"
-      class="py-5 w-full flex items-center justify-center"
+      class="flex w-full items-center justify-center py-5"
     >
       <div
-        class="rounded-full bg-on-surface/10 flex items-center justify-center px-4 py-0.5"
+        class="flex items-center justify-center rounded-full bg-on-surface/10 px-4 py-0.5"
       >
-        <div class="text-on-surface select-none text-body-sm">
+        <div class="select-none text-body-sm text-on-surface">
           {{
             !isFirstUnread
               ? formatDateShort(message.date)
@@ -24,55 +209,60 @@
         </div>
       </div>
     </div>
+
     <div
-      class="w-full px-5 pt-2 transition-all duration-200 flex items-center ease-in-out"
+      class="flex w-full items-center px-5 pt-2 transition-all duration-200 ease-in-out"
       :class="[
         isSelectMode && isSelected
-          ? ' bg-on-surface/5 gap-x-3'
-          : ' bg-on-surface/0 gap-x-0',
+          ? 'gap-x-3 bg-on-surface/5'
+          : 'gap-x-0 bg-on-surface/0',
         isSelectMode ? 'cursor-pointer select-none' : '',
       ]"
     >
+      <!-- Selection Checkbox -->
       <div
         v-if="!message.request"
-        class="shrink-0 transition-all duration-200 overflow-hidden ease-in-out whitespace-nowrap"
-        :class="[isSelectMode && isSelected ? 'w-auto' : ' w-0']"
+        class="shrink-0 whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
+        :class="[isSelectMode && isSelected ? 'w-auto' : 'w-0']"
       >
         <div
+          class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-primary-secondary transition-all duration-200 ease-in-out"
           :class="[
             isSelectMode && isSelected
-              ? ' opacity-100 scale-100'
-              : ' opacity-0 scale-0',
+              ? 'scale-100 opacity-100'
+              : 'scale-0 opacity-0',
           ]"
-          class="transition-all duration-200 ease-in-out w-5 h-5 rounded-full bg-gradient-primary-secondary flex items-center justify-center"
         >
-          <div class="w-2.5 h-2.5 rounded-full bg-surface"></div>
+          <div class="h-2.5 w-2.5 rounded-full bg-surface" />
         </div>
       </div>
+
+      <!-- Message Content Wrapper -->
       <div
         v-if="!message.request"
-        :class="[isMine ? ' justify-start' : 'justify-end']"
-        class="flex items-center flex-1 relative"
+        class="relative flex flex-1 items-center"
+        :class="[isMine ? 'justify-start' : 'justify-end']"
         @click="handleLeftClick"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
       >
-        <div class="select-none md:select-auto w-full">
+        <div class="w-full select-none md:select-auto">
           <div
-            class="w-full flex items-center"
+            class="flex w-full items-center"
             :class="[isMine ? 'justify-start' : 'justify-end']"
           >
             <div class="flex max-w-4/5 items-end gap-x-3">
               <div class="flex-1">
+                <!-- Text / File / Voice Bubble -->
                 <div
                   v-if="
                     messageType === 'text' ||
                     messageType === 'file' ||
                     messageType === 'voice'
                   "
-                  class="p-1 rounded-xl"
+                  class="rounded-xl p-1"
                   :class="[
                     roundingClasses,
                     isMine ? 'bg-surface-variant-2' : 'bg-surface',
@@ -81,35 +271,38 @@
                       : '',
                   ]"
                 >
+                  <!-- Reply Preview -->
                   <div
                     v-if="messageType === 'text' && message.repliedTo"
-                    class="text-body-sm select-none w-full h-10 gap-x-2 flex items-center rounded-lg justify-between p-2"
+                    class="flex h-10 w-full items-center justify-between gap-x-2 rounded-lg p-2 text-body-sm select-none"
                     :class="[
-                      isMine ? ' bg-surface-variant-3' : 'bg-surface-variant',
+                      isMine ? 'bg-surface-variant-3' : 'bg-surface-variant',
                     ]"
                   >
-                    <div class="text-on-surface/50 shrink-0">
+                    <div class="shrink-0 text-on-surface/50">
                       {{ replyName }} :
                     </div>
-                    <div class="text-on-surface flex-1">
+                    <div class="flex-1 text-on-surface">
                       <div
-                        class="w-full overflow-hidden text-ellipsis line-clamp-1"
+                        class="line-clamp-1 w-full overflow-hidden text-ellipsis"
                       >
                         {{ replyContent }}
                       </div>
                     </div>
                     <BIcon
                       icon="PhArrowUUpLeft"
-                      class="w-5 h-5 fill-on-surface/20"
                       weight="fill"
+                      class="h-5 w-5 fill-on-surface/20"
                     />
                   </div>
-                  <p v-if="messageType === 'text'" class="p-3 max-w-full">
+
+                  <p v-if="messageType === 'text'" class="max-w-full p-3">
                     <SafeEmojiText :text="message.text" />
                   </p>
+
                   <FileDisplay
-                    :is-mine="isMine"
                     v-else-if="message.fileUrl && messageType === 'file'"
+                    :is-mine="isMine"
                     :url="message.fileUrl"
                     :message-id="message.id"
                     :is-sent="message.isSent"
@@ -122,40 +315,39 @@
                     :is-sent="message.isSent"
                   />
                 </div>
+
+                <!-- Single Image -->
                 <div
                   v-else-if="message.imageUrl && messageType === 'image'"
+                  class="relative max-w-4/5 cursor-pointer overflow-hidden rounded-xl w-85 h-40.5 md:max-w-85"
                   @click.stop="previewImage(0)"
-                  class="relative cursor-pointer overflow-hidden rounded-xl max-w-4/5 md:max-w-85 w-85 h-40.5"
                 >
                   <BImage
-                    fit="cover"
                     :src="message.imageUrl[0]"
-                    class="w-full rounded-xl overflow-hidden h-full max-w-full max-h-full min-w-full min-h-full"
+                    fit="cover"
+                    class="absolute inset-0 h-full w-full min-h-full min-w-full max-h-full max-w-full overflow-hidden rounded-xl"
                   />
-
                   <div
                     v-if="!message.isSent && uploadData"
-                    class="absolute inset-0 flex items-center justify-center bg-black/40 z-10 pointer-events-none"
+                    class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/40"
                   >
                     <svg
-                      class="absolute w-12 h-12 -rotate-90"
+                      class="absolute h-12 w-12 -rotate-90"
                       viewBox="0 0 48 48"
                     >
                       <circle
                         cx="24"
                         cy="24"
                         r="22"
-                        class="stroke-white/30"
+                        class="fill-none stroke-white/30"
                         stroke-width="3"
-                        fill="none"
                       />
                       <circle
                         cx="24"
                         cy="24"
                         r="22"
-                        class="stroke-white transition-all duration-200 ease-linear"
+                        class="fill-none stroke-white transition-all duration-200 ease-linear"
                         stroke-width="3"
-                        fill="none"
                         stroke-linecap="round"
                         stroke-dasharray="138.2"
                         :stroke-dashoffset="
@@ -165,58 +357,56 @@
                     </svg>
                     <BIcon
                       icon="PhUploadSimple"
-                      class="w-5 h-5 text-white absolute"
+                      class="absolute h-5 w-5 text-white"
                     />
                   </div>
                 </div>
 
+                <!-- Multiple Images -->
                 <div
                   v-else-if="message.imageUrl && messageType === 'multiImage'"
-                  class="max-w-75 flex items-center gap-x-3 h-16"
+                  class="flex h-16 max-w-75 items-center gap-x-3"
                 >
                   <div
-                    @click="previewImage(3)"
                     v-if="message.imageUrl.length > 3"
-                    class="h-full rounded-xl cursor-pointer overflow-hidden aspect-square flex items-center justify-center bg-surface-variant-2"
+                    class="flex aspect-square h-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-surface-variant-2"
+                    @click="previewImage(3)"
                   >
-                    <div class="text-on-surface select-none text-label-md">
+                    <div class="select-none text-label-md text-on-surface">
                       +{{ message.imageUrl.length - 3 }}
                     </div>
                   </div>
                   <div
                     v-for="(image, index) in displayedImages"
                     :key="index"
+                    class="relative aspect-square h-full cursor-pointer overflow-hidden rounded-xl"
                     @click.stop="previewImage(index)"
-                    class="relative h-full rounded-xl cursor-pointer overflow-hidden aspect-square"
                   >
                     <BImage
                       :src="image"
-                      class="cursor-pointer min-w-full min-h-full max-w-full max-h-full h-full w-full"
+                      class="h-full w-full min-h-full min-w-full max-h-full max-w-full cursor-pointer"
                     />
-
                     <div
                       v-if="!message.isSent && uploadData"
-                      class="absolute inset-0 flex items-center justify-center bg-black/40 z-10 pointer-events-none"
+                      class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/40"
                     >
                       <svg
-                        class="absolute w-8 h-8 -rotate-90"
+                        class="absolute h-8 w-8 -rotate-90"
                         viewBox="0 0 32 32"
                       >
                         <circle
                           cx="16"
                           cy="16"
                           r="14"
-                          class="stroke-white/30"
+                          class="fill-none stroke-white/30"
                           stroke-width="2.5"
-                          fill="none"
                         />
                         <circle
                           cx="16"
                           cy="16"
                           r="14"
-                          class="stroke-white transition-all duration-200 ease-linear"
+                          class="fill-none stroke-white transition-all duration-200 ease-linear"
                           stroke-width="2.5"
-                          fill="none"
                           stroke-linecap="round"
                           stroke-dasharray="87.9"
                           :stroke-dashoffset="
@@ -226,23 +416,27 @@
                       </svg>
                       <BIcon
                         icon="PhUploadSimple"
-                        class="w-3.5 h-3.5 text-white absolute"
+                        class="absolute h-3.5 w-3.5 text-white"
                       />
                     </div>
                   </div>
                 </div>
+
+                <!-- Video -->
                 <div v-else-if="messageType === 'video'">
                   <BubbleVideo :video-url="message.videoUrl" mode="playback" />
                 </div>
+
+                <!-- Timestamp & Status -->
                 <div
                   v-if="shouldShowStatus"
-                  class="w-full pt-2 flex items-center gap-x-2.5"
+                  class="flex w-full items-center gap-x-2.5 pt-2"
                   :class="[isMine ? 'justify-start' : 'justify-end']"
                 >
                   <BIcon
                     v-if="isMine"
                     :icon="checkIcon"
-                    class="w-4 h-4"
+                    class="h-4 w-4"
                     :class="[
                       message.isRead && message.isSent
                         ? 'fill-primary'
@@ -254,10 +448,12 @@
                   </div>
                 </div>
               </div>
-              <div class="shrink-0 w-10 pb-8">
+
+              <!-- Avatar -->
+              <div class="w-10 shrink-0 pb-8">
                 <div
                   v-if="!isMine && (!isSameSenderNext || !isSameDayNext)"
-                  class="w-10 h-10"
+                  class="h-10 w-10"
                 >
                   <ContactAvatar :contact="contact" :show-online="false" />
                 </div>
@@ -265,313 +461,41 @@
             </div>
           </div>
         </div>
+
         <ImageGroupDisplay
           v-show="message.imageUrl && message.imageUrl.length > 0"
           ref="imageDisplayRef"
           :images="message.imageUrl"
         />
 
-        <BubbleOptions :message="message" ref="bubbleOptionsRef" />
+        <BubbleOptions ref="bubbleOptionsRef" :message="message" />
       </div>
-      <div v-if="message.request" class="py-3 w-full flex justify-center">
+
+      <!-- Request Card -->
+      <div v-if="message.request" class="flex w-full justify-center py-3">
         <RequestCard :message="message" :contact="contact" />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-// @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
-import { defineComponent, computed, ref, type PropType } from "vue";
-import type { Contact, ExtendedMessage } from "~/types/chat";
-import { useChatStore, useDate, useI18n } from "~/nuxt-shims";
-import { useMessagesStore } from "~/stores/messageStores.js";
-import { useUploadStore } from "~/stores/messagesStore";
-import BubbleVideo from "./chat-bubbles/BubbleVideo.vue";
-import FileDisplay from "./chat-bubbles/FileDisplay.vue";
-import VoiceDisplay from "./chat-bubbles/VoiceDisplay.vue";
-import ContactAvatar from "./contact/ContactAvatar.vue";
-import ImageGroupDisplay from "./chat-bubbles/ImageGroupDisplay.vue";
-import BubbleOptions from "./chat-bubbles/BubbleOptions.vue";
-import RequestCard from "./chat-bubbles/RequestCard.vue";
-import SafeEmojiText from "../general/SafeEmojiText.vue";
-
-type ImageDisplayInstance = InstanceType<typeof ImageGroupDisplay>;
-
-export default defineComponent({
-  name: "ChatBubble",
-  props: {
-    message: {
-      type: Object as PropType<ExtendedMessage>,
-      required: true,
-    },
-    contact: {
-      type: Object as PropType<Contact>,
-      required: true,
-    },
-    isFirstUnread: {
-      type: Boolean,
-      default: false,
-    },
-    isDeleting: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  components: {
-    ImageGroupDisplay,
-    BubbleVideo,
-    FileDisplay,
-    SafeEmojiText,
-    VoiceDisplay,
-    ContactAvatar,
-    BubbleOptions,
-    RequestCard,
-  },
-  setup(props) {
-    const chatStore = useChatStore();
-    const messagesStore = useMessagesStore();
-    const { formatDateShort, formatTime } = useDate();
-    const { t } = useI18n();
-
-    const isMine = computed(
-      () => props.message.senderId === chatStore.currentUserId,
-    );
-    const imageDisplayRef = ref<ImageDisplayInstance | null>(null);
-
-    // Typing as any to forcefully bypass the TypeScript compilation error for "openMenu does not exist"
-    const bubbleOptionsRef = ref<any>(null);
-
-    const messageType = computed(() => {
-      if (props.message.voiceUrl && props.message.voiceUrl.trim().length > 0)
-        return "voice";
-      if (props.message.imageUrl && props.message.imageUrl.length > 1)
-        return "multiImage";
-      if (
-        props.message.imageUrl &&
-        props.message.imageUrl.length === 1 &&
-        props.message.imageUrl[0]?.trim().length > 0
-      )
-        return "image";
-      if (props.message.videoUrl && props.message.videoUrl.trim().length > 0)
-        return "video";
-      if (props.message.fileUrl && props.message.fileUrl.trim().length > 0)
-        return "file";
-      return "text";
-    });
-
-    const isSameDayPrev = computed(() => {
-      if (!props.message.prevMessage) return false;
-      return (
-        new Date(props.message.date).toDateString() ===
-        new Date(props.message.prevMessage.date).toDateString()
-      );
-    });
-
-    const isSameDayNext = computed(() => {
-      if (!props.message.nextMessage) return false;
-      return (
-        new Date(props.message.date).toDateString() ===
-        new Date(props.message.nextMessage.date).toDateString()
-      );
-    });
-
-    const roundingClasses = computed(() => {
-      const isPrevSameSender =
-        props.message.prevMessage?.senderId === props.message.senderId;
-      if (isMine.value) {
-        if (!isPrevSameSender) return "rounded-br-none";
-        return "rounded-r-none";
-      } else {
-        if (isPrevSameSender) return "rounded-l-none";
-        return "rounded-bl-none";
-      }
-    });
-
-    const shouldShowStatus = computed(() => {
-      const nextMsg = props.message.nextMessage;
-
-      // 1. If there is no next message, it's the last one, so show status
-      if (!nextMsg) return true;
-
-      const isNextSameSender = nextMsg.senderId === props.message.senderId;
-
-      // 2. If the next message is from a different person or on a different day, show status
-      if (!isNextSameSender || !isSameDayNext.value) return true;
-
-      // 3. Check the 10-minute threshold
-      const currentTime = new Date(props.message.date).getTime();
-      const nextTime = new Date(nextMsg.date).getTime();
-      const tenMinutesInMs = 2 * 60 * 1000;
-
-      // Show status only if the next message is sent MORE than 10 minutes later
-      return nextTime - currentTime > tenMinutesInMs;
-    });
-
-    const isSameSenderPrev = computed(
-      () => props.message.prevMessage?.senderId === props.message.senderId,
-    );
-    const isSameSenderNext = computed(
-      () => props.message.nextMessage?.senderId === props.message.senderId,
-    );
-
-    const displayedImages = computed(() => {
-      return props.message.imageUrl?.slice(0, 3) || [];
-    });
-
-    const previewImage = (index: number) => {
-      console.log(imageDisplayRef.value);
-      imageDisplayRef.value?.open(index);
-    };
-
-    // --- Context Menu & Select Logic ---
-    const handleRightClick = (event: MouseEvent) => {
-      if (props.message.request) return;
-      if (!props.message.isSent) return;
-      if (!messagesStore.isSelectMode) {
-        messagesStore.selectedMessages.clear();
-        messagesStore.toggleSelection(props.message);
-      }
-
-      // when openning the menu remember to make also a mode for vibrate
-      bubbleOptionsRef.value?.openMenu(event.clientX, event.clientY);
-    };
-
-    const handleLeftClick = () => {
-      if (messagesStore.isSelectMode) {
-        messagesStore.toggleSelection(props.message);
-      }
-    };
-
-    const isSelected = computed(() =>
-      messagesStore.selectedMessages.has(props.message.id),
-    );
-    const isSelectMode = computed(() => messagesStore.isSelectMode);
-
-    const checkIcon = computed(() => {
-      if (props.message.isSent) {
-        return props.message.isRead ? "PhChecks" : "PhCheck";
-      } else {
-        return "PhClock";
-      }
-    });
-
-    const replyName = computed(() => {
-      if (!props.message.repliedTo) return "";
-      let message = props.message.repliedTo;
-      if (message.senderId === chatStore.currentUserId) return t("chat.you");
-      return props.contact.name;
-    });
-
-    const replyContent = computed(() => {
-      if (!props.message.repliedTo) return "";
-      let message = props.message.repliedTo;
-      if (message.videoUrl && message.videoUrl.trim().length > 0)
-        return t("chat.attachementTypes.video");
-      if (message.voiceUrl && message.voiceUrl.trim().length > 0)
-        return t("chat.attachementTypes.voice");
-      if (message.fileUrl && message.fileUrl.trim().length > 0)
-        return t("chat.attachementTypes.file");
-      if (message.imageUrl && message.imageUrl.length > 0)
-        return t("chat.attachementTypes.image");
-      return message.text;
-    });
-
-    const longPressTimer = ref<ReturnType<typeof setTimeout> | null>(null);
-    const touchStartPos = ref({ x: 0, y: 0 });
-
-    const onPointerDown = (event: PointerEvent) => {
-      // Only handle primary pointer (left click or single finger)
-      if (event.button !== 0 && event.pointerType === "mouse") return;
-      if (messagesStore.isSelectMode) return;
-
-      // Store starting position to detect if the user moves too much (scrolling)
-      touchStartPos.value = { x: event.clientX, y: event.clientY };
-
-      // Start the 1-second timer
-      longPressTimer.value = setTimeout(() => {
-        // Vibrate for feedback if available on mobile
-        if ("vibrate" in navigator) navigator.vibrate(50);
-
-        handleRightClick(event as unknown as MouseEvent);
-        longPressTimer.value = null;
-      }, 1000); // 1 Second as requested
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      if (!longPressTimer.value) return;
-
-      // If the user moves more than 10px, they are likely scrolling. Cancel the timer.
-      const deltaX = Math.abs(event.clientX - touchStartPos.value.x);
-      const deltaY = Math.abs(event.clientY - touchStartPos.value.y);
-
-      if (deltaX > 10 || deltaY > 10) {
-        clearTimeout(longPressTimer.value);
-        longPressTimer.value = null;
-      }
-    };
-
-    const onPointerUp = () => {
-      if (longPressTimer.value) {
-        clearTimeout(longPressTimer.value);
-        longPressTimer.value = null;
-      }
-    };
-
-    const uploadData = computed(() =>
-      messagesStore.uploadProgress.get(props.message.id),
-    );
-
-    return {
-      onPointerMove,
-      onPointerDown,
-      onPointerUp,
-      formatTime,
-      isMine,
-      replyContent,
-      messageType,
-      replyName,
-      checkIcon,
-      formatDateShort,
-      roundingClasses,
-      shouldShowStatus,
-      isSameSenderNext,
-      displayedImages,
-      isSameDayNext,
-      imageDisplayRef,
-      isSameSenderPrev,
-      previewImage,
-      bubbleOptionsRef,
-      handleRightClick,
-      handleLeftClick,
-      isSelected,
-      uploadData,
-      isSelectMode,
-      t,
-    };
-  },
-});
-</script>
 <style scoped>
 @keyframes slide-out-right {
   0% {
     transform: scaleY(-1) translateX(0);
     opacity: 1;
   }
-
   100% {
     transform: scaleY(-1) translateX(40px);
     opacity: 0;
   }
 }
 
-/* Animation for 'Their' messages exiting (Left) */
 @keyframes slide-out-left {
   0% {
     transform: scaleY(-1) translateX(0);
     opacity: 1;
   }
-
   100% {
     transform: scaleY(-1) translateX(-40px);
     opacity: 0;
@@ -591,7 +515,6 @@ export default defineComponent({
 .msg-slide-enter-active {
   transition: all 0.3s ease-out;
 }
-
 .msg-slide-enter-from {
   opacity: 0;
   transform: translateX(20px);
@@ -604,12 +527,10 @@ export default defineComponent({
   display: grid;
   grid-template-rows: 1fr;
 }
-
 .msg-grow-enter-from {
   grid-template-rows: 0fr;
   opacity: 0;
 }
-
 .msg-grow-enter-active > div {
   overflow: hidden;
 }

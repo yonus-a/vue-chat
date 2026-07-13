@@ -107,7 +107,6 @@ const isOpen = ref(false);
 const isDragging = ref(false);
 const startY = ref(0);
 const translateY = ref(0);
-const tabContent = ref<HTMLElement | null>(null);
 const backdropDown = ref(false);
 
 const open = () => {

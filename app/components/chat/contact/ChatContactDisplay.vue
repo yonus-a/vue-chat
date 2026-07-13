@@ -3,6 +3,7 @@ import SafeEmojiText from "~/components/general/SafeEmojiText.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import ContactAvatar from "./ContactAvatar.vue";
 import type { Contact } from "~/types/chat";
+import { useI18n } from "vue-i18n";
 import { computed } from "vue";
 
 const props = defineProps<{

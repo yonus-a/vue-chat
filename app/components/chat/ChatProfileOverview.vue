@@ -1,211 +1,9 @@
-<template>
-  <div
-    class="h-full shrink-0 overflow-hidden bg-surface transition-none md:transition-all md:duration-300 md:ease-in-out ltr:border-r-surface-variant rtl:border-l-surface-variant ltr:border-r rtl:border-l"
-    :class="[isOpen ? 'w-dvw md:w-80' : 'w-0 border-none!']"
-  >
-    <div class="flex h-full w-full flex-col">
-      <div class="flex h-full w-full flex-col md:px-2 md:pt-16.5">
-        <div class="relative w-full shrink-0">
-          <div class="h-29 w-full">
-            <BImage
-              :src="profileBackground"
-              class="h-full w-full min-h-full min-w-full max-h-full max-w-full overflow-hidden md:rounded-xl"
-            >
-              <div class="h-full w-full p-2">
-                <BIcon
-                  icon="PhX"
-                  class="h-5 w-5 cursor-pointer fill-white"
-                  @click="closeSidebar"
-                />
-              </div>
-            </BImage>
-          </div>
-          <div
-            class="flex w-full -translate-y-1/2 items-center justify-center absolute z-20"
-          >
-            <div class="h-25 w-25 overflow-hidden rounded-full">
-              <ContactAvatar v-if="profile" :contact="profile" />
-            </div>
-          </div>
-          <div class="h-12.5 w-full" />
-        </div>
-
-        <div
-          class="flex w-full shrink-0 flex-col items-center justify-center gap-y-2 select-none mt-2"
-        >
-          <div v-loading="isLoading" class="text-title-md text-on-surface">
-            {{ localProfile.name }}
-          </div>
-          <BLabel
-            v-if="localProfile.isOnline"
-            v-loading="isLoading"
-            color="primary"
-            :text="t('chat.online')"
-          />
-        </div>
-
-        <div class="w-full shrink-0 px-6">
-          <div class="flex w-full items-center justify-center gap-x-2 py-4">
-            <div
-              v-for="action in actionButtons"
-              :key="action.key"
-              v-loading="isLoading"
-              class="flex aspect-square w-15.5 flex-col items-center justify-center gap-y-0.5 rounded-xl bg-surface-variant transition-all duration-200 ease-in-out"
-              :class="[
-                action.active
-                  ? 'cursor-pointer opacity-100'
-                  : 'cursor-not-allowed opacity-50',
-              ]"
-              @click="handleAction(action)"
-            >
-              <BIcon
-                :icon="action.icon"
-                weight="fill"
-                class="h-6 w-6"
-                :class="[
-                  action.color === 'error' ? 'fill-error' : 'fill-primary',
-                ]"
-              />
-              <div class="select-none text-center text-[10px] text-on-surface">
-                {{ action.title }}
-              </div>
-            </div>
-          </div>
-
-          <div class="w-full">
-            <div class="h-0.5 w-full rounded-full bg-surface-variant" />
-          </div>
-
-          <div class="flex w-full flex-col gap-y-4 py-4">
-            <div
-              v-for="(info, index) in displayedInfo"
-              :key="index"
-              class="flex w-full flex-col select-none gap-y-1"
-            >
-              <div
-                v-loading="isLoading"
-                class="text-body-sm text-on-surface/50"
-              >
-                {{ info.title }}
-              </div>
-              <div v-loading="isLoading" class="text-body-md text-on-surface">
-                {{ info.value }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex min-h-0 w-full flex-1 flex-col select-none">
-          <div
-            v-if="!shouldShowTabs"
-            class="flex h-full w-full min-h-0 flex-col gap-y-1"
-          >
-            <div
-              v-if="fileAttachements.length > 0"
-              class="flex w-full shrink-0 flex-col gap-y-1"
-            >
-              <div class="text-body-sm text-on-surface/50">
-                {{ t("chat.info.files") }}
-              </div>
-              <FileDisplay
-                v-for="(file, index) in fileAttachements"
-                :key="index"
-                :url="file"
-                :loading="isLoadingAttachements"
-              />
-            </div>
-            <div
-              v-if="mediaAttachements.length > 0"
-              class="flex flex-1 flex-col gap-y-1"
-            >
-              <div class="shrink-0 text-body-sm text-on-surface/50">
-                {{ t("chat.info.media") }}
-              </div>
-              <div ref="imagesSection" class="w-full flex-1">
-                <div class="grid w-full grid-cols-4 gap-x-4 gap-y-3">
-                  <div
-                    v-for="(media, index) in mediaAttachements"
-                    :key="index"
-                    class="aspect-square md:h-14 md:w-14 overflow-hidden rounded-xl"
-                  >
-                    <BImage
-                      :src="media"
-                      class="h-full w-full min-h-full min-w-full max-h-full max-w-full"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="flex h-full w-full min-h-0 flex-col gap-y-2">
-            <BTab v-model="currentTab" :tabs="tabs" class="shrink-0 min-h-0" />
-            <div class="w-full flex-1 min-h-0 overflow-hidden">
-              <div
-                class="flex h-full w-[200%] min-h-0 transition-all duration-200 ease-in-out"
-                :class="[
-                  currentTab === 0
-                    ? 'translate-x-0'
-                    : 'ltr:-translate-x-1/2 rtl:translate-x-1/2',
-                ]"
-              >
-                <div class="h-full w-1/2 min-h-0 px-1">
-                  <BVirtualVerticalList
-                    :items="chunkedMedia"
-                    :loading="isLoadingMedia"
-                    :has-next-page="hasMediaNextPage"
-                    @load-more="fetchMoreMedia"
-                  >
-                    <template #item="{ item: row }">
-                      <div class="grid w-full grid-cols-4 gap-4 pb-3">
-                        <div
-                          v-for="(media, idx) in row"
-                          :key="idx"
-                          class="aspect-square md:h-14 md:w-14 overflow-hidden rounded-xl"
-                        >
-                          <BImage
-                            :src="media"
-                            class="h-full w-full min-h-full min-w-full max-h-full max-w-full"
-                          />
-                        </div>
-                      </div>
-                    </template>
-                  </BVirtualVerticalList>
-                </div>
-
-                <div class="h-full w-1/2 min-h-0 px-1">
-                  <BVirtualVerticalList
-                    :items="fileAttachements"
-                    :loading="isLoadingAttachements"
-                    :has-next-page="hasFileNextPage"
-                    @load-more="fetchMoreFiles"
-                  >
-                    <template #item="{ item: file }">
-                      <div class="pb-2">
-                        <FileDisplay
-                          :url="file"
-                          :loading="
-                            isLoadingAttachements && currentFilePage === 0
-                          "
-                        />
-                      </div>
-                    </template>
-                  </BVirtualVerticalList>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import profileBackground from "~/assets/lib-images/chat/profile-background.webp";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import ContactAvatar from "./contact/ContactAvatar.vue";
 import { useChatStore } from "~/stores/chatStore.js";
+import { useCallStore } from "~/stores/callStore.js";
 import FileDisplay from "./profile/FileDisplay.vue";
 import { useDate } from "~/composables/useDate.js";
 import type { Contact } from "~/types/chat";
@@ -456,3 +254,206 @@ onMounted(async () => {
   fetchMoreFiles();
 });
 </script>
+
+<template>
+  <div
+    class="h-full shrink-0 overflow-hidden bg-surface transition-none md:transition-all md:duration-300 md:ease-in-out ltr:border-r-surface-variant rtl:border-l-surface-variant ltr:border-r rtl:border-l"
+    :class="[isOpen ? 'w-dvw md:w-80' : 'w-0 border-none!']"
+  >
+    <div class="flex h-full w-full flex-col">
+      <div class="flex h-full w-full flex-col md:px-2 md:pt-16.5">
+        <div class="relative w-full shrink-0">
+          <div class="h-29 w-full">
+            <BImage
+              :src="profileBackground"
+              class="h-full w-full min-h-full min-w-full max-h-full max-w-full overflow-hidden md:rounded-xl"
+            >
+              <div class="h-full w-full p-2">
+                <BIcon
+                  icon="PhX"
+                  class="h-5 w-5 cursor-pointer fill-white"
+                  @click="closeSidebar"
+                />
+              </div>
+            </BImage>
+          </div>
+          <div
+            class="flex w-full -translate-y-1/2 items-center justify-center absolute z-20"
+          >
+            <div class="h-25 w-25 overflow-hidden rounded-full">
+              <ContactAvatar v-if="profile" :contact="profile" />
+            </div>
+          </div>
+          <div class="h-12.5 w-full" />
+        </div>
+
+        <div
+          class="flex w-full shrink-0 flex-col items-center justify-center gap-y-2 select-none mt-2"
+        >
+          <div v-loading="isLoading" class="text-title-md text-on-surface">
+            {{ localProfile.name }}
+          </div>
+          <BLabel
+            v-if="localProfile.isOnline"
+            v-loading="isLoading"
+            color="primary"
+            :text="t('chat.online')"
+          />
+        </div>
+
+        <div class="w-full shrink-0 px-6">
+          <div class="flex w-full items-center justify-center gap-x-2 py-4">
+            <div
+              v-for="action in actionButtons"
+              :key="action.key"
+              v-loading="isLoading"
+              class="flex aspect-square w-15.5 flex-col items-center justify-center gap-y-0.5 rounded-xl bg-surface-variant transition-all duration-200 ease-in-out"
+              :class="[
+                action.active
+                  ? 'cursor-pointer opacity-100'
+                  : 'cursor-not-allowed opacity-50',
+              ]"
+              @click="handleAction(action)"
+            >
+              <BIcon
+                :icon="action.icon"
+                weight="fill"
+                class="h-6 w-6"
+                :class="[
+                  action.color === 'error' ? 'fill-error' : 'fill-primary',
+                ]"
+              />
+              <div class="select-none text-center text-[10px] text-on-surface">
+                {{ action.title }}
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full">
+            <div class="h-0.5 w-full rounded-full bg-surface-variant" />
+          </div>
+
+          <div class="flex w-full flex-col gap-y-4 py-4">
+            <div
+              v-for="(info, index) in displayedInfo"
+              :key="index"
+              class="flex w-full flex-col select-none gap-y-1"
+            >
+              <div
+                v-loading="isLoading"
+                class="text-body-sm text-on-surface/50"
+              >
+                {{ info.title }}
+              </div>
+              <div v-loading="isLoading" class="text-body-md text-on-surface">
+                {{ info.value }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex min-h-0 w-full flex-1 flex-col select-none">
+          <div
+            v-if="!shouldShowTabs"
+            class="flex h-full w-full min-h-0 flex-col gap-y-1"
+          >
+            <div
+              v-if="fileAttachements.length > 0"
+              class="flex w-full shrink-0 flex-col gap-y-1"
+            >
+              <div class="text-body-sm text-on-surface/50">
+                {{ t("chat.info.files") }}
+              </div>
+              <FileDisplay
+                v-for="(file, index) in fileAttachements"
+                :key="index"
+                :url="file"
+                :loading="isLoadingAttachements"
+              />
+            </div>
+            <div
+              v-if="mediaAttachements.length > 0"
+              class="flex flex-1 flex-col gap-y-1"
+            >
+              <div class="shrink-0 text-body-sm text-on-surface/50">
+                {{ t("chat.info.media") }}
+              </div>
+              <div ref="imagesSection" class="w-full flex-1">
+                <div class="grid w-full grid-cols-4 gap-x-4 gap-y-3">
+                  <div
+                    v-for="(media, index) in mediaAttachements"
+                    :key="index"
+                    class="aspect-square md:h-14 md:w-14 overflow-hidden rounded-xl"
+                  >
+                    <BImage
+                      :src="media"
+                      class="h-full w-full min-h-full min-w-full max-h-full max-w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="flex h-full w-full min-h-0 flex-col gap-y-2">
+            <BTab v-model="currentTab" :tabs="tabs" class="shrink-0 min-h-0" />
+            <div class="w-full flex-1 min-h-0 overflow-hidden">
+              <div
+                class="flex h-full w-[200%] min-h-0 transition-all duration-200 ease-in-out"
+                :class="[
+                  currentTab === 0
+                    ? 'translate-x-0'
+                    : 'ltr:-translate-x-1/2 rtl:translate-x-1/2',
+                ]"
+              >
+                <div class="h-full w-1/2 min-h-0 px-1">
+                  <BVirtualVerticalList
+                    :items="chunkedMedia"
+                    :loading="isLoadingMedia"
+                    :has-next-page="hasMediaNextPage"
+                    @load-more="fetchMoreMedia"
+                  >
+                    <template #item="{ item: row }">
+                      <div class="grid w-full grid-cols-4 gap-4 pb-3">
+                        <div
+                          v-for="(media, idx) in row"
+                          :key="idx"
+                          class="aspect-square md:h-14 md:w-14 overflow-hidden rounded-xl"
+                        >
+                          <BImage
+                            :src="media"
+                            class="h-full w-full min-h-full min-w-full max-h-full max-w-full"
+                          />
+                        </div>
+                      </div>
+                    </template>
+                  </BVirtualVerticalList>
+                </div>
+
+                <div class="h-full w-1/2 min-h-0 px-1">
+                  <BVirtualVerticalList
+                    :items="fileAttachements"
+                    :loading="isLoadingAttachements"
+                    :has-next-page="hasFileNextPage"
+                    @load-more="fetchMoreFiles"
+                  >
+                    <template #item="{ item: file }">
+                      <div class="pb-2">
+                        <FileDisplay
+                          :url="file"
+                          :loading="
+                            isLoadingAttachements && currentFilePage === 0
+                          "
+                        />
+                      </div>
+                    </template>
+                  </BVirtualVerticalList>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

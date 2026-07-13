@@ -68,8 +68,6 @@ export const useChatStore = defineStore("chat", () => {
         page,
       });
 
-      console.log(result);
-
       conversations.data =
         page === 1 ? result.data : [...conversations.data, ...result.data];
       conversations.page = page;
@@ -77,6 +75,16 @@ export const useChatStore = defineStore("chat", () => {
     } finally {
       conversations.loading = false;
     }
+  };
+
+  const getDisplayedContacts = (filter: StateKeys): Contact[] => {
+    const state = conversationStates.value[filter];
+
+    return [...state.data].sort((a, b) => {
+      const dateA = a.lastMessage ? new Date(a.lastMessage.date).getTime() : 0;
+      const dateB = b.lastMessage ? new Date(b.lastMessage.date).getTime() : 0;
+      return dateB - dateA;
+    });
   };
 
   const loadNextPage = async (filter: StateKeys) => {
@@ -183,5 +191,6 @@ export const useChatStore = defineStore("chat", () => {
     fetchConversations,
     loadNextPage,
     getContactById,
+    getDisplayedContacts,
   };
 });

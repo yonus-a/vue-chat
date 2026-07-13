@@ -17,7 +17,8 @@ export interface Message {
   senderId: string;
   isSent: boolean;
   isRead: boolean;
-  repliedTo: Message; 
+  repliedTo: Message;
+  request?: string;
 }
 
 export interface Contact {

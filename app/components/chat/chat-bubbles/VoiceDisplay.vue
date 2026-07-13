@@ -7,7 +7,7 @@ import { useUploadStore } from "~/stores/messagesStore";
 const props = withDefaults(
   defineProps<{
     url: string;
-    messageId?: number;
+    messageId?: string;
     isSent?: boolean;
   }>(),
   {

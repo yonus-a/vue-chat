@@ -1,85 +1,126 @@
 <script setup lang="ts">
-import BVirtualVerticalList from "~/components/global/BVirtualVerticalList.vue";
-import { useConversationHandlers } from "~/providers/conversations.js";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import type { ChatFilter, StateKeys } from "~/types/chat";
+import ChatContactDisplay from "./ChatContactDisplay.vue";
+import ChatListSearch from "./ChatListSearch.vue";
 import NoData from "~/assets/lib-images/dashboard/no-contacts.webp";
 import NoDataDisplay from "~/components/general/NoDataDisplay.vue";
-import ChatContactDisplay from "./ChatContactDisplay.vue";
-import type { ChatFilter, StateKeys } from "~/types/chat";
-import BLabel from "~/components/global/BLabel.vue";
-import ChatListSearch from "./ChatListSearch.vue";
-import { computed, ref } from "vue";
+import { useChatStore } from "~/stores/chatStore.js";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const { data, loading, currentPage, totalPages, handleFilter, loadNextPage } =
-  useConversationHandlers();
+const chatStore = useChatStore();
 
-const hasNextPage = computed(() => currentPage.value < totalPages.value);
-const activeState = ref<StateKeys>("");
+const activeFilter = ref<StateKeys>("");
 const searchText = ref("");
+const listRef = ref<HTMLElement | null>(null);
 
-const setState = (state: StateKeys) => {
-  if (activeState.value === state) return;
-  handleFilter({ state: activeState.value });
-};
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-watch([searchText], () => {
-  handleFilter({ search: searchText.value });
-});
+const currentState = computed(
+  () => chatStore.conversationStates[activeFilter.value],
+);
 
-const states = computed<ChatFilter[]>(() => [
+const chats = computed(() =>
+  chatStore.getDisplayedContacts(activeFilter.value),
+);
+
+const filters = computed<ChatFilter[]>(() => [
   { key: "online", label: t("chat.filters.online") },
   { key: "ended", label: t("chat.filters.ended") },
   { key: "active", label: t("chat.filters.active") },
 ]);
 
-const filterProps = (type: StateKeys) => {
-  return activeState.value === type
-    ? { color: "primary", icon: "PhX" }
-    : { color: "neutral", icon: "" };
+const setFilter = (type: StateKeys) => {
+  if (activeFilter.value === type) return;
+  activeFilter.value = type;
 };
+
+const filterProps = (type: StateKeys) => {
+  return activeFilter.value === type
+    ? { color: "primary" as const, icon: "PhX" }
+    : { color: "neutral" as const, icon: "" };
+};
+
+// Handle Filter Changes
+watch(activeFilter, (newFilter) => {
+  // 1. Scroll to top
+  const scrollEl = listRef.value;
+  if (scrollEl) scrollEl.scrollTop = 0;
+
+  // 2. Fetch if category is empty
+  if (chatStore.conversationStates[newFilter].data.length === 0) {
+    chatStore.fetchConversations(newFilter, 1);
+  }
+});
+
+// Handle Search with Debounce
+watch(searchText, (newQuery) => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    chatStore.fetchConversations(activeFilter.value, 1, newQuery);
+
+    const scrollEl = listRef.value;
+    if (scrollEl) scrollEl.scrollTop = 0;
+  }, 500);
+});
+
+onMounted(() => {
+  if (chatStore.conversationStates[activeFilter.value].data.length === 0) {
+    chatStore.fetchConversations(activeFilter.value, 1);
+  }
+});
+
+// Cleanup timeout to prevent memory leaks or state updates on unmounted components
+onBeforeUnmount(() => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+});
 </script>
+
 <template>
   <div
-    class="bg-surface flex flex-col border border-outline-variant w-full h-full overflow-hidden"
+    class="flex h-full w-full flex-col overflow-hidden border border-outline-variant bg-surface"
   >
-    <ChatListSearch class="shrink-0" v-model="searchText" />
+    <ChatListSearch v-model="searchText" class="shrink-0" />
 
-    <div class="flex-1 w-full flex flex-col overflow-hidden">
-      <div class="w-full shrink-0 px-5 py-2 flex items-center gap-x-2">
+    <div class="flex w-full flex-1 flex-col overflow-hidden">
+      <div class="flex w-full shrink-0 items-center gap-x-2 px-5 py-2">
         <BLabel
-          v-for="filter in states"
-          :color="filterProps(filter.key).color"
-          :icon="filterProps(filter.key).icon"
-          @click="setState(filter.key)"
-          @action="setState('')"
-          class="cursor-pointer"
-          :text="filter.label"
+          v-for="filter in filters"
           :key="filter.key"
           size="lg"
+          :text="filter.label"
+          :icon="filterProps(filter.key).icon"
+          :color="filterProps(filter.key).color"
+          class="cursor-pointer"
+          @click="setFilter(filter.key)"
+          @action="setFilter('')"
         />
       </div>
 
       <div
-        v-if="loading || data.length > 0"
-        class="w-full flex-1 px-2.5 pt-2.5 overflow-hidden relative"
+        v-if="currentState.loading || chats.length > 0"
+        class="relative w-full flex-1 overflow-hidden px-2.5 pt-2.5"
       >
         <BVirtualVerticalList
           ref="listRef"
-          :items="data"
-          :loading="loading"
-          :has-next-page="hasNextPage"
-          @load-more="loadNextPage"
+          :items="chats"
+          :loading="currentState.loading"
+          :has-next-page="currentState.hasNextPage"
           class="h-full w-full"
+          @load-more="chatStore.loadNextPage(activeFilter)"
         >
           <template #item="{ item }">
             <ChatContactDisplay
               :contact="item"
-              :loading="loading && currentPage === 0"
+              :loading="currentState.loading && currentState.page === 0"
             />
           </template>
         </BVirtualVerticalList>
       </div>
-      <div v-else class="w-full flex-1 flex items-center justify-center">
+
+      <div v-else class="flex w-full flex-1 items-center justify-center">
         <NoDataDisplay :image-path="NoData" :title="t('chat.noMessages')" />
       </div>
     </div>
