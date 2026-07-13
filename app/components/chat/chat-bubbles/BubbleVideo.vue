@@ -37,7 +37,7 @@ const uploadData = computed(() =>
 );
 const isUploading = computed(() => !props.isSent && uploadData.value);
 
-const circumference = 2 * Math.PI * 115;
+const circumference = 2 * Math.PI * 113;
 const dashOffset = computed(() => {
   if (isUploading.value && uploadData.value) {
     return circumference - (uploadData.value.progress / 100) * circumference;

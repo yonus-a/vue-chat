@@ -7,7 +7,7 @@ defineProps<{
 
 <template>
   <a
-    :to="to"
+    :href="to"
     class="flex text-primary cursor-pointer select-none items-center gap-x-1"
   >
     <div class="text-label-sm">{{ title }}</div>

@@ -1,0 +1,10 @@
+{
+  "noMessages": "No messages exchanged",
+  "unreadMessages": "Unread.",
+  "delete": {
+    "title": "Delete message",
+    "singleMessage": "Are you sure you want to delete this message?",
+    "multipleMessages": "Are you sure you want to delete {count} messages?",
+    "confirm": "Delete"
+  }
+}

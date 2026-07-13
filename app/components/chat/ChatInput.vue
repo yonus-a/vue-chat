@@ -169,13 +169,13 @@
           class="flex items-center justify-center text-body-md text-on-surface/70 transition-opacity"
           :style="{ opacity: cancelOpacity }"
         >
-          <span v-if="!isLocked">{{ t("chat.swipeToCancel") }}</span>
+          <span v-if="!isLocked">{{ t("swipeToCancel") }}</span>
           <span
             v-else
             class="z-20 cursor-pointer px-4 text-primary"
             @click="cancelRecording"
           >
-            {{ t("chat.cancel") }}
+            {{ t("cancel") }}
           </span>
         </div>
 
@@ -228,14 +228,12 @@ import { useChatRecording } from "~/composables/chat/useChatRecording";
 import SafeEmojiText from "../general/SafeEmojiText.vue";
 import { parseEmojiArray } from "~/utils/emojiParser";
 import VideoRecordDisplay from "./chat-input/VideoRecordDisplay.vue";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatInput } from "@i18n/locales";
 import { useMessagesStore } from "~/stores/messageStores.js";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";
 
-defineOptions({
-  name: "ChatInput",
-});
 
 const props = withDefaults(
   defineProps<{
@@ -251,12 +249,11 @@ const emit = defineEmits<{
   edit: [];
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(chatInput);
 const { requestWithPopup, checkMediaStatus } = useAppPermissions();
 const messagesStore = useMessagesStore();
 const chatStore = useChatStore();
 const callStore = useCallStore();
-const isDragging = ref();
 // Template Refs
 const rootElements = useTemplateRef<HTMLElement>("rootElements");
 const inputRef = useTemplateRef<HTMLDivElement>("inputRef");
@@ -279,7 +276,7 @@ const inputWidth = computed(() => rootElements.value?.clientWidth || 0);
 
 const inputDisabled = computed(() => !props.isActive);
 const inputPlaceholder = computed(() =>
-  props.isActive ? t("chat.placeholder") : t("chat.chatLocked"),
+  props.isActive ? t("placeholder") : t("chatLocked"),
 );
 const iconClass = computed(() =>
   !props.isActive
@@ -297,17 +294,17 @@ const displayedActionText = computed(() => {
       ? editingMessageData.value
       : replyingToMessageData.value;
   if (!message) return "";
-  if (message.voiceUrl?.trim()) return t("chat.attachementTypes.voice");
-  if (message.videoUrl?.trim()) return t("chat.attachementTypes.video");
-  if (message.imageUrl?.length) return t("chat.attachementTypes.image");
-  if (message.fileUrl?.trim()) return t("chat.attachementTypes.file");
+  if (message.voiceUrl?.trim()) return t("attachementTypes.voice");
+  if (message.videoUrl?.trim()) return t("attachementTypes.video");
+  if (message.imageUrl?.length) return t("attachementTypes.image");
+  if (message.fileUrl?.trim()) return t("attachementTypes.file");
   return message.text;
 });
 
 const displayActionName = computed(() => {
-  if (textMode.value === "edit") return t("chat.you");
+  if (textMode.value === "edit") return t("you");
   if (replyingToMessageData.value?.senderId === chatStore.currentUserId)
-    return t("chat.you");
+    return t("you");
   return replyingToMessageData.value?.contact?.name || "";
 });
 
@@ -339,6 +336,7 @@ const {
   isLocked,
   isPaused,
   dragOffset,
+  isDragging,
   formattedTime,
   isLongPress,
   onPointerDown: onRecordPointerDown,
@@ -346,6 +344,7 @@ const {
   mediaStream,
   lockOpacity,
   cancelOpacity,
+  togglePause,
 } = recording;
 
 const currentRecordingSeconds = computed(() => {
@@ -448,8 +447,6 @@ const handleEditMessage = (msg: ExtendedMessage) => {
 };
 
 // --- Watchers ---
-
-const offEditBus = () => messagesStore.editBus.off(handleEditMessage);
 
 watch(
   () => messagesStore.replyingTo,
@@ -585,11 +582,6 @@ const toggleSecondaryMessageType = () => {
   }
 };
 
-const togglePause = () => {
-  // Assuming useChatRecording has a togglePause, if not, this is a placeholder
-  console.warn("Toggle pause requested");
-};
-
 const handleFlipCamera = () => {
   if (typeof recording.toggleCamera === "function") {
     recording.toggleCamera();
@@ -628,7 +620,6 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  offEditBus();
   window.removeEventListener("keydown", handleGlobalKeyDown);
 });
 

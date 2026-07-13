@@ -33,14 +33,9 @@ const emit = defineEmits<{
 const popupRef = ref<Popup | null>(null);
 const menuRef = ref<Menu | null>(null);
 const isPopupOpen = ref(false);
-const isMenuOpen = ref(false);
 
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value < 768);
-
-const handleMenuState = (open: boolean) => {
-  isMenuOpen.value = open;
-};
 
 const handleMobileClick = () => {
   isPopupOpen.value = true;

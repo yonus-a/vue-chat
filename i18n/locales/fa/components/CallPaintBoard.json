@@ -1,0 +1,9 @@
+{
+  "board": {
+    "title": "تخته",
+    "selectColor": "انتخاب رنگ",
+    "savedSuccessfully": "تصویر با موفقیت ذخیره سازی شد.",
+    "page": "صفحه {page}",
+    "addPage": "صفحه جدید"
+  }
+}

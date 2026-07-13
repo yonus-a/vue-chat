@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-defineOptions({
-  name: "LoadingStatus",
-});
-
 const props = withDefaults(
   defineProps<{
     progress?: number;

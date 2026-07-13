@@ -1,0 +1,11 @@
+{
+  "cancel": "لغو",
+  "confirm": "تایید",
+  "noResultFound": "هیچ {item} برای '{search}' یافت نشد !",
+  "result": "نتیجه ای",
+  "search": "جستجو",
+  "themes": {
+    "dark": "تاریک",
+    "light": "روشن"
+  }
+}

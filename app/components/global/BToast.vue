@@ -3,6 +3,9 @@
     <ClientOnly>
       <div
         class="pointer-events-none fixed bottom-0 z-10000 w-full max-w-dvw p-5 bg-transparent md:max-w-203"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
       >
         <!-- 
                     OUTER DIV: Preserves exact original positioning and mount animation.
@@ -49,10 +52,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from "vue";
-
-defineOptions({
-  name: "TheToast",
-});
+import { useWindowSize } from "~/composables/useWindowSize";
 
 type ToastType = "success" | "error" | "warning" | "info";
 

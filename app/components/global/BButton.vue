@@ -23,6 +23,13 @@ const COLOR_MAP: Record<string, any> = {
     fillText: "var(--color-on-surface)",
     text: "var(--color-secondary)",
   },
+  warning: {
+    fillBgImage: "var(--background-image-diamond-warning)",
+    fillBgColor: "var(--color-warning)",
+    fillBorder: "var(--color-warning)",
+    fillText: "var(--color-on-warning)",
+    text: "var(--color-warning)",
+  },
 };
 
 const SIZE = {
@@ -201,6 +208,8 @@ const buttonStyle = computed(() => {
 </script>
 <template>
   <button
+    type="button"
+    :disabled="disabled"
     @click="handleClick"
     class="b-btn"
     :class="[

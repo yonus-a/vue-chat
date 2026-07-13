@@ -15,7 +15,7 @@
         >
           <BIcon icon="PhImage" class="h-5 w-5 fill-on-surface/50" />
           <div class="text-body-sm text-on-surface/70">
-            {{ t("chat.file.attachMedia") }}
+            {{ t("file.attachMedia") }}
           </div>
         </div>
 
@@ -26,7 +26,7 @@
         >
           <BIcon icon="PhFile" class="h-5 w-5 fill-on-surface/50" />
           <div class="text-body-sm text-on-surface/70">
-            {{ t("chat.file.attachFile") }}
+            {{ t("file.attachFile") }}
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
             v-model="caption"
             class="min-w-full"
             textarea
-            :placeholder="t('chat.caption')"
+            :placeholder="t('caption')"
           />
         </div>
 
@@ -105,7 +105,7 @@
           <div class="basis-1/2">
             <BButton
               class="min-w-full"
-              :text="t('chat.send')"
+              :text="t('send')"
               @click="sendMessages"
             />
           </div>
@@ -113,7 +113,7 @@
             <BButton
               class="min-w-full"
               color="secondary"
-              :text="t('chat.file.cancel')"
+              :text="t('file.cancel')"
               @click="closePopup"
             />
           </div>
@@ -129,8 +129,8 @@ import type { Menu } from "~/types/components/menu";
 import type { Popup } from "~/types/components/popup";
 import AttachementFileDisplay from "./AttachementFileDisplay.vue";
 import { useAppToast } from "~/composables/useAppToast.js";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { inputAttachement } from "@i18n/locales";
 type PopupMode = "single-image" | "multi-image" | "file";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,7 +149,7 @@ const emit = defineEmits<{
   "send-attachments": [messages: AttachmentData[]];
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(inputAttachement);
 const { openToast } = useAppToast();
 
 const popup = ref<Popup | null>(null);
@@ -184,7 +184,7 @@ const handleMediaSelected = (
   const remaining = maxAllowed - selectedMedia.value.length;
 
   if (remaining <= 0) {
-    openToast(t("chat.errors.maxFilesReached"), "error");
+    openToast(t("errors.maxFilesReached"), "error");
     return;
   }
 
@@ -218,11 +218,11 @@ const resetSelections = () => {
 const popupTitle = computed(() => {
   switch (popupMode.value) {
     case "file":
-      return t("chat.file.sendFile");
+      return t("file.sendFile");
     case "multi-image":
-      return t("chat.file.sendImages");
+      return t("file.sendImages");
     case "single-image":
-      return t("chat.file.sendImage");
+      return t("file.sendImage");
   }
 });
 

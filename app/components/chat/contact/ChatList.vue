@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
-import type { ChatFilter, StateKeys } from "~/types/chat";
-import ChatContactDisplay from "./ChatContactDisplay.vue";
-import ChatListSearch from "./ChatListSearch.vue";
 import NoData from "~/assets/lib-images/dashboard/no-contacts.webp";
 import NoDataDisplay from "~/components/general/NoDataDisplay.vue";
+import type { ChatFilter, StateKeys } from "~/types/chat";
+import ChatContactDisplay from "./ChatContactDisplay.vue";
 import { useChatStore } from "~/stores/chatStore.js";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
+import ChatListSearch from "./ChatListSearch.vue";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatList } from "@i18n/locales";
+const { t } = useLocalI18n(chatList);
 const chatStore = useChatStore();
 
 const activeFilter = ref<StateKeys>("");
@@ -26,9 +26,9 @@ const chats = computed(() =>
 );
 
 const filters = computed<ChatFilter[]>(() => [
-  { key: "online", label: t("chat.filters.online") },
-  { key: "ended", label: t("chat.filters.ended") },
-  { key: "active", label: t("chat.filters.active") },
+  { key: "online", label: t("filters.online") },
+  { key: "ended", label: t("filters.ended") },
+  { key: "active", label: t("filters.active") },
 ]);
 
 const setFilter = (type: StateKeys) => {
@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else class="flex w-full flex-1 items-center justify-center">
-        <NoDataDisplay :image-path="NoData" :title="t('chat.noMessages')" />
+        <NoDataDisplay :image-path="NoData" :title="t('noMessages')" />
       </div>
     </div>
   </div>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref } from "vue";
 import { useMessagesStore } from "~/stores/messageStores";
 import type { Menu } from "~/types/components/menu";
 import type { ExtendedMessage } from "~/types/chat";
 import BMenu from "~/components/global/BMenu.vue";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { bubbleOptions } from "@i18n/locales";
 const props = defineProps<{
   message: ExtendedMessage;
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(bubbleOptions);
 const messagesStore = useMessagesStore();
 const isOpen = ref(false);
 
@@ -53,33 +53,33 @@ const options = computed(() => {
     {
       icon: "PhArrowBendUpLeft",
       key: "reply",
-      label: t("chat.messageOptions.reply"),
+      label: t("messageOptions.reply"),
       canShow: props.message.isSent,
     },
     {
       icon: "PhPencilSimpleLine",
       key: "edit",
-      label: t("chat.messageOptions.edit"),
+      label: t("messageOptions.edit"),
       canShow: messagesStore.canEdit,
     },
     {
       icon: "PhCopy",
       key: "copy",
-      label: t("chat.messageOptions.copy"),
+      label: t("messageOptions.copy"),
       canShow: true,
     },
     {
       icon: showAsDeselect.value ? "PhXCircle" : "PhCheckCircle",
       key: "select_toggle",
       label: showAsDeselect.value
-        ? t("chat.messageOptions.deselect")
-        : t("chat.messageOptions.select"),
+        ? t("messageOptions.deselect")
+        : t("messageOptions.select"),
       canShow: true,
     },
     {
       icon: "PhTrash",
       key: "delete",
-      label: t("chat.messageOptions.delete"),
+      label: t("messageOptions.delete"),
       canShow: messagesStore.canDelete,
       color: "error",
     },
@@ -96,7 +96,10 @@ const handleOption = (key: string) => {
 
   closeMenu();
 
-  setTimeout(() => {
+  // Defer the action so the menu's exit animation finishes first.
+  // Track the timer so we can cancel it if the component unmounts mid-delay.
+  pendingAction = setTimeout(() => {
+    pendingAction = null;
     switch (key) {
       case "delete":
         messagesStore.triggerDelete(targetIds);
@@ -121,6 +124,12 @@ const handleOption = (key: string) => {
     }
   }, 300);
 };
+
+let pendingAction: ReturnType<typeof setTimeout> | null = null;
+
+onBeforeUnmount(() => {
+  if (pendingAction) clearTimeout(pendingAction);
+});
 </script>
 <template>
   <Teleport to="body">

@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "notNow": "Not now",
+    "allow": "Allow access",
+    "retry": "Try again",
+    "permissionTitle": "Camera and microphone access",
+    "description": "To join video calls or send voice messages, we need access to your camera and microphone.",
+    "camError": {
+      "title": "Camera access error",
+      "description": "We need camera permission to send video messages or place video calls."
+    },
+    "micError": {
+      "title": "Your microphone is disabled",
+      "description": "We need microphone permission to send voice messages or place calls."
+    },
+    "cam": {
+      "title": "Camera access",
+      "description": "We need camera access to send video messages and place video calls."
+    },
+    "mic": {
+      "title": "Microphone access",
+      "description": "We need microphone access to send voice messages and place video calls."
+    },
+    "screenError": {
+      "title": "Screen access error",
+      "description": "Screen capture permission was denied. We need screen access permission to share your screen."
+    },
+    "screen": {
+      "title": "Screen access",
+      "description": "After tapping confirm, please select the screen or tab you want to share."
+    }
+  }
+}

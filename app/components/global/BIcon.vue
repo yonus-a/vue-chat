@@ -5,7 +5,7 @@ import * as PhosphorIcons from "@phosphor-icons/vue";
 const props = withDefaults(
   defineProps<{
     icon: string;
-    weight?: string;
+    weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone";
     size?: string | number;
   }>(),
   {
@@ -32,10 +32,8 @@ const iconComponent = computed<PhosphorComponent | string>(() => {
 });
 
 function normalizeIconName(icon: string): string {
-  // Remove any "Ph" prefix and normalize
-  const withoutPrefix = icon.startsWith("Ph") ? icon.slice(2) : icon;
-
-  // Capitalize first letter and prepend "Ph"
+  // Strip a "Ph"/"ph" prefix (case-insensitive), then re-add a normalized "Ph".
+  const withoutPrefix = /^ph/i.test(icon) ? icon.slice(2) : icon;
   return "Ph" + withoutPrefix.charAt(0).toUpperCase() + withoutPrefix.slice(1);
 }
 </script>

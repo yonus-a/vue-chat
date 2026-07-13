@@ -93,9 +93,9 @@
             >
               <span class="select-none text-sm font-medium">
                 {{
-                  t("general.noResultFound", {
+                  t("noResultFound", {
                     search: searchQuery,
-                    item: noResultText || t("general.result"),
+                    item: noResultText || t("result"),
                   })
                 }}
               </span>
@@ -203,12 +203,8 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { useVirtualizer } from "@tanstack/vue-virtual";
 import type { DropdownOption } from "~/types/components/select";
-import { useI18n } from "vue-i18n";
-
-defineOptions({
-  name: "DopeDropDown",
-});
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { componentsGeneral } from "@i18n/locales";
 const props = withDefaults(
   defineProps<{
     modelValue?: string | number;
@@ -247,8 +243,7 @@ const emit = defineEmits<{
   search: [query: string];
 }>();
 
-const { t } = useI18n();
-
+const { t } = useLocalI18n(componentsGeneral);
 const isOpen = ref(false);
 const searchQuery = ref("");
 const dropdownRef = ref<HTMLElement | null>(null);

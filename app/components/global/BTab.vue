@@ -31,10 +31,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick, onBeforeUnmount } from "vue";
 
-defineOptions({
-  name: "TheTab",
-});
-
 const props = withDefaults(
   defineProps<{
     modelValue?: number;
@@ -75,6 +71,14 @@ const setTab = (index: number) => {
 watch(
   () => props.modelValue,
   () => {
+    nextTick(updateIndicator);
+  },
+);
+
+watch(
+  () => props.tabs,
+  () => {
+    tabRefs.value = [];
     nextTick(updateIndicator);
   },
 );

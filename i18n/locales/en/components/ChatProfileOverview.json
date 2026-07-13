@@ -1,0 +1,15 @@
+{
+  "info": {
+    "media": "Images",
+    "files": "Files",
+    "nationalCode": "National code",
+    "phoneNumber": "Phone number",
+    "age": "Age"
+  },
+  "options": {
+    "end": "End",
+    "voiceCall": "Call",
+    "videoCall": "Video"
+  },
+  "online": "Online"
+}

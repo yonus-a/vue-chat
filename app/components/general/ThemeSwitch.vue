@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useTheme } from "~/composables/useTheme";
 import { computed, onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
+import useLocalI18n from "~/composables/useLocalI18n";
+import { componentsGeneral } from "@i18n/locales";
+const { t } = useLocalI18n(componentsGeneral);
 const { mode, toggleMode } = useTheme();
 
 const isMounted = ref(false);
@@ -16,7 +16,7 @@ const themeIcon = computed(() =>
 );
 
 const themeTitle = computed(() =>
-  mode.value === "light" ? t("general.themes.light") : t("general.themes.dark"),
+  mode.value === "light" ? t("themes.light") : t("themes.dark"),
 );
 
 const layoutItems = computed(() => {

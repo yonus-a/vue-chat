@@ -2,7 +2,7 @@
 // @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import LoadingStatus from "~/components/general/LoadingStatus.vue";
-import { useUploadStore } from "~/stores/messagesStore";
+import { useMessagesStore } from "~/stores/messageStores";
 
 const props = withDefaults(
   defineProps<{

@@ -7,12 +7,12 @@ import { useCallStore } from "~/stores/callStore.js";
 import FileDisplay from "./profile/FileDisplay.vue";
 import { useDate } from "~/composables/useDate.js";
 import type { Contact } from "~/types/chat";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatProfileOverview } from "@i18n/locales";
 interface Action {
   title: string;
   icon: string;
-  key: "end" | "refer" | "voice-call" | "video-call";
+  key: "end" | "voice-call" | "video-call";
   active: boolean | null;
   color?: string;
 }
@@ -29,8 +29,7 @@ const props = withDefaults(
 const { getYearsPassed } = useDate();
 const callStore = useCallStore();
 const chatStore = useChatStore();
-const { t } = useI18n();
-
+const { t } = useLocalI18n(chatProfileOverview);
 // FIX: Renamed from `imageList` to `imagesSection` to actually match the template ref="imagesSection"
 const imagesSection = ref<HTMLElement | null>(null);
 
@@ -61,7 +60,7 @@ const imagesPerPage = computed(() => maxImageCounts.value * 4);
 const filesPerPage = computed(() => maxImageCounts.value);
 const maxFileCounts = ref(2);
 
-const tabs = computed(() => [t("chat.info.media"), t("chat.info.files")]);
+const tabs = computed(() => [t("info.media"), t("info.files")]);
 
 const shouldShowTabs = computed(
   () =>
@@ -74,20 +73,14 @@ const showPersonalInfo = computed(() => role.value !== "user");
 
 const actionButtons = computed<Action[]>(() => [
   {
-    title: t("chat.options.end"),
+    title: t("options.end"),
     icon: "PhX",
     active: localProfile.value ? localProfile.value.isActive : false,
     key: "end",
     color: "error",
   },
   {
-    title: t("chat.options.refer"),
-    icon: "PhTreeStructure",
-    active: localProfile.value ? localProfile.value.isActive : false,
-    key: "refer",
-  },
-  {
-    title: t("chat.options.voiceCall"),
+    title: t("options.voiceCall"),
     icon: "PhPhoneCall",
     active: localProfile.value
       ? localProfile.value.isActive &&
@@ -97,7 +90,7 @@ const actionButtons = computed<Action[]>(() => [
     key: "voice-call",
   },
   {
-    title: t("chat.options.videoCall"),
+    title: t("options.videoCall"),
     icon: "PhVideoCamera",
     active: localProfile.value
       ? localProfile.value.isActive &&
@@ -119,17 +112,17 @@ const chunkedMedia = computed(() => {
 const displayedInfo = computed(() => {
   const items = [
     {
-      title: t("chat.info.nationalCode"),
+      title: t("info.nationalCode"),
       value: localProfile.value?.nationalCode,
       canDisplay: showPersonalInfo.value,
     },
     {
-      title: t("chat.info.phoneNumber"),
+      title: t("info.phoneNumber"),
       value: localProfile.value?.phoneNumber,
       canDisplay: showPersonalInfo.value,
     },
     {
-      title: t("chat.info.age"),
+      title: t("info.age"),
       value: getYearsPassed(localProfile.value?.birthDate || new Date()),
       canDisplay: true,
     },
@@ -171,7 +164,6 @@ const handleAction = (action: Action) => {
   if (!action.active) return;
   switch (action.key) {
     case "end":
-    case "refer":
       break;
     case "voice-call":
     case "video-call":
@@ -291,13 +283,13 @@ onMounted(async () => {
           class="flex w-full shrink-0 flex-col items-center justify-center gap-y-2 select-none mt-2"
         >
           <div v-loading="isLoading" class="text-title-md text-on-surface">
-            {{ localProfile.name }}
+            {{ localProfile?.name }}
           </div>
           <BLabel
-            v-if="localProfile.isOnline"
+            v-if="localProfile?.isOnline"
             v-loading="isLoading"
             color="primary"
-            :text="t('chat.online')"
+            :text="t('online')"
           />
         </div>
 
@@ -362,7 +354,7 @@ onMounted(async () => {
               class="flex w-full shrink-0 flex-col gap-y-1"
             >
               <div class="text-body-sm text-on-surface/50">
-                {{ t("chat.info.files") }}
+                {{ t("info.files") }}
               </div>
               <FileDisplay
                 v-for="(file, index) in fileAttachements"
@@ -376,7 +368,7 @@ onMounted(async () => {
               class="flex flex-1 flex-col gap-y-1"
             >
               <div class="shrink-0 text-body-sm text-on-surface/50">
-                {{ t("chat.info.media") }}
+                {{ t("info.media") }}
               </div>
               <div ref="imagesSection" class="w-full flex-1">
                 <div class="grid w-full grid-cols-4 gap-x-4 gap-y-3">

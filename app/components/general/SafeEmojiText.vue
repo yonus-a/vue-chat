@@ -22,7 +22,7 @@ const parsedText = computed(() => parseEmojiArray(props.text));
     :class="[
       truncate
         ? 'line-clamp-1 overflow-hidden text-ellipsis break-all w-full'
-        : 'inline whitespace-pre-wrap wrap-break-word',
+        : 'inline whitespace-pre-wrap break-words',
     ]"
   >
     <template v-for="(chunk, index) in parsedText" :key="index">

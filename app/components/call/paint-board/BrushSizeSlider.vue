@@ -39,10 +39,6 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from "vue";
 
-defineOptions({
-  name: "BrushSizeSlider",
-});
-
 const props = withDefaults(
   defineProps<{
     modelValue: number;

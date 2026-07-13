@@ -59,10 +59,6 @@ import { computed, ref, watch, onMounted } from "vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import type { CallMember } from "~/types/call";
 
-defineOptions({
-  name: "CallMemberDisplay",
-});
-
 const props = withDefaults(
   defineProps<{
     contact: CallMember;
@@ -93,17 +89,6 @@ const hasActiveStream = computed(() => {
 const toggleFullScreen = () => {
   emit("toggle-fullscreen");
 };
-
-// Preserved in case this auto-fullscreen logic is needed later
-// watch(hasActiveStream, (isActive) => {
-//     if (isActive) {
-//         toggleFullScreen();
-//     } else {
-//         if (!isMine.value && props.isFullScreen) {
-//             toggleFullScreen();
-//         }
-//     }
-// });
 
 // Manual binding for the MediaStream object
 const updateStream = () => {

@@ -5,12 +5,13 @@ import { useChatStore } from "../stores/chatStore";
 import ChatList from "./chat/contact/ChatList.vue";
 import { useWindowSize } from "@vueuse/core";
 import ChatView from "./chat/ChatView.vue";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatPage } from "@i18n/locales";
 import { computed } from "vue";
 
 const { width } = useWindowSize();
 const chatStore = useChatStore();
-const { t } = useI18n();
+const { t } = useLocalI18n(chatPage);
 
 const isMobile = computed(() => width.value < 768);
 const isInChat = computed(() => chatStore.activeConversationId !== null);
@@ -32,7 +33,7 @@ const showMessagingSection = computed(() => {
       <div v-else class="w-full h-full flex items-center justify-center">
         <NoDataDisplay
           :image-path="NoChatSelected"
-          :title="t('chat.noConversationSelected')"
+          :title="t('noConversationSelected')"
         />
       </div>
     </div>

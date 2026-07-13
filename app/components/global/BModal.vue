@@ -45,7 +45,7 @@
             class="w-full min-w-full max-w-full"
             type="outline"
             color="primary"
-            :text="t('general.cancel')"
+            :text="t('cancel')"
             @click="closeModal"
           />
         </div>
@@ -83,7 +83,7 @@
         <BButton
           color="secondary"
           type="outline"
-          :text="t('chat.permissions.notNow')"
+          :text="t('permissions.notNow')"
           @click="closeModal"
         />
       </div>
@@ -95,12 +95,8 @@
 import { ref, computed } from "vue";
 import type { Popup } from "~/types/components/popup";
 import type { ModalState } from "~/types/components/modal";
-import { useI18n } from "vue-i18n";
-
-defineOptions({
-  name: "TheModal",
-});
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { bModal } from "@i18n/locales";
 const props = withDefaults(
   defineProps<{
     loading?: boolean;
@@ -118,14 +114,13 @@ const emit = defineEmits<{
   closed: [];
 }>();
 
-const { t } = useI18n();
-
+const { t } = useLocalI18n(bModal);
 const popup = ref<Popup | null>(null);
 const modalState = ref<ModalState>("success");
 const modalText = ref("");
 const modalTitle = ref("");
 const hasAction = ref(false);
-const actionButtonText = ref(t("general.confirm"));
+const actionButtonText = ref(t("confirm"));
 
 const isLoading = computed(() => props.loading);
 
@@ -180,7 +175,7 @@ const openModal = (
   modalTitle.value = title;
   modalState.value = color;
   hasAction.value = action;
-  actionButtonText.value = actionText || t("general.confirm");
+  actionButtonText.value = actionText || t("confirm");
   popup.value?.open();
 };
 

@@ -38,9 +38,7 @@
       :contact="selectedChat"
     />
 
-    <!-- Note: PatientReferral was not imported in the original file, relying on Nuxt auto-imports -->
     <PermissionPopup />
-    <PrescribtionDisplay />
   </div>
 </template>
 
@@ -56,21 +54,14 @@ import ChatPageBar from "~/components/chat/ChatPageBar.vue";
 import ChatInput from "~/components/chat/ChatInput.vue";
 import { useChatStore } from "~/stores/chatStore";
 import { useCallStore } from "~/stores/callStore";
-import { useI18n } from "vue-i18n";
-
-defineOptions({
-  name: "ChatView",
-});
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatView } from "@i18n/locales";
 const chatStore = useChatStore();
 const callStore = useCallStore();
 const { width } = useWindowSize();
-const { t } = useI18n();
-
+const { t } = useLocalI18n(chatView);
 // Template Refs
 const chatInput = ref<ChatTextField | null>(null);
-// Kept for template binding (ref="patientRefferal")
-const patientRefferal = ref<any>(null);
 
 const isMobile = computed(() => width.value < 768);
 
@@ -96,27 +87,12 @@ const isChatMode = computed(() => {
 
 const medicOptions = computed<MenuOption[]>(() => [
   {
-    label: t("chat.barOptions.prescribeMedications"),
-    icon: "PhPencilSimpleLine",
-    key: "prescribe-meds",
-  },
-  {
-    label: t("chat.barOptions.addPerson"),
-    icon: "PhUserPlus",
-    key: "add-user",
-  },
-  {
-    label: t("chat.barOptions.refer"),
-    icon: "PhTreeStructure",
-    key: "refer",
-  },
-  {
-    label: t("chat.barOptions.endChat"),
+    label: t("barOptions.endChat"),
     icon: "PhXSquare",
     key: "end-chat",
   },
   {
-    label: t("chat.barOptions.deleteMessages"),
+    label: t("barOptions.deleteMessages"),
     icon: "PhTrash",
     key: "delete-all",
     color: "error",

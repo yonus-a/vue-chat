@@ -76,10 +76,6 @@ import { ref, computed, watch, onUnmounted } from "vue";
 import { useWindowSize } from "~/composables/useWindowSize";
 import type { Popup } from "~/types/components/popup";
 
-defineOptions({
-  name: "ThePopup",
-});
-
 const props = withDefaults(
   defineProps<{
     noPadding?: boolean;

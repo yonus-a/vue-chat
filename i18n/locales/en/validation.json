@@ -1,0 +1,54 @@
+{
+  "validation": {
+    "required": "{field} is required",
+    "must_be_persian": "{field} must be entered in Persian characters",
+    "must_be_english": "{field} must be entered in English characters",
+    "min_length": "{field} must be at least {min} characters",
+    "invalid_format": "{field} format is invalid",
+    "phone_invalid": "The entered phone number is invalid",
+    "email_invalid": "The entered email is invalid",
+    "date_invalid": "{field} date is invalid",
+    "date_past": "{field} must be a date in the past",
+    "date_future": "{field} must be a date in the future",
+    "url_invalid": "Please enter a valid URL",
+    "whatsapp_invalid": "Please enter a valid WhatsApp link (wa.me)",
+    "username_invalid": "Username contains invalid characters",
+    "national_id_invalid": "The entered national code is invalid",
+    "foreign_id_invalid": "Foreign national ID is invalid",
+    "identifier_invalid": "Please enter a valid phone number or national/foreign ID",
+    "captcha_required": "Please confirm you are not a robot",
+    "phone_length_invalid": "Phone number must be 11 digits",
+    "national_code_length": "National code must be 10 digits",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "only_letters": "{field} must contain only letters (digits are not allowed).",
+    "must_be_persian_letters": "{field} must contain only Persian letters.",
+    "must_be_english_letters": "{field} must contain only English letters.",
+    "invalid_day": "Invalid day",
+    "invalid_month": "Invalid month",
+    "invalid_year": "Invalid year",
+    "invalid_date": "Invalid date.",
+    "future_date": "Invalid date.",
+    "too_old_date": "Invalid date.",
+    "agreeToTerms": "Please read and accept the terms."
+  },
+  "addresses": {
+    "errors": {
+      "postalCodeLowlength": "Postal code must be exactly 10 digits",
+      "postalCodeInvalid": "Postal code format is invalid",
+      "plateInvalid": "Please enter a positive number for the plate",
+      "unitInvalid": "Please enter a positive number for the unit"
+    }
+  },
+  "profile": {
+    "titles": {
+      "email": "Email address",
+      "phoneNumber": "Phone number"
+    }
+  },
+  "auth": {
+    "login": {
+      "username": "Username"
+    }
+  }
+}

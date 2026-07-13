@@ -59,8 +59,7 @@
 
 <!-- Normal script block used to export the interface for parent components to import -->
 <script lang="ts">
-// Note: Fixed 'Refferal' typo to 'Referral'
-export interface PatientReferralExposed {
+export interface VideoRecordDisplayExposed {
   open: () => void;
   close: () => void;
 }
@@ -69,10 +68,8 @@ export interface PatientReferralExposed {
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import BubbleVideo from "../chat-bubbles/BubbleVideo.vue";
+import { useCallStore } from "~/stores/callStore.js";
 
-defineOptions({
-  name: "VideoRecordDisplay",
-});
 
 const props = withDefaults(
   defineProps<{
@@ -154,10 +151,12 @@ const handleOption = async (key: string) => {
       if (track) {
         try {
           isFlashOn.value = !isFlashOn.value;
-          // Apply the native torch constraint to the existing track
+          // Apply the native torch constraint to the existing track.
+          // `torch` is a non-standard Chromium-only MediaTrackConstraint, so TS doesn't know it;
+          // cast through `unknown` to satisfy the type checker without silencing it broadly.
           await track.applyConstraints({
             advanced: [{ torch: isFlashOn.value }],
-          } as MediaTrackConstraints);
+          } as unknown as MediaTrackConstraints);
         } catch (err) {
           console.error("Failed to toggle flash:", err);
           isFlashOn.value = !isFlashOn.value; // Revert UI if hardware rejects it
@@ -179,7 +178,7 @@ const close = () => {
   isOpen.value = false;
 };
 
-defineExpose<PatientReferralExposed>({
+defineExpose<VideoRecordDisplayExposed>({
   open,
   close,
 });

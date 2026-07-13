@@ -9,7 +9,7 @@ const toastRef: Ref<Toast | null> = ref(null);
 export const useAppToast = () => {
   /**
    * @param message The text to display
-   * @param type 'success' | 'error' | 'warning' | 'info' (matching your DToast props)
+   * @param type 'success' | 'error' | 'warning' | 'info' (matching BToast props)
    */
   const openToast = (
     message: string,
@@ -18,7 +18,7 @@ export const useAppToast = () => {
     if (toastRef.value) {
       toastRef.value.openToast(message, type);
     } else {
-      console.warn("DToast component is not yet initialized in app.vue");
+      console.warn("BToast component is not yet initialized in app.vue");
     }
   };
 

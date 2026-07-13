@@ -1,0 +1,12 @@
+{
+  "file": {
+    "attachMedia": "عکس یا ویدیو",
+    "attachFile": "فایل",
+    "cancel": "انصراف",
+    "sendFile": "ارسال فایل",
+    "sendImages": "ارسال تصاویر",
+    "sendImage": "ارسال تصویر"
+  },
+  "caption": "کپشن",
+  "send": "ارسال"
+}

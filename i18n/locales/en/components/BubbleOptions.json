@@ -1,0 +1,10 @@
+{
+  "messageOptions": {
+    "reply": "Reply",
+    "edit": "Edit message",
+    "copy": "Copy",
+    "deselect": "Deselect",
+    "select": "Select",
+    "delete": "Delete message"
+  }
+}

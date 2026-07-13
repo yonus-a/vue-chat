@@ -488,16 +488,15 @@ export const useDate = () => {
 
   const formatEventFullDateTime = (event: CalendarEventPayload) => {
     const date = new Date(event.date);
+    const lang = getLang();
+    const intlLocale = lang === "fa" ? "fa-IR" : lang === "ar" ? "ar-EG" : "en-US";
 
     // 1. Format the Date part (e.g., ۲۶ اردیبهشت ۱۴۰۵)
-    const datePart = new Intl.DateTimeFormat(
-      locale.value === "fa" ? "fa-IR" : "en-US",
-      {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      },
-    ).format(date);
+    const datePart = new Intl.DateTimeFormat(intlLocale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
 
     // 2. Prepare Start Time
     const startTime = event.time;
@@ -521,12 +520,12 @@ export const useDate = () => {
         endM = String(endObj.getMinutes()).padStart(2, "0");
       }
 
-      const separator = locale.value === "fa" ? " تا " : " to ";
+      const separator = lang === "fa" ? " تا " : " to ";
       timePart += `${separator}${endH}:${endM}`;
     }
 
     // 4. Combine with localized labels
-    const hourLabel = locale.value === "fa" ? " ساعت " : " at ";
+    const hourLabel = lang === "fa" ? " ساعت " : " at ";
     const finalString = `${datePart}${hourLabel}${timePart}`;
 
     // Use your existing utility to ensure Persian digits if needed
@@ -545,7 +544,7 @@ export const useDate = () => {
     formatTime,
     g2j,
     j2g,
-    getRelativeTime: (d: any) => formatDate(d, { useRelativeDay: true }),
+    getRelativeTime: (d: string | Date) => formatDate(d, { useRelativeDay: true }),
     formatRelativeDate,
     formatEventFullDateTime,
   };

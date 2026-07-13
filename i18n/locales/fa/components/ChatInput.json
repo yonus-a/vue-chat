@@ -1,0 +1,13 @@
+{
+  "swipeToCancel": "برای لغو بکشید",
+  "cancel": "لغو",
+  "placeholder": "بنویسید ...",
+  "chatLocked": "گفتگو تمام شده",
+  "attachementTypes": {
+    "voice": "پیام صوتی",
+    "video": "ویدیو",
+    "image": "عکس",
+    "file": "فایل"
+  },
+  "you": "شما"
+}

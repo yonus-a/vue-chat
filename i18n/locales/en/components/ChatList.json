@@ -1,0 +1,8 @@
+{
+  "filters": {
+    "online": "Online",
+    "ended": "Ended",
+    "active": "Active"
+  },
+  "noMessages": "No messages exchanged"
+}

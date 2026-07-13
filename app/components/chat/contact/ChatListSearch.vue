@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import BIcon from "~/components/global/BIcon.vue";
 import { nextTick, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatListSearch } from "@i18n/locales";
 const model = defineModel<string>({ default: "" });
 
-const { t } = useI18n();
+const { t } = useLocalI18n(chatListSearch);
 const isOpen = ref(false);
 const inputRef = ref<HTMLInputElement | null>(null);
 
@@ -33,7 +33,7 @@ watch(isOpen, async (val) => {
         :class="[isOpen ? 'opacity-0 max-w-0' : 'max-w-37.5 opacity-100']"
         class="transition-all duration-300 overflow-hidden text-nowrap ease-in-out select-none text-on-surface text-label-lg"
       >
-        {{ t("chat.title") }}
+        {{ t("title") }}
       </div>
 
       <div class="flex-1">
@@ -49,7 +49,7 @@ watch(isOpen, async (val) => {
           <input
             ref="inputRef"
             v-model="model"
-            :placeholder="t('general.search')"
+            :placeholder="t('search')"
             :class="[
               isOpen ? 'opacity-100 flex-1 w-full ml-3' : 'w-0 opacity-0',
             ]"

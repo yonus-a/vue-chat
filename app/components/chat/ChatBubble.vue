@@ -11,8 +11,8 @@ import SafeEmojiText from "../general/SafeEmojiText.vue";
 import ContactAvatar from "./contact/ContactAvatar.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useDate } from "~/composables/useDate.js";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatBubble } from "@i18n/locales";
 const props = withDefaults(
   defineProps<{
     message: ExtendedMessage;
@@ -26,7 +26,7 @@ const props = withDefaults(
   },
 );
 
-const { t } = useI18n();
+const { t } = useLocalI18n(chatBubble);
 const chatStore = useChatStore();
 const messagesStore = useMessagesStore();
 const { formatDateShort, formatTime } = useDate();
@@ -103,17 +103,17 @@ const checkIcon = computed(() => {
 const replyName = computed(() => {
   if (!props.message.repliedTo) return "";
   return props.message.repliedTo.senderId === chatStore.currentUserId
-    ? t("chat.you")
+    ? t("you")
     : props.contact.name;
 });
 
 const replyContent = computed(() => {
   const msg = props.message.repliedTo;
   if (!msg) return "";
-  if (msg.videoUrl?.trim()) return t("chat.attachementTypes.video");
-  if (msg.voiceUrl?.trim()) return t("chat.attachementTypes.voice");
-  if (msg.fileUrl?.trim()) return t("chat.attachementTypes.file");
-  if (msg.imageUrl?.length > 0) return t("chat.attachementTypes.image");
+  if (msg.videoUrl?.trim()) return t("attachementTypes.video");
+  if (msg.voiceUrl?.trim()) return t("attachementTypes.voice");
+  if (msg.fileUrl?.trim()) return t("attachementTypes.file");
+  if (msg.imageUrl?.length > 0) return t("attachementTypes.image");
   return msg.text;
 });
 
@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
           {{
             !isFirstUnread
               ? formatDateShort(message.date)
-              : t("chat.unreadMessages")
+              : t("unreadMessages")
           }}
         </div>
       </div>

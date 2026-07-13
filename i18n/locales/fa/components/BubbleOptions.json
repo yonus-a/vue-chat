@@ -1,0 +1,10 @@
+{
+  "messageOptions": {
+    "reply": "پاسخ",
+    "edit": "ویرایش پیام",
+    "copy": "کپی",
+    "deselect": "لغو انتخاب",
+    "select": "انتخاب",
+    "delete": "حذف پیام"
+  }
+}

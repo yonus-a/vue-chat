@@ -1,0 +1,10 @@
+{
+  "noMessages": "هیچ پیامی تبادل نشده",
+  "unreadMessages": "خوانده نشده.",
+  "delete": {
+    "title": "حذف پیام",
+    "singleMessage": "آیا از حذف پیام اطمینان دارید ؟",
+    "multipleMessages": "آیا از حذف {count} پیام اطمینان دارید؟",
+    "confirm": "حذف"
+  }
+}

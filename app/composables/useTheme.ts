@@ -1,6 +1,6 @@
+import type { CssVariables, Theme, ThemeInput } from "../types/theme";
 import { inject, provide, type InjectionKey } from "vue";
 import { getTheme } from "../themes/factory";
-import type { CssVariables, Theme, ThemeInput } from "../types/theme";
 import { useColorMode } from "@vueuse/core";
 
 const THEME_KEY: InjectionKey<Theme> = Symbol("app_theme");

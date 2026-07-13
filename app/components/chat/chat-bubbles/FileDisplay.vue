@@ -3,7 +3,8 @@ import FileFormatDisplay from "~/components/general/FileFormatDisplay.vue";
 import LoadingStatus from "~/components/general/LoadingStatus.vue";
 import { useMessagesStore } from "~/stores/messageStores";
 import { computed, onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatBubblesFileDisplay } from "@i18n/locales";
 import { formatBytes } from "~/utils/format";
 
 const props = withDefaults(
@@ -19,7 +20,7 @@ const props = withDefaults(
   },
 );
 
-const { t } = useI18n();
+const { t } = useLocalI18n(chatBubblesFileDisplay);
 const messagesStore = useMessagesStore();
 
 const status = ref<"idle" | "downloading" | "downloaded">("idle");
@@ -95,7 +96,7 @@ const formattedSize = computed(() => {
   }
   return fetchedSize.value
     ? formatBytes(fetchedSize.value)
-    : t("chat.file.calculating");
+    : t("file.calculating");
 });
 
 const getFileSize = async () => {

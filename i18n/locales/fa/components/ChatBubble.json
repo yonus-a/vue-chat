@@ -1,0 +1,10 @@
+{
+  "you": "شما",
+  "attachementTypes": {
+    "video": "ویدیو",
+    "voice": "پیام صوتی",
+    "file": "فایل",
+    "image": "عکس"
+  },
+  "unreadMessages": "خوانده نشده."
+}

@@ -96,10 +96,6 @@ import { useClickOutside } from "~/composables/useClickOutside";
 // Shared state across all BMenu instances to handle global auto-closing
 const globalActiveMenuId = ref<string | null>(null);
 
-defineOptions({
-  name: "BMenu",
-});
-
 const props = withDefaults(
   defineProps<{
     options?: Option[];
@@ -228,6 +224,7 @@ watch(globalActiveMenuId, (newId) => {
 });
 
 useClickOutside(menuWrapper, () => {
+  if (!isOpen.value) return;
   if (props.autoClose) {
     closeMenu();
   }

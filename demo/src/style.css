@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "../../dist/chat.css";
+@source "../../dist";
+
+body,
+#app {
+  height: 100vh !important;
+}

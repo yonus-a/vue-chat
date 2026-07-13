@@ -1,0 +1,70 @@
+{
+  "general": {
+    "themes": {
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "all": "All",
+    "back": "Back",
+    "loading": "Loading",
+    "save": "Save",
+    "relationshipStatus": {
+      "title": "Marital status",
+      "married": "Married",
+      "single": "Single"
+    },
+    "todaysDate": "Today {date}",
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "nationality": {
+      "iranian": "Iranian",
+      "foreigner": "Foreign national"
+    },
+    "viewAll": "View all",
+    "search": "Search",
+    "roles": {
+      "user": "Service recipient",
+      "employee": "Service provider",
+      "business": "Business"
+    },
+    "pagination": {
+      "next": "Next",
+      "prev": "Previous"
+    },
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "currency": "Toman",
+    "select": "Select...",
+    "write": "Write...",
+    "colors": {
+      "red": "Red",
+      "green": "Green",
+      "black": "Black",
+      "gray": "Gray",
+      "yellow": "Yellow",
+      "white": "White"
+    },
+    "timeframes": {
+      "seconds": "Seconds",
+      "minutes": "Minutes",
+      "hours": "Hours",
+      "days": "Days",
+      "week": "Week",
+      "month": "Month",
+      "year": "Year"
+    },
+    "datePicker": {
+      "title": "Select date"
+    },
+    "result": "Result",
+    "noResultFound": "No {item} found for '{search}'!",
+    "onlineReservations": "Online appointments",
+    "less": "Less",
+    "more": "More",
+    "lastMonth": "Last month",
+    "percent": "Percent",
+    "comparedTo": "{amount} {compare} from {period}"
+  }
+}

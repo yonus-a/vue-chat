@@ -1,0 +1,13 @@
+{
+  "swipeToCancel": "Swipe to cancel",
+  "cancel": "Cancel",
+  "placeholder": "Write...",
+  "chatLocked": "Conversation ended",
+  "attachementTypes": {
+    "voice": "Voice message",
+    "video": "Video",
+    "image": "Photo",
+    "file": "File"
+  },
+  "you": "You"
+}

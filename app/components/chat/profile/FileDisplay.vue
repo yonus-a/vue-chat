@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { profileFileDisplay } from "@i18n/locales";
 import { formatBytes } from "~/utils/format";
 
 const props = withDefaults(
@@ -13,8 +14,7 @@ const props = withDefaults(
   },
 );
 
-const { t } = useI18n();
-
+const { t } = useLocalI18n(profileFileDisplay);
 const fetchedSize = ref<number | null>(null);
 const isLoading = computed(() => props.loading);
 
@@ -45,7 +45,7 @@ const formattedSize = computed(() => {
   // a truthy check would incorrectly show "Calculating..." forever.
   return fetchedSize.value !== null
     ? formatBytes(fetchedSize.value)
-    : t("chat.file.calculating");
+    : t("file.calculating");
 });
 
 const getFileSize = async () => {

@@ -66,8 +66,6 @@ export const useValidation = () => {
       const minDate = new Date();
       minDate.setFullYear(now.getFullYear() - 100);
 
-      const errors: Record<string, string> = {};
-
       if (date > now) {
         errors.year = t("validation.future_date");
       } else if (date < minDate) {
@@ -258,7 +256,7 @@ export const useValidation = () => {
     return null;
   };
 
-  const validateSlug = (text: string, title: string) => {
+  const validateSlug = (text: string, title: string): string | null => {
     const slugRegex = /^[a-z0-9-]+$/;
     if (!text) return t("validation.required", { field: title });
     return slugRegex.test(text)

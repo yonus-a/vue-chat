@@ -1,0 +1,10 @@
+{
+  "you": "You",
+  "attachementTypes": {
+    "video": "Video",
+    "voice": "Voice message",
+    "file": "File",
+    "image": "Photo"
+  },
+  "unreadMessages": "Unread."
+}

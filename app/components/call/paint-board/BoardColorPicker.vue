@@ -38,7 +38,7 @@
           :disabled="!canSelect"
           class="min-w-full"
           color="primary"
-          :text="t('chat.board.confirm')"
+          :text="t('board.confirm')"
           @click="submitSelection"
         />
       </div>
@@ -56,8 +56,8 @@ export interface BoardColorPickerExposed {
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, onUnmounted } from "vue";
-import { useI18n } from "vue-i18n";
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { boardColorPicker } from "@i18n/locales";
 const props = withDefaults(
   defineProps<{
     modelValue?: string;
@@ -72,13 +72,13 @@ const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
 
-const { t } = useI18n();
-
+const { t } = useLocalI18n(boardColorPicker);
 const colorPickerWrapper = ref<HTMLElement | null>(null);
 const isOpen = ref(false);
 const selectedColor = ref(0);
 const previousSelectedColor = ref(0);
 const isTransitioning = ref(true);
+let transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
 const colors = computed(() => props.colors);
 
@@ -97,7 +97,9 @@ const open = () => {
   previousSelectedColor.value = index !== -1 ? index : 0;
   selectedColor.value = previousSelectedColor.value;
 
-  setTimeout(() => {
+  if (transitionTimer) clearTimeout(transitionTimer);
+  transitionTimer = setTimeout(() => {
+    transitionTimer = null;
     isTransitioning.value = false;
   }, 300);
 
@@ -131,6 +133,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleGlobalKeyDown);
+  if (transitionTimer) clearTimeout(transitionTimer);
 });
 
 defineExpose<BoardColorPickerExposed>({

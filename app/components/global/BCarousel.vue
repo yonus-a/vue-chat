@@ -2,10 +2,6 @@
 import { ref, watch, nextTick, computed } from "vue";
 import { useLocale } from "~/composables/useLocale";
 
-defineOptions({
-  name: "BCarousel",
-});
-
 const props = withDefaults(
   defineProps<{
     items: unknown[];

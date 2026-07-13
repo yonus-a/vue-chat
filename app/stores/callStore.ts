@@ -1,6 +1,7 @@
 import { useAppPermissions } from "~/composables/useAppPermissions";
 import { getCallHandlers } from "~/providers/callHanlder";
 import type { CallMember, CallKind } from "~/types/call";
+import type { Contact } from "~/types/chat";
 import { useChatStore } from "./chatStore";
 import { defineStore } from "pinia";
 
@@ -36,7 +37,7 @@ export const useCallStore = defineStore("call", () => {
   const screenStream = ref<MediaStream | null>(null);
 
   // Contact state
-  const chatContact = ref<CallMember | null>();
+  const chatContact = ref<Contact | null>();
 
   // Timer state
   const startTime = ref<number | null>(null);
@@ -212,7 +213,7 @@ export const useCallStore = defineStore("call", () => {
   };
 
   const startCall = async (
-    contact: CallMember,
+    contact: Contact,
     conversationId: string,
     serviceType: CallKind,
   ) => {

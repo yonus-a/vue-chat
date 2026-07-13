@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex h-16 items-center justify-between px-4 sm:h-20">
       <div class="hidden text-label-lg text-white select-none md:block">
-        {{ t("chat.call.title") }}
+        {{ t("call.title") }}
       </div>
 
       <div
@@ -72,21 +72,6 @@
         </template>
       </CallBoard>
 
-      <MedicSelector mode="medic">
-        <template #trigger="{ isOpen }">
-          <div
-            class="flex aspect-square w-9 items-center justify-center rounded-full transition-all duration-200 sm:w-12"
-            :class="[isOpen ? 'bg-white' : 'bg-black-500']"
-          >
-            <BIcon
-              :icon="isOpen ? 'PhX' : 'PhUserPlus'"
-              class="h-4 w-4 sm:h-6 sm:w-6"
-              :class="[isOpen ? 'fill-black-500' : 'fill-white']"
-            />
-          </div>
-        </template>
-      </MedicSelector>
-
       <div
         v-for="option in optionButtons"
         :key="option.key"
@@ -129,15 +114,12 @@ import type { Contact } from "~/types/chat";
 import { formatDuration } from "~/utils/format";
 import CallMemberDisplay from "./CallMemberDisplay.vue";
 import CallBoard from "./CallBoard.vue";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { callPageOverlay } from "@i18n/locales";
 import { useAppToast } from "~/composables/useAppToast.js";
 import { useCallStore } from "~/stores/callStore.js";
 import { useAppPermissions } from "~/composables/useAppPermissions.js";
 import { useDevice } from "~/composables/useDevice.js";
-
-defineOptions({
-  name: "CallPageOverlay",
-});
 
 interface CallOption {
   icon: string;
@@ -153,7 +135,7 @@ defineProps<{
   contacts?: Contact[];
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(callPageOverlay);
 const { openToast } = useAppToast();
 const callStore = useCallStore();
 const { width } = useWindowSize();
@@ -161,7 +143,6 @@ const { requestWithPopup, checkMediaStatus } = useAppPermissions();
 const { hardware } = useDevice();
 
 const isReady = ref(false);
-const isFlashOn = ref(false);
 const hasMultipleCameras = ref(false);
 const supportsTorch = ref(false);
 const fullScreenId = ref<string | null>(null);
@@ -170,7 +151,7 @@ const isMobile = computed(() => width.value < 768);
 const callTimeDisplay = computed(() => formatDuration(callStore.elapsedTime));
 const callMembers = computed(() => callStore.callMembers);
 const flashIcon = computed(() =>
-  isFlashOn.value ? "PhLightningSlash" : "PhLightning",
+  callStore.isFlashOn ? "PhLightningSlash" : "PhLightning",
 );
 
 const mobileOptions = computed<CallOption[]>(() => [
@@ -299,7 +280,7 @@ const initPermissions = async () => {
 const handleOptions = async (key: string) => {
   const option = mobileOptions.value.find((o) => o.key === key);
   if (option?.disabled) {
-    openToast(t("chat.call.deviceDoesntSupport"), "error");
+    openToast(t("call.deviceDoesntSupport"), "error");
     return;
   }
 

@@ -1,0 +1,9 @@
+{
+  "attachementTypes": {
+    "image": "Photo",
+    "file": "File",
+    "voice": "Voice message",
+    "video": "Video",
+    "request": "Request"
+  }
+}

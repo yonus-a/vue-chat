@@ -1,0 +1,9 @@
+{
+  "board": {
+    "title": "Board",
+    "selectColor": "Select color",
+    "savedSuccessfully": "Image saved successfully.",
+    "page": "Page {page}",
+    "addPage": "New page"
+  }
+}

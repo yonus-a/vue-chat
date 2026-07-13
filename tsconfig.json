@@ -16,10 +16,11 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist/types",
-    "rootDir": "app",
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "@i18n/*": ["./i18n/*"]
     },
     "types": ["vite/client", "node"]
   },
@@ -27,6 +28,7 @@
     "app/**/*.ts",
     "app/**/*.d.ts",
     "app/**/*.vue",
+    "i18n/**/*.ts",
     "auto-imports.d.ts"
   ],
   "exclude": ["node_modules", "dist"]

@@ -1,0 +1,12 @@
+{
+  "file": {
+    "attachMedia": "Photo or video",
+    "attachFile": "File",
+    "cancel": "Cancel",
+    "sendFile": "Send file",
+    "sendImages": "Send images",
+    "sendImage": "Send image"
+  },
+  "caption": "Caption",
+  "send": "Send"
+}

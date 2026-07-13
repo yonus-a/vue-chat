@@ -3,7 +3,8 @@ import SafeEmojiText from "~/components/general/SafeEmojiText.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import ContactAvatar from "./ContactAvatar.vue";
 import type { Contact } from "~/types/chat";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatContactDisplay } from "@i18n/locales";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -11,7 +12,7 @@ const props = defineProps<{
   loading?: boolean;
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(chatContactDisplay);
 const chatStore = useChatStore();
 
 const isActive = computed(
@@ -64,10 +65,10 @@ const lastMessageText = computed(() => {
   // Handle content (Text or Attachment Title)
   let content = msg.text;
   if (!content && msg.request) {
-    content = t("chat.attachementTypes.request");
+    content = t("attachementTypes.request");
   }
   if (!content && msg.type !== "text") {
-    content = t(`chat.attachementTypes.${msg.type}`);
+    content = t(`attachementTypes.${msg.type}`);
   }
 
   // Handle Name Prefix

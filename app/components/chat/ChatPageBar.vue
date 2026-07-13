@@ -20,7 +20,7 @@
             </div>
             <div class="text-body-sm text-on-surface/50">
               {{
-                t("chat.lastSeen", {
+                t("lastSeen", {
                   time: formatRelativeDate(selectedChat.lastSeen),
                 })
               }}
@@ -121,7 +121,8 @@ import { useChatStore } from "~/stores/chatStore.js";
 import { useDate } from "~/composables/useDate.js";
 import { formatDuration } from "~/utils/format";
 import type { Contact } from "~/types/chat";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { chatPageBar } from "@i18n/locales";
 import { computed } from "vue";
 
 const props = withDefaults(
@@ -144,8 +145,7 @@ const messagesStore = useMessagesStore();
 const { formatRelativeDate } = useDate();
 const callStore = useCallStore();
 const chatStore = useChatStore();
-const { t } = useI18n();
-
+const { t } = useLocalI18n(chatPageBar);
 const currentConversationId = computed(() => chatStore.activeConversationId);
 const selectedChat = computed(() => props.contact);
 const isSelectMode = computed(() => messagesStore.isSelectMode);

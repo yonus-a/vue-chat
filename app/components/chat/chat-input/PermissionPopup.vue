@@ -10,7 +10,7 @@
             </div>
             <div class="flex w-full items-center gap-x-3 p-5">
                 <BButton :text="actionButtonText" :loading="isLoading" @click="handleAction" />
-                <BButton color="secondary" type="outline" :text="t('chat.permissions.notNow')" @click="closePopup" />
+                <BButton color="secondary" type="outline" :text="t('permissions.notNow')" @click="closePopup" />
             </div>
         </div>
     </BPopup>
@@ -20,15 +20,16 @@
 import { ref, computed, nextTick, onUnmounted } from 'vue';
 import type { Popup } from '~/types/components/popup';
 import { useAppPermissions, type PopupState } from '~/composables/useAppPermissions';
+import { useCallStore } from '~/stores/callStore.js';
 import { useEventBus } from '@vueuse/core';
-import { useI18n } from 'vue-i18n';
-
+import useLocalI18n from "~/composables/useLocalI18n";
+import { permissionPopup } from "@i18n/locales";
 const emit = defineEmits<{
     action: [];
     cancel: [];
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(permissionPopup);
 const { requestMediaAccess, getNativeScreenShare } = useAppPermissions();
 const callStore = useCallStore();
 
@@ -40,9 +41,8 @@ const currentResolver = ref<((v: boolean) => void) | null>(null);
 // --- Event Bus ---
 const bus = useEventBus<{ resolve: (v: boolean) => void; state: PopupState }>('global-permission-popup');
 
-// FIX: The original code did not clean up the event listener, causing memory leaks
-// and duplicate triggers if the component was unmounted and remounted.
-const { off: offBus } = bus.on((payload) => {
+// `bus.on(handler)` returns the cleanup function directly — not an object with an `off` property.
+const offBus = bus.on((payload) => {
     currentResolver.value = payload.resolve;
     switchMode(payload.state);
 });
@@ -58,25 +58,25 @@ const popupIcon = computed(() => ({
 }));
 
 const actionButtonText = computed(() =>
-    popupMode.value.endsWith('permission') ? t('chat.permissions.allow') : t('chat.permissions.retry')
+    popupMode.value.endsWith('permission') ? t('permissions.allow') : t('permissions.retry')
 );
 
 const popupContent = computed(() => {
     switch (popupMode.value) {
         case 'permission':
-            return { title: t('chat.permissions.permissionTitle'), description: t('chat.permissions.description') };
+            return { title: t('permissions.permissionTitle'), description: t('permissions.description') };
         case 'cam-error':
-            return { title: t('chat.permissions.camError.title'), description: t('chat.permissions.camError.description') };
+            return { title: t('permissions.camError.title'), description: t('permissions.camError.description') };
         case 'mic-error':
-            return { title: t('chat.permissions.micError.title'), description: t('chat.permissions.micError.description') };
+            return { title: t('permissions.micError.title'), description: t('permissions.micError.description') };
         case 'cam-permission':
-            return { title: t('chat.permissions.cam.title'), description: t('chat.permissions.cam.description') };
+            return { title: t('permissions.cam.title'), description: t('permissions.cam.description') };
         case 'mic-permission':
-            return { title: t('chat.permissions.mic.title'), description: t('chat.permissions.mic.description') };
+            return { title: t('permissions.mic.title'), description: t('permissions.mic.description') };
         case 'screen-share-error':
-            return { title: t('chat.permissions.screenError.title'), description: t('chat.permissions.screenError.description') };
+            return { title: t('permissions.screenError.title'), description: t('permissions.screenError.description') };
         case 'screen-share-permission':
-            return { title: t('chat.permissions.screen.title'), description: t('chat.permissions.screen.description') };
+            return { title: t('permissions.screen.title'), description: t('permissions.screen.description') };
     }
 });
 

@@ -1,13 +1,13 @@
 // @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
 // composables/useChatRecording.ts
-import { ref, computed, type Ref } from "vue";
+import { ref, computed, onBeforeUnmount, type Ref } from "vue";
 
 export function useChatRecording(
   inputWidth: Ref<number | undefined>,
   callbacks: {
     onStart: () => void;
     onCancel: () => void;
-    onSend?: (mediaUrl: string) => void;
+    onSend?: (mediaUrl?: string) => void;
     requestPermission: () => Promise<boolean>;
   },
 ) {
@@ -178,6 +178,19 @@ export function useChatRecording(
     }
     resetDrag();
   };
+
+  // Release the MediaStream and stop the timer if the host component
+  // unmounts mid-recording (e.g. route change while recording).
+  onBeforeUnmount(() => {
+    if (pressTimer.value) {
+      clearTimeout(pressTimer.value);
+      pressTimer.value = null;
+    }
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerUp);
+    window.removeEventListener("pointercancel", onPointerUp);
+    if (isRecording.value) stopRecording(false);
+  });
 
   return {
     isRecording,

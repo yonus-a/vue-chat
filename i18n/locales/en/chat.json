@@ -1,0 +1,120 @@
+{
+  "chat": {
+    "title": "Messages",
+    "filters": {
+      "active": "Active",
+      "ended": "Ended",
+      "online": "Online"
+    },
+    "info": {
+      "nationalCode": "National code",
+      "phoneNumber": "Phone number",
+      "age": "Age",
+      "ageDisplay": "{year} years",
+      "files": "Files",
+      "media": "Images"
+    },
+    "lastSeen": "Last seen {time}",
+    "nationalId": "National code",
+    "age": "Age",
+    "ageText": "{years} years",
+    "attachements": "Attachments",
+    "options": {
+      "end": "End",
+      "voiceCall": "Call",
+      "videoCall": "Video"
+    },
+    "attachementTypes": {
+      "image": "Photo",
+      "file": "File",
+      "voice": "Voice message",
+      "video": "Video",
+      "request": "Request"
+    },
+    "messageOptions": {
+      "edit": "Edit message",
+      "delete": "Delete message",
+      "copy": "Copy",
+      "select": "Select",
+      "reply": "Reply",
+      "deselect": "Deselect"
+    },
+    "barOptions": {
+      "endChat": "End conversation",
+      "deleteMessages": "Delete messages"
+    },
+    "placeholder": "Write...",
+    "chatLocked": "Conversation ended",
+    "noConversationSelected": "No conversation selected yet",
+    "noMessages": "No messages exchanged",
+    "swipeToCancel": "Swipe to cancel",
+    "cancel": "Cancel",
+    "online": "Online",
+    "file": {
+      "calculating": "Calculating",
+      "attachMedia": "Photo or video",
+      "attachFile": "File",
+      "sendImage": "Send image",
+      "sendImages": "Send images",
+      "sendFile": "Send file",
+      "cancel": "Cancel"
+    },
+    "permissions": {
+      "permissionTitle": "Camera and microphone access",
+      "description": "To join video calls or send voice messages, we need access to your camera and microphone.",
+      "allow": "Allow access",
+      "notNow": "Not now",
+      "retry": "Try again",
+      "mic": {
+        "title": "Microphone access",
+        "description": "We need microphone access to send voice messages and place video calls."
+      },
+      "cam": {
+        "title": "Camera access",
+        "description": "We need camera access to send video messages and place video calls."
+      },
+      "micError": {
+        "title": "Your microphone is disabled",
+        "description": "We need microphone permission to send voice messages or place calls."
+      },
+      "camError": {
+        "title": "Camera access error",
+        "description": "We need camera permission to send video messages or place video calls."
+      },
+      "screen": {
+        "title": "Screen access",
+        "description": "After tapping confirm, please select the screen or tab you want to share."
+      },
+      "screenError": {
+        "title": "Screen access error",
+        "description": "Screen capture permission was denied. We need screen access permission to share your screen."
+      }
+    },
+    "you": "You",
+    "copiedMessage": "Message copied to clipboard.",
+    "unreadMessages": "Unread.",
+    "caption": "Caption",
+    "send": "Send",
+    "delete": {
+      "title": "Delete message",
+      "singleMessage": "Are you sure you want to delete this message?",
+      "multipleMessages": "Are you sure you want to delete {count} messages?",
+      "confirm": "Delete",
+      "requestTitle": "Cancel request",
+      "request": "Are you sure you want to cancel this request?"
+    },
+    "call": {
+      "title": "Call",
+      "you": "You",
+      "deviceDoesntSupport": "Your device does not support this feature."
+    },
+    "board": {
+      "title": "Board",
+      "selectColor": "Select color",
+      "page": "Page {page}",
+      "addPage": "New page",
+      "confirm": "Confirm",
+      "savedSuccessfully": "Image saved successfully."
+    }
+  }
+}

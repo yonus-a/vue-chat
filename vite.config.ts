@@ -1,3 +1,4 @@
+import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
@@ -12,6 +13,12 @@ export default defineConfig({
       imports: ["vue", "@vueuse/core"],
       dts: fileURLToPath(new URL("./auto-imports.d.ts", import.meta.url)),
     }),
+    Components({
+      dirs: ["app/components/global"],
+      dts: "./components.d.ts",
+      extensions: ["vue"],
+      deep: true,
+    }),
     dts({
       outDir: "dist/types",
       insertTypesEntry: true,
@@ -21,6 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./app", import.meta.url)),
+      "@i18n": fileURLToPath(new URL("./i18n", import.meta.url)),
     },
   },
   build: {

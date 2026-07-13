@@ -25,6 +25,17 @@ const toggleCheck = () => {
   if (props.disabled) return;
   emit("update:modelValue", !props.modelValue);
 };
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (props.disabled) return;
+  if (e.key === " " || e.key === "Spacebar") {
+    e.preventDefault();
+    toggleCheck();
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    toggleCheck();
+  }
+};
 </script>
 <template>
   <div
@@ -33,7 +44,12 @@ const toggleCheck = () => {
       hasContent && 'gap-x-3',
       !disabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
     ]"
+    role="checkbox"
+    :aria-checked="modelValue"
+    :aria-disabled="disabled || undefined"
+    :tabindex="disabled ? -1 : 0"
     @click="toggleCheck"
+    @keydown="onKeydown"
   >
     <div class="flex shrink-0 items-center justify-center">
       <div

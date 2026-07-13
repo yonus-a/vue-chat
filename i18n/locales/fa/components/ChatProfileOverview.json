@@ -1,0 +1,15 @@
+{
+  "info": {
+    "media": "تصاویر",
+    "files": "فایل ها",
+    "nationalCode": "کد ملی",
+    "phoneNumber": "شماره تماس",
+    "age": "سن"
+  },
+  "options": {
+    "end": "خاتمه",
+    "voiceCall": "تماس",
+    "videoCall": "تصویری"
+  },
+  "online": "آنلاین"
+}

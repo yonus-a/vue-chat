@@ -10,7 +10,7 @@
           @click="$emit('close')"
         />
         <div class="text-label-sm text-on-surface">
-          {{ t("chat.board.title") }}
+          {{ t("board.title") }}
         </div>
       </div>
 
@@ -68,7 +68,7 @@
             </template>
             <div class="flex flex-col gap-y-4 p-3">
               <div class="select-none text-label-md text-on-surface">
-                {{ t("chat.board.selectColor") }}
+                {{ t("board.selectColor") }}
               </div>
               <div class="hidden w-50 grid-cols-5 gap-1 md:grid">
                 <div
@@ -151,16 +151,14 @@ import type { BoardColorPickerExposed } from "./BoardColorPicker.vue";
 import { useAppToast } from "~/composables/useAppToast.js";
 import { useCallStore } from "~/stores/callStore.js";
 import type { Menu } from "~/types/components/menu";
-import { useI18n } from "vue-i18n";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { callPaintBoard } from "@i18n/locales";
 import { storeToRefs } from "pinia";
 
 // Isolate the untyped signature_pad instance to avoid polluting the rest of the file
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SignaturePadInstance = any;
 
-defineOptions({
-  name: "CallPaintBoard",
-});
 
 const props = withDefaults(
   defineProps<{
@@ -175,7 +173,7 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const { t } = useI18n();
+const { t } = useLocalI18n(callPaintBoard);
 const callStore = useCallStore();
 const { openToast } = useAppToast();
 const { width } = useWindowSize();
@@ -214,6 +212,8 @@ const {
 } = storeToRefs(callStore);
 
 let signaturePadInstance: SignaturePadInstance = null;
+let openStreamTimer: ReturnType<typeof setTimeout> | null = null;
+let addPageTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Handle Canvas Resizing correctly to prevent stretching
 const resizeCanvas = () => {
@@ -263,6 +263,8 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   stopStreaming();
   window.removeEventListener("resize", resizeCanvas);
+  if (openStreamTimer) clearTimeout(openStreamTimer);
+  if (addPageTimer) clearTimeout(addPageTimer);
   if (signaturePadInstance) {
     signaturePadInstance.off();
   }
@@ -294,20 +296,21 @@ const saveToFiles = () => {
   a.click();
   document.body.removeChild(a);
 
-  openToast(t("chat.board.savedSuccessfully"), "success");
+  openToast(t("board.savedSuccessfully"), "success");
 };
 
 const handleAction = (action: string) => {
   if (!signaturePadInstance) return;
 
   switch (action) {
-    case "erase":
+    case "erase": {
       if (signaturePadInstance.isEmpty()) return;
       const snapshot = signaturePadInstance.toData();
       history.value.push({ isClearAction: true, snapshot });
       signaturePadInstance.clear();
       redoHistory.value = [];
       break;
+    }
     case "color":
       if (isMobile.value) {
         boardColorPicker.value?.open();
@@ -349,14 +352,14 @@ const handleAction = (action: string) => {
 const pageOptions = computed(() => {
   const options = pages.value.map((_, index) => ({
     key: (index + 1).toString(),
-    label: t("chat.board.page", { page: index + 1 }),
+    label: t("board.page", { page: index + 1 }),
     icon: "PhFiles",
     color: "primary",
   }));
 
   options.push({
     key: "add-new-page",
-    label: t("chat.board.addPage"),
+    label: t("board.addPage"),
     icon: "PhPlus",
     color: "primary",
   });
@@ -385,7 +388,9 @@ const switchPage = (index: number) => {
 
 const handlePageSelect = (key: string) => {
   if (key === "add-new-page") {
-    setTimeout(() => {
+    if (addPageTimer) clearTimeout(addPageTimer);
+    addPageTimer = setTimeout(() => {
+      addPageTimer = null;
       handleAction("add-page");
     }, 300);
   } else {
@@ -418,7 +423,9 @@ watch(
   () => props.isOpen,
   (val) => {
     if (val) {
-      setTimeout(() => {
+      if (openStreamTimer) clearTimeout(openStreamTimer);
+      openStreamTimer = setTimeout(() => {
+        openStreamTimer = null;
         resizeCanvas();
         startStreaming();
       }, 50);

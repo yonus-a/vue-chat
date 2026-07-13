@@ -24,6 +24,7 @@ logs
 !.env.example
 # Added by code-review-graph
 .code-review-graph/
+CLAUDE.md
 
 # Build outputs
 dist/
