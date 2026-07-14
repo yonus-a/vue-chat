@@ -159,13 +159,13 @@ const closeToast = () => {
 const backgroundColor = computed(() => {
   switch (toastType.value) {
     case "success":
-      return "bg-primary";
+      return "bg-chat-primary";
     case "error":
-      return "bg-error";
+      return "bg-chat-error";
     case "warning":
       return "bg-orange-500";
     case "info":
-      return "bg-on-surface";
+      return "bg-chat-on-background";
   }
 });
 

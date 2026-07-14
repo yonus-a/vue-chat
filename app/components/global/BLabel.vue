@@ -3,7 +3,7 @@
     :dir="dir"
     @click="emit('click')"
     :class="[
-      'relative inline-flex items-center justify-center select-none rounded-full transition-all duration-200 ease-in-out text-primary bg-primary/10 border-gradient-active',
+      'relative inline-flex items-center justify-center select-none rounded-full transition-all duration-200 ease-in-out text-chat-primary bg-chat-primary/10 border-gradient-active',
       sizeClasses,
       paddingClasses,
       icon.trim() ? 'gap-x-3' : '',

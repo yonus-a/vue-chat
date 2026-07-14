@@ -1,15 +1,36 @@
 import { useAppPermissions } from "~/composables/useAppPermissions";
-import { getCallHandlers } from "~/providers/callHanlder";
-import type { CallMember, CallKind } from "~/types/call";
+import type { CallMember } from "~/types/call";
 import type { Contact } from "~/types/chat";
 import { useChatStore } from "./chatStore";
 import { defineStore } from "pinia";
 
+export type CallKind = "voice-call" | "video-call";
+
+export type CallSignalEvent =
+  | { type: "offer"; callId: string; sdp: RTCSessionDescriptionInit }
+  | { type: "answer"; callId: string; sdp: RTCSessionDescriptionInit }
+  | { type: "ice"; callId: string; candidate: RTCIceCandidateInit }
+  | { type: "end"; callId: string }
+  | { type: "join"; callId: string; memberId: string }
+  | { type: "leave"; callId: string; memberId: string };
+
+export interface CallHandlers {
+  initiate(conversationId: string, kind: CallKind): Promise<{ callId: string }>;
+  sendOffer(callId: string, sdp: RTCSessionDescriptionInit): Promise<void>;
+  sendAnswer(callId: string, sdp: RTCSessionDescriptionInit): Promise<void>;
+  sendIce(callId: string, candidate: RTCIceCandidateInit): Promise<void>;
+  end(callId: string): Promise<void>;
+  onSignal(handler: (e: CallSignalEvent) => void): () => void;
+}
+
 export const useCallStore = defineStore("call", () => {
   const chatStore = useChatStore();
   const { checkMediaStatus, requestWithPopup } = useAppPermissions();
-  const handlers = getCallHandlers();
+  let handlers: CallHandlers;
 
+  function setHandlers(val: CallHandlers) {
+    handlers = val;
+  }
   // Board state
   const boardPages = ref<{ data: any[]; history: any[]; redo: any[] }[]>([
     { data: [], history: [], redo: [] },
@@ -349,6 +370,7 @@ export const useCallStore = defineStore("call", () => {
     boardRedoHistory,
 
     // Actions
+    setHandlers,
     startCall,
     initCall,
     stopCall,

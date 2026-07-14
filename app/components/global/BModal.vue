@@ -22,10 +22,10 @@
         />
       </div>
       <div class="mt-4 flex w-full flex-col items-center gap-y-3 select-none">
-        <div v-if="modalTitle.trim()" class="text-label-lg text-on-surface">
+        <div v-if="modalTitle.trim()" class="text-label-lg text-chat-on-background">
           {{ modalTitle }}
         </div>
-        <div v-if="modalText.trim()" class="text-body-md text-on-surface/50">
+        <div v-if="modalText.trim()" class="text-body-md text-chat-on-background/50">
           {{ modalText }}
         </div>
       </div>
@@ -55,7 +55,7 @@
     <!-- Card Modal Layout -->
     <div v-else class="w-dvw max-w-120">
       <div
-        class="flex w-full items-center gap-x-2 border-b border-b-outline-variant p-5"
+        class="flex w-full items-center gap-x-2 border-b border-b-chat-outline-variant p-5"
       >
         <BIcon
           :icon="modalIcon"
@@ -63,14 +63,14 @@
           class="h-7 w-7"
           :class="[modalColorings?.iconColor]"
         />
-        <div class="select-none text-label-lg text-on-surface">
+        <div class="select-none text-label-lg text-chat-on-background">
           {{ modalTitle }}
         </div>
       </div>
       <div
-        class="w-full select-none border-b border-b-outline-variant p-5 text-wrap"
+        class="w-full select-none border-b border-b-chat-outline-variant p-5 text-wrap"
       >
-        <p class="text-body-md text-on-surface/50">{{ modalText }}</p>
+        <p class="text-body-md text-chat-on-background/50">{{ modalText }}</p>
       </div>
       <div class="flex w-full items-center gap-x-3 p-5">
         <BButton

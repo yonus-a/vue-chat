@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
         cy="115"
         r="113"
         :class="[
-          isUploading ? 'stroke-white/30' : 'stroke-white dark:stroke-surface',
+          isUploading ? 'stroke-white/30' : 'stroke-white dark:stroke-chat-background',
         ]"
         stroke-width="4"
         fill="none"
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
         cx="115"
         cy="115"
         r="113"
-        class="stroke-primary transition-all ease-linear"
+        class="stroke-chat-primary transition-all ease-linear"
         :class="[isPlaying || isUploading ? 'duration-200' : 'duration-75']"
         stroke-width="4"
         fill="none"
@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
 
       <div
         v-if="!isLoaded && mode === 'playback'"
-        class="absolute inset-0 flex items-center justify-center bg-surface"
+        class="absolute inset-0 flex items-center justify-center bg-chat-background"
       ></div>
 
       <div
@@ -214,7 +214,7 @@ onBeforeUnmount(() => {
         v-if="mode === 'recording'"
         class="absolute top-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-x-1"
       >
-        <div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+        <div class="w-2 h-2 rounded-full bg-chat-error animate-pulse"></div>
       </div>
     </div>
   </div>

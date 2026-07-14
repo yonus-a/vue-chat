@@ -1,12 +1,12 @@
 <template>
     <BPopup ref="popup" no-padding>
         <div class="w-dvw max-w-120">
-            <div class="flex w-full items-center gap-x-2 border-b border-b-outline-variant p-5">
+            <div class="flex w-full items-center gap-x-2 border-b border-b-chat-outline-variant p-5">
                 <BIcon :icon="popupIcon.icon" weight="fill" :class="[popupIcon.color]" class="h-7 w-7" />
-                <div class="select-none text-label-lg text-on-surface">{{ popupContent.title }}</div>
+                <div class="select-none text-label-lg text-chat-on-background">{{ popupContent.title }}</div>
             </div>
-            <div class="w-full select-none border-b border-b-outline-variant p-5 text-wrap">
-                <p class="text-body-md text-on-surface/50">{{ popupContent.description }}</p>
+            <div class="w-full select-none border-b border-b-chat-outline-variant p-5 text-wrap">
+                <p class="text-body-md text-chat-on-background/50">{{ popupContent.description }}</p>
             </div>
             <div class="flex w-full items-center gap-x-3 p-5">
                 <BButton :text="actionButtonText" :loading="isLoading" @click="handleAction" />
@@ -54,7 +54,7 @@ onUnmounted(() => {
 // --- Computed ---
 const popupIcon = computed(() => ({
     icon: popupMode.value.endsWith('permission') ? 'PhWarningCircle' : 'PhWarningOctagon',
-    color: popupMode.value.endsWith('permission') ? 'fill-primary' : 'fill-error',
+    color: popupMode.value.endsWith('permission') ? 'fill-chat-primary' : 'fill-chat-error',
 }));
 
 const actionButtonText = computed(() =>

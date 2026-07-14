@@ -183,7 +183,7 @@ defineExpose({
           <BIcon
             icon="PhX"
             :class="[isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0']"
-            class="transition-all duration-200 ease-in-out shrink-0 w-6 h-6 fill-surface cursor-pointer md:fill-on-surface"
+            class="transition-all duration-200 ease-in-out shrink-0 w-6 h-6 fill-chat-background cursor-pointer md:fill-chat-on-background"
             @click="closeImage"
           />
         </div>
@@ -247,7 +247,7 @@ defineExpose({
               @click="selectImage(index)"
               class="cursor-pointer h-20 shrink-0 transition-all duration-200 ease-in-out rounded-xl overflow-hidden aspect-square border-2 snap-center"
               :class="[
-                selectedImage === index ? 'border-primary' : 'border-primary/0',
+                selectedImage === index ? 'border-chat-primary' : 'border-chat-primary/0',
               ]"
               v-for="(image, index) in images"
               :key="index"

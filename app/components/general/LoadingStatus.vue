@@ -48,7 +48,7 @@ const iconSize = computed(() => props.size * 0.4);
         :cx="center"
         :cy="center"
         :r="radius"
-        class="stroke-on-surface/20"
+        class="stroke-chat-on-background/20"
         :stroke-width="strokeWidth"
         fill="none"
       />
@@ -56,7 +56,7 @@ const iconSize = computed(() => props.size * 0.4);
         :cx="center"
         :cy="center"
         :r="radius"
-        class="stroke-on-surface transition-all duration-200 ease-linear"
+        class="stroke-chat-on-background transition-all duration-200 ease-linear"
         :stroke-width="strokeWidth"
         fill="none"
         stroke-linecap="round"
@@ -70,19 +70,19 @@ const iconSize = computed(() => props.size * 0.4);
         v-if="isUploading"
         icon="PhUploadSimple"
         :style="{ width: `${iconSize}px`, height: `${iconSize}px` }"
-        class="fill-on-surface"
+        class="fill-chat-on-background"
       />
       <BIcon
         v-else-if="isDownloading"
         icon="PhX"
         :style="{ width: `${iconSize}px`, height: `${iconSize}px` }"
-        class="fill-on-surface"
+        class="fill-chat-on-background"
       />
       <BIcon
         v-else
         icon="PhDownloadSimple"
         :style="{ width: `${iconSize}px`, height: `${iconSize}px` }"
-        class="fill-on-surface"
+        class="fill-chat-on-background"
       />
     </div>
   </div>

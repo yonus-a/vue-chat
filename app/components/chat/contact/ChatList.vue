@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="flex h-full w-full flex-col overflow-hidden border border-outline-variant bg-surface"
+    class="flex h-full w-full flex-col overflow-hidden border border-chat-outline-variant bg-chat-background"
   >
     <ChatListSearch v-model="searchText" class="shrink-0" />
 

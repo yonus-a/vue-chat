@@ -82,14 +82,14 @@ const currentEmojis = computed<ParsedEmoji[]>(() => {
 </script>
 
 <template>
-  <div class="flex flex-col bg-surface md:w-87.5 md:rounded-2xl" dir="rtl">
+  <div class="flex flex-col bg-chat-background md:w-87.5 md:rounded-2xl" dir="rtl">
     <div
       class="grid h-49.5 grid-cols-8 content-start gap-x-1 gap-y-2 overflow-y-auto px-3 pb-3 pt-3 md:h-94.5 hide-scrollbar"
     >
       <div
         v-for="emoji in currentEmojis"
         :key="emoji.hex"
-        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-surface-variant"
+        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-chat-surface"
         @click="emit('select', emoji.native)"
       >
         <img
@@ -101,18 +101,18 @@ const currentEmojis = computed<ParsedEmoji[]>(() => {
       </div>
     </div>
 
-    <div class="flex h-10 items-center justify-between bg-surface-variant px-2">
+    <div class="flex h-10 items-center justify-between bg-chat-surface px-2">
       <button
         v-for="cat in categories"
         :key="cat.id"
-        class="rounded-md p-1.5 transition-colors hover:bg-surface-variant"
+        class="rounded-md p-1.5 transition-colors hover:bg-chat-surface"
         @click="activeCategory = cat.id"
       >
         <BIcon
           :icon="cat.icon"
           class="h-6 w-6 cursor-pointer transition-colors"
           :class="
-            activeCategory === cat.id ? 'fill-primary' : 'fill-on-surface/50'
+            activeCategory === cat.id ? 'fill-chat-primary' : 'fill-chat-on-background/50'
           "
         />
       </button>

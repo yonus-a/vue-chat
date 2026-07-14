@@ -2,7 +2,7 @@
   <div class="relative z-20 w-full">
     <div
       v-if="selectedChat"
-      class="relative z-50 flex h-16 w-full items-center justify-between gap-x-4 border-b border-b-outline-variant bg-surface py-4 px-5 md:h-20"
+      class="relative z-50 flex h-16 w-full items-center justify-between gap-x-4 border-b border-b-chat-outline-variant bg-chat-background py-4 px-5 md:h-20"
     >
       <div
         class="relative flex w-full flex-row-reverse items-center justify-end gap-x-4 md:flex-row md:justify-between"
@@ -15,10 +15,10 @@
             <ContactAvatar v-if="contact" :contact="contact" />
           </div>
           <div class="select-none">
-            <div class="text-label-md text-on-surface">
+            <div class="text-label-md text-chat-on-background">
               {{ selectedChat.name }} {{ selectedChat.lastName }}
             </div>
-            <div class="text-body-sm text-on-surface/50">
+            <div class="text-body-sm text-chat-on-background/50">
               {{
                 t("lastSeen", {
                   time: formatRelativeDate(selectedChat.lastSeen),
@@ -47,8 +47,8 @@
                   class="h-6 w-6"
                   :class="[
                     contact?.isActive || isInCall
-                      ? 'cursor-pointer fill-on-surface/50'
-                      : 'cursor-not-allowed fill-on-surface/25',
+                      ? 'cursor-pointer fill-chat-on-background/50'
+                      : 'cursor-not-allowed fill-chat-on-background/25',
                   ]"
                   @click="initCall"
                   v-if="selectedChat.serviceType !== 'chat'"
@@ -68,14 +68,14 @@
                 class="h-6 w-6"
                 :class="[
                   canDelete
-                    ? 'cursor-pointer fill-error'
-                    : 'cursor-not-allowed fill-on-surface/50',
+                    ? 'cursor-pointer fill-chat-error'
+                    : 'cursor-not-allowed fill-chat-on-background/50',
                 ]"
                 @click="deleteMessages"
               />
               <BIcon
                 icon="PhCopy"
-                class="h-6 w-6 cursor-pointer fill-on-surface"
+                class="h-6 w-6 cursor-pointer fill-chat-on-background"
                 @click="copy"
               />
             </div>
@@ -84,7 +84,7 @@
       </div>
       <BIcon
         icon="PhArrowLeft"
-        class="md:hidden h-6 w-6 cursor-pointer fill-on-surface/50"
+        class="md:hidden h-6 w-6 cursor-pointer fill-chat-on-background/50"
         @click="goBack"
       />
     </div>

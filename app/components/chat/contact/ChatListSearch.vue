@@ -27,11 +27,11 @@ watch(isOpen, async (val) => {
 <template>
   <div class="w-full">
     <div
-      class="px-5 h-16 md:h-20 w-full shrink-0 border-b border-b-outline-variant flex justify-between items-center"
+      class="px-5 h-16 md:h-20 w-full shrink-0 border-b border-b-chat-outline-variant flex justify-between items-center"
     >
       <div
         :class="[isOpen ? 'opacity-0 max-w-0' : 'max-w-37.5 opacity-100']"
-        class="transition-all duration-300 overflow-hidden text-nowrap ease-in-out select-none text-on-surface text-label-lg"
+        class="transition-all duration-300 overflow-hidden text-nowrap ease-in-out select-none text-chat-on-background text-label-lg"
       >
         {{ t("title") }}
       </div>
@@ -44,7 +44,7 @@ watch(isOpen, async (val) => {
           <BIcon
             @click="toggleSearch"
             icon="PhMagnifyingGlass"
-            class="cursor-pointer w-5 h-5 fill-on-surface/50 shrink-0"
+            class="cursor-pointer w-5 h-5 fill-chat-on-background/50 shrink-0"
           />
           <input
             ref="inputRef"
@@ -54,7 +54,7 @@ watch(isOpen, async (val) => {
               isOpen ? 'opacity-100 flex-1 w-full ml-3' : 'w-0 opacity-0',
             ]"
             type="text"
-            class="transition-all text-label-sm duration-300 ease-in-out outline-none bg-transparent text-on-surface"
+            class="transition-all text-label-sm duration-300 ease-in-out outline-none bg-transparent text-chat-on-background"
           />
           <BIcon
             :class="[
@@ -62,7 +62,7 @@ watch(isOpen, async (val) => {
                 ? ' w-5 h-5 opacity-100 pointer-events-auto'
                 : ' pointer-events-none opacity-0 w-0 h-0 ',
             ]"
-            class="overflow-hidden cursor-pointer fill-on-surface/50 transition-all duration-200 shrink-0 ease-in-out"
+            class="overflow-hidden cursor-pointer fill-chat-on-background/50 transition-all duration-200 shrink-0 ease-in-out"
             @click="toggleSearch"
             icon="PhX"
           />

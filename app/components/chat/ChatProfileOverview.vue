@@ -249,7 +249,7 @@ onMounted(async () => {
 
 <template>
   <div
-    class="h-full shrink-0 overflow-hidden bg-surface transition-none md:transition-all md:duration-300 md:ease-in-out ltr:border-r-surface-variant rtl:border-l-surface-variant ltr:border-r rtl:border-l"
+    class="h-full shrink-0 overflow-hidden bg-chat-background transition-none md:transition-all md:duration-300 md:ease-in-out ltr:border-r-chat-surface rtl:border-l-chat-surface ltr:border-r rtl:border-l"
     :class="[isOpen ? 'w-dvw md:w-80' : 'w-0 border-none!']"
   >
     <div class="flex h-full w-full flex-col">
@@ -282,7 +282,7 @@ onMounted(async () => {
         <div
           class="flex w-full shrink-0 flex-col items-center justify-center gap-y-2 select-none mt-2"
         >
-          <div v-loading="isLoading" class="text-title-md text-on-surface">
+          <div v-loading="isLoading" class="text-title-md text-chat-on-background">
             {{ localProfile?.name }}
           </div>
           <BLabel
@@ -299,7 +299,7 @@ onMounted(async () => {
               v-for="action in actionButtons"
               :key="action.key"
               v-loading="isLoading"
-              class="flex aspect-square w-15.5 flex-col items-center justify-center gap-y-0.5 rounded-xl bg-surface-variant transition-all duration-200 ease-in-out"
+              class="flex aspect-square w-15.5 flex-col items-center justify-center gap-y-0.5 rounded-xl bg-chat-surface transition-all duration-200 ease-in-out"
               :class="[
                 action.active
                   ? 'cursor-pointer opacity-100'
@@ -312,17 +312,17 @@ onMounted(async () => {
                 weight="fill"
                 class="h-6 w-6"
                 :class="[
-                  action.color === 'error' ? 'fill-error' : 'fill-primary',
+                  action.color === 'error' ? 'fill-chat-error' : 'fill-chat-primary',
                 ]"
               />
-              <div class="select-none text-center text-[10px] text-on-surface">
+              <div class="select-none text-center text-[10px] text-chat-on-background">
                 {{ action.title }}
               </div>
             </div>
           </div>
 
           <div class="w-full">
-            <div class="h-0.5 w-full rounded-full bg-surface-variant" />
+            <div class="h-0.5 w-full rounded-full bg-chat-surface" />
           </div>
 
           <div class="flex w-full flex-col gap-y-4 py-4">
@@ -333,11 +333,11 @@ onMounted(async () => {
             >
               <div
                 v-loading="isLoading"
-                class="text-body-sm text-on-surface/50"
+                class="text-body-sm text-chat-on-background/50"
               >
                 {{ info.title }}
               </div>
-              <div v-loading="isLoading" class="text-body-md text-on-surface">
+              <div v-loading="isLoading" class="text-body-md text-chat-on-background">
                 {{ info.value }}
               </div>
             </div>
@@ -353,7 +353,7 @@ onMounted(async () => {
               v-if="fileAttachements.length > 0"
               class="flex w-full shrink-0 flex-col gap-y-1"
             >
-              <div class="text-body-sm text-on-surface/50">
+              <div class="text-body-sm text-chat-on-background/50">
                 {{ t("info.files") }}
               </div>
               <FileDisplay
@@ -367,7 +367,7 @@ onMounted(async () => {
               v-if="mediaAttachements.length > 0"
               class="flex flex-1 flex-col gap-y-1"
             >
-              <div class="shrink-0 text-body-sm text-on-surface/50">
+              <div class="shrink-0 text-body-sm text-chat-on-background/50">
                 {{ t("info.media") }}
               </div>
               <div ref="imagesSection" class="w-full flex-1">

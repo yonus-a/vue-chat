@@ -21,7 +21,7 @@
 
     <div
       ref="panelRef"
-      class="absolute z-10110 rounded-xl border border-outline-variant bg-surface transition-all duration-200 ease-in-out"
+      class="absolute z-10110 rounded-xl border border-chat-outline-variant bg-chat-background transition-all duration-200 ease-in-out"
       :class="[
         isOpen ? 'shadow-[0px_8px_24px_rgba(149,157,165,0.2)]' : 'shadow-none',
         !hasCustomContent && options.length > 0 ? 'w-50' : '',
@@ -41,7 +41,7 @@
         <template v-for="(opt, idx) in options" :key="opt.key">
           <div class="pointer-events-auto">
             <div
-              class="flex h-11 w-full cursor-pointer items-center gap-x-2 rounded-lg bg-transparent px-2 transition-all duration-200 ease-in-out hover:bg-surface-variant-2"
+              class="flex h-11 w-full cursor-pointer items-center gap-x-2 rounded-lg bg-transparent px-2 transition-all duration-200 ease-in-out hover:bg-chat-surface-2"
               @click="handleSelect(opt.key)"
             >
               <BIcon
@@ -49,13 +49,13 @@
                 :icon="opt.icon"
                 class="h-5 w-5"
                 :class="[
-                  opt.color ? `fill-${opt.color}` : 'fill-on-surface/50',
+                  opt.color ? `fill-${opt.color}` : 'fill-chat-on-background/50',
                 ]"
               />
               <div
                 class="select-none text-label-sm"
                 :class="[
-                  opt.color ? `text-${opt.color}` : 'text-on-surface/50',
+                  opt.color ? `text-${opt.color}` : 'text-chat-on-background/50',
                 ]"
               >
                 {{ opt.label }}

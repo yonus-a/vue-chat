@@ -1,8 +1,8 @@
 <template>
   <div class="flex w-full select-none items-center gap-x-2">
     <div class="flex min-w-0 flex-1 flex-col gap-y-0.5 text-left">
-      <div class="truncate text-label-md text-on-surface">{{ fileName }}</div>
-      <div dir="ltr" class="text-body-sm text-on-surface/70">
+      <div class="truncate text-label-md text-chat-on-background">{{ fileName }}</div>
+      <div dir="ltr" class="text-body-sm text-chat-on-background/70">
         {{ formattedSize }}
       </div>
     </div>
@@ -12,7 +12,7 @@
     >
       <BIcon icon="PhFile" class="h-10 w-10 fill-white" />
       <div
-        class="absolute bottom-2 right-0 flex items-center justify-center rounded-sm bg-error px-1 py-0.5"
+        class="absolute bottom-2 right-0 flex items-center justify-center rounded-sm bg-chat-error px-1 py-0.5"
       >
         <div
           class="text-center text-[7px] font-bold uppercase leading-none tracking-wide text-white"

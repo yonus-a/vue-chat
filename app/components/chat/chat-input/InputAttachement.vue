@@ -4,28 +4,28 @@
       <template #trigger>
         <BIcon
           icon="PhPaperclip"
-          class="h-6 w-6 shrink-0 cursor-pointer fill-on-surface"
+          class="h-6 w-6 shrink-0 cursor-pointer fill-chat-on-background"
         />
       </template>
-      <div class="flex w-41 flex-col gap-y-1 rounded-2xl bg-surface p-3">
+      <div class="flex w-41 flex-col gap-y-1 rounded-2xl bg-chat-background p-3">
         <div
           v-image-pick="{ multiple: true, onSelect: handleMediaSelected }"
-          class="flex h-11 w-full cursor-pointer select-none items-center gap-x-2 rounded-xl bg-transparent px-3 transition-all duration-200 ease-in-out hover:bg-surface-variant-2"
+          class="flex h-11 w-full cursor-pointer select-none items-center gap-x-2 rounded-xl bg-transparent px-3 transition-all duration-200 ease-in-out hover:bg-chat-surface-2"
           @click="resetSelections"
         >
-          <BIcon icon="PhImage" class="h-5 w-5 fill-on-surface/50" />
-          <div class="text-body-sm text-on-surface/70">
+          <BIcon icon="PhImage" class="h-5 w-5 fill-chat-on-background/50" />
+          <div class="text-body-sm text-chat-on-background/70">
             {{ t("file.attachMedia") }}
           </div>
         </div>
 
         <div
           v-file-pick="{ multiple: true, onSelect: handleFilesSelected }"
-          class="flex h-11 w-full cursor-pointer select-none items-center gap-x-2 rounded-xl bg-transparent px-3 transition-all duration-200 ease-in-out hover:bg-surface-variant-2"
+          class="flex h-11 w-full cursor-pointer select-none items-center gap-x-2 rounded-xl bg-transparent px-3 transition-all duration-200 ease-in-out hover:bg-chat-surface-2"
           @click="resetSelections"
         >
-          <BIcon icon="PhFile" class="h-5 w-5 fill-on-surface/50" />
-          <div class="text-body-sm text-on-surface/70">
+          <BIcon icon="PhFile" class="h-5 w-5 fill-chat-on-background/50" />
+          <div class="text-body-sm text-chat-on-background/70">
             {{ t("file.attachFile") }}
           </div>
         </div>
@@ -35,14 +35,14 @@
     <BPopup ref="popup" no-padding @closed="resetSelections">
       <div class="w-dvw md:max-w-114">
         <div
-          class="flex w-full items-center gap-x-3 border-b border-b-outline-variant p-5"
+          class="flex w-full items-center gap-x-3 border-b border-b-chat-outline-variant p-5"
         >
           <BIcon
             icon="PhX"
-            class="h-5 w-5 cursor-pointer fill-on-surface/50"
+            class="h-5 w-5 cursor-pointer fill-chat-on-background/50"
             @click="closePopup"
           />
-          <div class="select-none text-label-md text-on-surface">
+          <div class="select-none text-label-md text-chat-on-background">
             {{ popupTitle }}
           </div>
         </div>
@@ -100,7 +100,7 @@
         </div>
 
         <div
-          class="flex w-full items-center gap-x-3 border-t border-t-outline-variant p-5"
+          class="flex w-full items-center gap-x-3 border-t border-t-chat-outline-variant p-5"
         >
           <div class="basis-1/2">
             <BButton

@@ -1,11 +1,30 @@
 import { Contact, StateKeys, UserRoleKey } from "~/types/chat";
 import { useWindowSize } from "~/composables/useWindowSize";
-import { getChatHandlers } from "~/providers/chatHanlder";
 import { defineStore } from "pinia";
+export interface FetchContactsParams {
+  page: number;
+  pageSize: number;
+  state: StateKeys;
+  search?: string;
+}
+
+export interface ContactsPage {
+  data: Contact[];
+  hasNextPage: boolean;
+}
+
+export interface ChatHandlers {
+  fetchConversations(params: FetchContactsParams): Promise<ContactsPage>;
+  deleteConversation(id: string): Promise<void>;
+}
 
 export const useChatStore = defineStore("chat", () => {
   const { height: windowHeight } = useWindowSize();
-  const handlers = getChatHandlers();
+  let handlers: ChatHandlers;
+
+  function setHandlers(val: ChatHandlers) {
+    handlers = val;
+  }
 
   const chatsPerPage = computed(() => {
     const h = windowHeight.value || 800;
@@ -184,6 +203,7 @@ export const useChatStore = defineStore("chat", () => {
     typingByConversation,
     chatsPerPage,
     unreadCount,
+    setHandlers,
     setSelectedChat,
     openProfile,
     closeProfile,

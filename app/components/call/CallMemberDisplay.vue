@@ -1,7 +1,7 @@
 <template>
   <div
     class="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl border-2 bg-black-600 p-2 transition-all duration-200 ease-in-out"
-    :class="[contact.isSpeaking ? 'border-primary' : 'border-primary/0']"
+    :class="[contact.isSpeaking ? 'border-chat-primary' : 'border-chat-primary/0']"
   >
     <!-- Video Background Feature -->
     <video

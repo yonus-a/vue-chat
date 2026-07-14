@@ -1,7 +1,3 @@
-import {
-  UploadProgressEvent,
-  getMessagesHandlers,
-} from "~/providers/messagesHanlder";
 import { ExtendedMessage, Message, StateKeys } from "~/types/chat";
 import { useAppToast } from "~/composables/useAppToast";
 import { useDate } from "~/composables/useDate";
@@ -9,12 +5,39 @@ import { useChatStore } from "./chatStore";
 import { useI18n } from "vue-i18n";
 import { defineStore } from "pinia";
 
+export interface UploadProgressEvent {
+  uploaded: number;
+  total: number;
+  progress: number;
+}
+
+export interface SendMessageOptions {
+  onProgress?: (e: UploadProgressEvent) => void;
+}
+
+export interface FetchMessagesParams {
+  conversationId: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface MessagesHandlers {
+  sendMessage(msg: Message, opts?: SendMessageOptions): Promise<Message>;
+  editMessage(id: string, text: string): Promise<Message>;
+  deleteMessages(ids: string[]): Promise<void>;
+  fetchMessages(params: FetchMessagesParams): Promise<Message[]>;
+}
+
 export const useMessagesStore = defineStore("messages-store", () => {
   const { t } = useI18n();
   const { openToast } = useAppToast();
   const { formatDateShort, formatTime } = useDate();
-  const handlers = getMessagesHandlers();
   const chatStore = useChatStore();
+  let handlers: MessagesHandlers;
+
+  function setHandlers(val: MessagesHandlers) {
+    handlers = val;
+  }
 
   const isOptionMenuOpen = ref(false);
   const isSelectMode = ref(false);
@@ -304,6 +327,7 @@ export const useMessagesStore = defineStore("messages-store", () => {
     canDelete,
     clearSelection,
     startSelectMode,
+    setHandlers,
     toggleSelection,
     triggerEdit,
     copyMessageText,

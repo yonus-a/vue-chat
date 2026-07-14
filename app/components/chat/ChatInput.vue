@@ -11,21 +11,21 @@
     <div>
       <div
         :class="[textMode !== 'normal' ? 'h-10' : 'h-0']"
-        class="relative z-30 flex w-full items-center justify-between gap-x-3 overflow-hidden whitespace-nowrap border-t border-t-outline-variant bg-surface px-3 select-none text-body-sm transition-all duration-200 ease-in-out"
+        class="relative z-30 flex w-full items-center justify-between gap-x-3 overflow-hidden whitespace-nowrap border-t border-t-chat-outline-variant bg-chat-background px-3 select-none text-body-sm transition-all duration-200 ease-in-out"
       >
         <BIcon
           :icon="
             textMode === 'edit' ? 'PhPencilSimpleLine' : 'PhArrowBendUpLeft'
           "
-          class="h-5 w-5 shrink-0 fill-on-surface"
+          class="h-5 w-5 shrink-0 fill-chat-on-background"
         />
         <div class="flex flex-1 items-center gap-x-2">
-          <div v-if="textMode === 'reply'" class="shrink-0 text-on-surface/50">
+          <div v-if="textMode === 'reply'" class="shrink-0 text-chat-on-background/50">
             {{ displayActionName }} :
           </div>
           <div class="flex-1">
             <div
-              class="line-clamp-1 w-full overflow-hidden text-ellipsis text-on-surface"
+              class="line-clamp-1 w-full overflow-hidden text-ellipsis text-chat-on-background"
             >
               <SafeEmojiText :text="displayedActionText" />
             </div>
@@ -33,7 +33,7 @@
         </div>
         <BIcon
           icon="PhX"
-          class="h-5 w-5 shrink-0 cursor-pointer fill-on-surface/50"
+          class="h-5 w-5 shrink-0 cursor-pointer fill-chat-on-background/50"
           @click="cancelAction"
         />
       </div>
@@ -42,7 +42,7 @@
     <div
       ref="rootElements"
       @contextmenu.prevent
-      class="relative z-40 flex min-h-19 w-full items-end overflow-visible border-t border-t-outline-variant bg-surface px-4 py-4 select-none transition-all duration-200 ease-in-out"
+      class="relative z-40 flex min-h-19 w-full items-end overflow-visible border-t border-t-chat-outline-variant bg-chat-background px-4 py-4 select-none transition-all duration-200 ease-in-out"
     >
       <div
         class="relative z-30 mb-0.5 flex shrink-0 items-center justify-center"
@@ -55,7 +55,7 @@
       >
         <div
           v-if="isRecording"
-          class="absolute -top-20 flex w-9 flex-col items-center justify-center rounded-full bg-surface shadow-floating transition-opacity"
+          class="absolute -top-20 flex w-9 flex-col items-center justify-center rounded-full bg-chat-background shadow-floating transition-opacity"
           :class="[
             isLocked
               ? 'pointer-events-auto py-1.5'
@@ -64,7 +64,7 @@
           :style="{ opacity: lockOpacity }"
         >
           <template v-if="!isLocked">
-            <BIcon icon="PhLockKey" class="h-5 w-5 fill-on-surface" />
+            <BIcon icon="PhLockKey" class="h-5 w-5 fill-chat-on-background" />
           </template>
           <template v-else>
             <div
@@ -73,13 +73,13 @@
             >
               <BIcon
                 :icon="isPaused ? 'PhPlayCircle' : 'PhPauseCircle'"
-                class="h-6 w-6 fill-on-surface"
+                class="h-6 w-6 fill-chat-on-background"
               />
             </div>
           </template>
           <BIcon
             icon="PhCaretUp"
-            class="h-4 w-4 animate-bounce fill-on-surface/60"
+            class="h-4 w-4 animate-bounce fill-chat-on-background/60"
           />
         </div>
 
@@ -87,8 +87,8 @@
           class="flex h-11 w-11 touch-none items-center justify-center transition-all duration-200"
           :class="[
             (isRecording && !isLocked) || messageText.trim().length > 0
-              ? 'rounded-full bg-primary/10'
-              : 'h-6 w-6 bg-primary/0',
+              ? 'rounded-full bg-chat-primary/10'
+              : 'h-6 w-6 bg-chat-primary/0',
           ]"
           @pointerdown="!isLocked ? onRecordPointerDown($event) : null"
           @click="!isLocked ? toggleSecondaryMessageType() : null"
@@ -98,7 +98,7 @@
             :icon="secondaryMessageIcon"
             :weight="isRecording ? 'fill' : 'regular'"
             class="h-6 w-6 shrink-0 cursor-pointer transition-colors"
-            :class="[isRecording ? 'fill-primary' : iconClass]"
+            :class="[isRecording ? 'fill-chat-primary' : iconClass]"
           />
           <div
             v-else
@@ -119,7 +119,7 @@
             ref="inputRef"
             contenteditable="true"
             :data-placeholder="inputPlaceholder"
-            class="z-10 max-h-[144px] min-h-[44px] w-full flex-1 cursor-text overflow-y-auto bg-transparent py-1 text-body-md leading-6 text-on-surface outline-none whitespace-pre-wrap break-words hide-scrollbar empty:before:content-[attr(data-placeholder)] empty:before:text-on-surface/50 pointer-events-auto"
+            class="z-10 max-h-[144px] min-h-[44px] w-full flex-1 cursor-text overflow-y-auto bg-transparent py-1 text-body-md leading-6 text-chat-on-background outline-none whitespace-pre-wrap break-words hide-scrollbar empty:before:content-[attr(data-placeholder)] empty:before:text-chat-on-background/50 pointer-events-auto"
             @keydown.enter.exact.prevent="handleEnterKey"
             @input="handleContentInput"
             @focus="onInputFocus"
@@ -137,7 +137,7 @@
               <template #trigger>
                 <BIcon
                   icon="PhSmiley"
-                  class="h-6 w-6 cursor-pointer fill-on-surface"
+                  class="h-6 w-6 cursor-pointer fill-chat-on-background"
                   @mousedown.prevent
                 />
               </template>
@@ -149,7 +149,7 @@
 
           <BIcon
             icon="PhSmiley"
-            class="h-6 w-6 cursor-pointer fill-on-surface md:hidden"
+            class="h-6 w-6 cursor-pointer fill-chat-on-background md:hidden"
             @mousedown.prevent
             @click="toggleMobileEmoji"
           />
@@ -166,13 +166,13 @@
       >
         <div />
         <div
-          class="flex items-center justify-center text-body-md text-on-surface/70 transition-opacity"
+          class="flex items-center justify-center text-body-md text-chat-on-background/70 transition-opacity"
           :style="{ opacity: cancelOpacity }"
         >
           <span v-if="!isLocked">{{ t("swipeToCancel") }}</span>
           <span
             v-else
-            class="z-20 cursor-pointer px-4 text-primary"
+            class="z-20 cursor-pointer px-4 text-chat-primary"
             @click="cancelRecording"
           >
             {{ t("cancel") }}
@@ -181,13 +181,13 @@
 
         <div class="left-6 z-10 flex shrink-0 items-center gap-x-2">
           <div class="relative h-2.5 w-2.5">
-            <div class="h-2.5 w-2.5 rounded-full bg-error" />
+            <div class="h-2.5 w-2.5 rounded-full bg-chat-error" />
             <div
-              class="absolute inset-0 h-2.5 w-2.5 animate-ping rounded-full bg-error"
+              class="absolute inset-0 h-2.5 w-2.5 animate-ping rounded-full bg-chat-error"
             />
           </div>
           <span
-            class="mt-0.5 min-w-12 text-center tabular-nums text-body-md text-on-surface"
+            class="mt-0.5 min-w-12 text-center tabular-nums text-body-md text-chat-on-background"
             dir="ltr"
           >
             {{ formattedTime }}
@@ -280,8 +280,8 @@ const inputPlaceholder = computed(() =>
 );
 const iconClass = computed(() =>
   !props.isActive
-    ? "pointer-events-none fill-on-surface opacity-50"
-    : "pointer-events-auto fill-on-surface opacity-100",
+    ? "pointer-events-none fill-chat-on-background opacity-50"
+    : "pointer-events-auto fill-chat-on-background opacity-100",
 );
 
 const secondaryMessageIcon = computed(() =>

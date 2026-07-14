@@ -7,9 +7,9 @@
     >
       <div
         v-if="floatingHeader"
-        class="rounded-full bg-on-surface/10 flex items-center justify-center px-4 py-0.5"
+        class="rounded-full bg-chat-on-background/10 flex items-center justify-center px-4 py-0.5"
       >
-        <div class="text-on-surface select-none text-label-sm">
+        <div class="text-chat-on-background select-none text-label-sm">
           {{ floatingHeader }}
         </div>
       </div>
@@ -18,7 +18,7 @@
       dir="rtl"
       id="list"
       ref="scrollContainer"
-      class="h-full w-full max-w-dvw overflow-x-hidden overflow-y-auto pb-4 hide-scrollbar flip-vertical bg-surface-variant/30"
+      class="h-full w-full max-w-dvw overflow-x-hidden overflow-y-auto pb-4 hide-scrollbar flip-vertical bg-chat-surface/30"
       :class="[
         !showOptionsBar ? 'pt-16' : 'pt-4',
         lockScroll ? 'overflow-hidden' : '',
@@ -101,7 +101,7 @@
 
       <div
         v-show="messages.length === 0 && !isLoading"
-        class="h-full flex items-center justify-center text-on-surface/50 text-body-md flip-vertical"
+        class="h-full flex items-center justify-center text-chat-on-background/50 text-body-md flip-vertical"
       >
         <NoDataDisplay :title="t('noMessages')" :image-path="NoMessages" />
       </div>
@@ -135,9 +135,9 @@
                 ? ' scale-100 pointer-events-auto opacity-100'
                 : ' opacity-0 pointer-events-none scale-0',
             ]"
-            class="w-11 origin-bottom transition-all duration-200 ease-in-out h-11 rounded-full overflow-hidden bg-surface shadow-floating flex items-center justify-center cursor-pointer"
+            class="w-11 origin-bottom transition-all duration-200 ease-in-out h-11 rounded-full overflow-hidden bg-chat-background shadow-floating flex items-center justify-center cursor-pointer"
           >
-            <BIcon icon="PhArrowDown" class="fill-on-surface w-6 h-6" />
+            <BIcon icon="PhArrowDown" class="fill-chat-on-background w-6 h-6" />
           </div>
         </div>
         <div
@@ -162,10 +162,10 @@
               <div
                 v-for="option in options"
                 :key="option.key"
-                class="px-2.5 pointer-events-auto flex items-center gap-x-2 cursor-pointer bg-surface-variant-3 rounded-lg h-9 shrink-0"
+                class="px-2.5 pointer-events-auto flex items-center gap-x-2 cursor-pointer bg-chat-surface-3 rounded-lg h-9 shrink-0"
               >
-                <BIcon :icon="option.icon" class="w-5 h-5 fill-on-surface/50" />
-                <div class="text-body-sm select-none text-on-surface/70">
+                <BIcon :icon="option.icon" class="w-5 h-5 fill-chat-on-background/50" />
+                <div class="text-body-sm select-none text-chat-on-background/70">
                   {{ option.label }}
                 </div>
               </div>

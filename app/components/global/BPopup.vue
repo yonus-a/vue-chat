@@ -18,7 +18,7 @@
           ref="tabContent"
           :style="isMobile ? { transform: `translateY(${translateY}px)` } : {}"
           :class="[
-            'relative rounded-t-xl bg-surface md:rounded-xl',
+            'relative rounded-t-xl bg-chat-background md:rounded-xl',
             isMobile ? 'w-full' : 'max-w-[90vw] lg:max-w-max',
             isDragging
               ? 'transition-none'
@@ -38,7 +38,7 @@
             @mousedown="startDrag"
             @touchstart="startDrag"
           >
-            <div class="h-1.5 w-12 rounded-full bg-outline" />
+            <div class="h-1.5 w-12 rounded-full bg-chat-outline" />
           </div>
 
           <!-- Header -->
@@ -51,11 +51,11 @@
               class="flex h-7 w-7 cursor-pointer items-center justify-center transition-colors"
               @click="close"
             >
-              <BIcon icon="PhX" class="h-4 w-4 fill-on-surface" />
+              <BIcon icon="PhX" class="h-4 w-4 fill-chat-on-background" />
             </div>
             <div
               v-if="title.trim()"
-              class="select-none text-label-sm text-on-surface"
+              class="select-none text-label-sm text-chat-on-background"
             >
               {{ title }}
             </div>

@@ -33,9 +33,9 @@ const lastMessageIcon = computed(() => {
   const msg = props.contact.lastMessage;
   if (!msg || !isFromMe.value) return { color: "", icon: "" };
 
-  if (!msg.isSent) return { color: "fill-on-surface/30", icon: "PhClock" };
-  if (!msg.isRead) return { color: "fill-on-surface/50", icon: "PhCheck" };
-  return { color: "fill-primary", icon: "PhChecks" };
+  if (!msg.isSent) return { color: "fill-chat-on-background/30", icon: "PhClock" };
+  if (!msg.isRead) return { color: "fill-chat-on-background/50", icon: "PhCheck" };
+  return { color: "fill-chat-primary", icon: "PhChecks" };
 });
 
 const attachmentIcon = computed(() => {
@@ -81,20 +81,20 @@ const lastMessageText = computed(() => {
 
 const lastMessageColor = computed(() => {
   const msg = props.contact.lastMessage;
-  if (!msg) return "text-on-surface/50";
+  if (!msg) return "text-chat-on-background/50";
 
   if ((!msg.text && msg.type !== "text") || msg.request)
-    return "text-primary font-medium";
+    return "text-chat-primary font-medium";
 
-  if (props.contact.unreadCount > 0) return "text-on-surface font-medium";
+  if (props.contact.unreadCount > 0) return "text-chat-on-background font-medium";
 
-  return "text-on-surface/50";
+  return "text-chat-on-background/50";
 });
 </script>
 <template>
   <div
     @click="openChat"
-    :class="[isActive ? 'bg-surface-variant' : 'bg-surface-variant/0']"
+    :class="[isActive ? 'bg-chat-surface' : 'bg-chat-surface/0']"
     class="rounded-xl w-full transition-all duration-200 ease-in-out cursor-pointer p-2.5 flex justify-between gap-x-3 items-center h-19"
   >
     <div v-loading="isLoading" class="relative shrink-0 h-11 w-11">
@@ -104,7 +104,7 @@ const lastMessageColor = computed(() => {
     <div class="select-none flex-1 overflow-hidden">
       <div class="w-full flex items-center justify-between">
         <div
-          class="text-label-md text-on-surface min-w-20 truncate"
+          class="text-label-md text-chat-on-background min-w-20 truncate"
           v-loading="isLoading"
         >
           {{ contact.name }} {{ contact.lastName }}
@@ -113,7 +113,7 @@ const lastMessageColor = computed(() => {
           v-if="contact.lastMessage"
           class="flex gap-x-1.5 items-center shrink-0"
         >
-          <div v-loading="isLoading" class="text-on-surface/50 text-[11px]">
+          <div v-loading="isLoading" class="text-chat-on-background/50 text-[11px]">
             {{ contact.lastMessage.date }}
           </div>
           <BIcon
@@ -131,7 +131,7 @@ const lastMessageColor = computed(() => {
             v-if="attachmentIcon && contact.lastMessage"
             weight="bold"
             :icon="attachmentIcon"
-            class="w-4 h-4 fill-primary shrink-0"
+            class="w-4 h-4 fill-chat-primary shrink-0"
           />
 
           <div

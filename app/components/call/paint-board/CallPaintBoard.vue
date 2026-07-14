@@ -6,17 +6,17 @@
       <div class="flex shrink-0 items-center gap-x-3">
         <BIcon
           icon="PhX"
-          class="h-5 w-5 cursor-pointer fill-on-surface/50"
+          class="h-5 w-5 cursor-pointer fill-chat-on-background/50"
           @click="$emit('close')"
         />
-        <div class="text-label-sm text-on-surface">
+        <div class="text-label-sm text-chat-on-background">
           {{ t("board.title") }}
         </div>
       </div>
 
       <!-- CANVAS WRAPPER -->
       <div
-        class="relative mt-4 min-h-117 w-full shrink-0 overflow-hidden rounded-2xl border-2 border-primary bg-white"
+        class="relative mt-4 min-h-117 w-full shrink-0 overflow-hidden rounded-2xl border-2 border-chat-primary bg-white"
       >
         <canvas
           ref="canvasRef"
@@ -35,21 +35,21 @@
         <div dir="rtl" class="flex items-center gap-x-2">
           <div
             v-if="pages.length === 1"
-            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-surface-variant"
+            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-chat-surface"
             @click.stop="handleAction('add-page')"
           >
-            <BIcon icon="PhPlus" class="h-6 w-6 fill-on-surface" />
+            <BIcon icon="PhPlus" class="h-6 w-6 fill-chat-on-background" />
           </div>
 
           <BMenu v-else :options="pageOptions" @select="handlePageSelect">
             <template #trigger>
               <div
-                class="relative flex h-11 items-center justify-center gap-x-2.5 rounded-full bg-surface-variant p-2.5"
+                class="relative flex h-11 items-center justify-center gap-x-2.5 rounded-full bg-chat-surface p-2.5"
               >
-                <div class="select-none text-label-sm text-on-surface">
+                <div class="select-none text-label-sm text-chat-on-background">
                   +{{ pages.length - 1 }}
                 </div>
-                <BIcon icon="PhFiles" class="h-6 w-6 fill-on-surface" />
+                <BIcon icon="PhFiles" class="h-6 w-6 fill-chat-on-background" />
               </div>
             </template>
           </BMenu>
@@ -57,7 +57,7 @@
           <BMenu ref="colorPickerMenu" align="top">
             <template #trigger>
               <div
-                class="relative flex h-11 w-11 aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-full bg-surface-variant"
+                class="relative flex h-11 w-11 aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-full bg-chat-surface"
                 @click.stop="handleAction('color')"
               >
                 <div
@@ -67,7 +67,7 @@
               </div>
             </template>
             <div class="flex flex-col gap-y-4 p-3">
-              <div class="select-none text-label-md text-on-surface">
+              <div class="select-none text-label-md text-chat-on-background">
                 {{ t("board.selectColor") }}
               </div>
               <div class="hidden w-50 grid-cols-5 gap-1 md:grid">
@@ -77,8 +77,8 @@
                   class="aspect-square w-8 cursor-pointer rounded-lg border transition-all duration-200 ease-in-out"
                   :class="[
                     selectedColor === color
-                      ? 'border-primary'
-                      : 'border-primary/0',
+                      ? 'border-chat-primary'
+                      : 'border-chat-primary/0',
                   ]"
                   :style="{ backgroundColor: color }"
                   @click="setColor(color)"
@@ -88,18 +88,18 @@
           </BMenu>
 
           <div
-            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-surface-variant"
+            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-chat-surface"
             @click="handleAction('erase')"
           >
-            <BIcon icon="PhEraser" class="h-6 w-6 fill-on-surface" />
+            <BIcon icon="PhEraser" class="h-6 w-6 fill-chat-on-background" />
           </div>
 
           <BMenu align="top">
             <template #trigger="{ isOpen }">
               <div
-                class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-surface-variant"
+                class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-chat-surface"
               >
-                <BIcon icon="PhPencilLine" class="h-6 w-6 fill-on-surface" />
+                <BIcon icon="PhPencilLine" class="h-6 w-6 fill-chat-on-background" />
               </div>
             </template>
             <!-- @click.stop prevents the BPopup from closing when you click the menu -->
@@ -109,17 +109,17 @@
           </BMenu>
 
           <div
-            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-surface-variant"
+            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-chat-surface"
             @click="handleAction('redo')"
           >
-            <BIcon icon="PhArrowUUpRight" class="h-6 w-6 fill-on-surface" />
+            <BIcon icon="PhArrowUUpRight" class="h-6 w-6 fill-chat-on-background" />
           </div>
 
           <div
-            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-surface-variant"
+            class="flex h-11 w-11 aspect-square cursor-pointer items-center justify-center rounded-full bg-chat-surface"
             @click="handleAction('undo')"
           >
-            <BIcon icon="PhArrowUUpLeft" class="h-6 w-6 fill-on-surface" />
+            <BIcon icon="PhArrowUUpLeft" class="h-6 w-6 fill-chat-on-background" />
           </div>
         </div>
       </div>

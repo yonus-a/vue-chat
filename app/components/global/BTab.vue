@@ -11,7 +11,7 @@
         "
         class="cursor-pointer py-1 transition-colors duration-200"
         :class="[
-          modelValue === index ? 'text-on-surface' : 'text-on-surface/50',
+          modelValue === index ? 'text-chat-on-background' : 'text-chat-on-background/50',
         ]"
         @click="setTab(index)"
       >
@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <div class="relative h-0.5 w-full rounded-full bg-outline-variant">
+    <div class="relative h-0.5 w-full rounded-full bg-chat-outline-variant">
       <div
         class="bg-gradient-primary-secondary absolute bottom-0 h-full rounded-full transition-all duration-200 ease-in-out"
         :style="indicatorStyle"

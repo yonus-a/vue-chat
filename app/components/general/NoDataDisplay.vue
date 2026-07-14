@@ -12,7 +12,7 @@ defineProps<{
         :src="imagePath"
       />
     </div>
-    <div class="select-none text-label-sm text-center text-on-surface/50">
+    <div class="select-none text-label-sm text-center text-chat-on-background/50">
       {{ title }}
     </div>
   </div>

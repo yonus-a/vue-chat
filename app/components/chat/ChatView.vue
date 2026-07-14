@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-surface-variant">
+  <div class="h-full w-full bg-chat-surface">
     <div
       v-show="canShowMessagingSection || isProfile"
       class="flex h-full w-full"
@@ -10,7 +10,7 @@
         v-show="chatId && isChatMode"
         class="flex h-full flex-1 flex-col items-center justify-between"
       >
-        <div class="h-16 w-full bg-surface md:h-20">
+        <div class="h-16 w-full bg-chat-background md:h-20">
           <ChatPageBar
             :contact="selectedChat"
             :options="medicOptions"

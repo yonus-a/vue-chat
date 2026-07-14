@@ -276,6 +276,30 @@
   --text-body-sm--line-height: 24px;
   --text-body-sm--font-weight: 400;
   --color-accent:var(--color-accent-blue-light);
+
+  /* --- Chat-scoped semantic tokens (host overridable) --- */
+  --color-chat-background: var(--color-surface);
+  --color-chat-surface: var(--color-surface-variant);
+  --color-chat-surface-2: var(--color-surface-variant-2);
+  --color-chat-surface-3: var(--color-surface-variant-3);
+  --color-chat-on-background: var(--color-on-surface);
+  --color-chat-on-surface: var(--color-on-surface-variant);
+  --color-chat-primary: var(--color-primary-600);
+  --color-chat-on-primary: var(--color-on-primary);
+  --color-chat-secondary: var(--color-secondary-600);
+  --color-chat-on-secondary: var(--color-on-secondary);
+  --color-chat-outline: var(--color-outline);
+  --color-chat-outline-variant: var(--color-outline-variant);
+  --color-chat-warning: var(--color-warning);
+  --color-chat-on-warning: var(--color-on-warning);
+  --color-chat-error: var(--color-error);
+  --color-chat-on-error: var(--color-on-error);
+  --color-chat-success: var(--color-secondary);
+
+  --font-chat-family: "Vazirmatn", system-ui, sans-serif;
+  --text-chat-base: 14px;
+  --text-chat-base--line-height: 24px;
+  --text-chat-base--font-weight: 400;
 }
 
 @layer base {
@@ -309,6 +333,12 @@
     --color-surface-variant-3: var(--color-black-300);
     --color-outline: var(--color-gray-800);
     --color-outline-variant: var(--color-gray-900);
+
+    --color-chat-primary: var(--color-primary-400);
+    --color-chat-secondary: var(--color-secondary-400);
+    --color-chat-warning: var(--color-warning-400);
+    --color-chat-error: var(--color-error-400);
+    --color-chat-success: var(--color-secondary-400);
 
     --background-image-diamond-surface: radial-gradient(
       circle at 70% 0%,

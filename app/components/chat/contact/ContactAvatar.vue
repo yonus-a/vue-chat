@@ -45,15 +45,15 @@ const initials = computed(() => {
     />
     <div
       v-else
-      class="w-full h-full bg-primary/10 flex items-center justify-center rounded-full overflow-hidden"
+      class="w-full h-full bg-chat-primary/10 flex items-center justify-center rounded-full overflow-hidden"
     >
-      <div class="select-none text-primary text-sm font-semibold">
+      <div class="select-none text-chat-primary text-sm font-semibold">
         {{ initials }}
       </div>
     </div>
     <div
       v-if="contact.isOnline && showOnline"
-      class="absolute right-0 bottom-0 bg-primary rounded-full w-2.5 h-2.5 border-2 border-surface"
+      class="absolute right-0 bottom-0 bg-chat-primary rounded-full w-2.5 h-2.5 border-2 border-chat-background"
     ></div>
   </div>
 </template>

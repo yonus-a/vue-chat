@@ -3,7 +3,7 @@
     class="pointer-events-none fixed left-0 top-0 z-20 h-dvh w-dvw overflow-visible md:absolute md:h-0 md:w-full md:backdrop-blur-none"
     :class="[
       isOpen
-        ? 'bg-on-surface/10 backdrop-blur-lg md:bg-transparent'
+        ? 'bg-chat-on-background/10 backdrop-blur-lg md:bg-transparent'
         : 'backdrop-blur-none',
     ]"
   >
@@ -33,7 +33,7 @@
 
       <!-- Mobile Bottom Toolbar -->
       <div
-        class="origin-bottom flex items-center gap-x-6 rounded-full bg-surface px-4 py-3 shadow-floating md:hidden"
+        class="origin-bottom flex items-center gap-x-6 rounded-full bg-chat-background px-4 py-3 shadow-floating md:hidden"
         :class="[
           isOpen
             ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
@@ -44,7 +44,7 @@
           v-for="option in mobileOptions"
           :key="option.key"
           :icon="option.icon"
-          class="h-6 w-6 fill-on-surface"
+          class="h-6 w-6 fill-chat-on-background"
           :class="[
             option.disabled
               ? 'cursor-not-allowed opacity-50'

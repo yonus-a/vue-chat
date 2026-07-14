@@ -198,9 +198,9 @@ onBeforeUnmount(() => {
       class="flex w-full items-center justify-center py-5"
     >
       <div
-        class="flex items-center justify-center rounded-full bg-on-surface/10 px-4 py-0.5"
+        class="flex items-center justify-center rounded-full bg-chat-on-background/10 px-4 py-0.5"
       >
-        <div class="select-none text-body-sm text-on-surface">
+        <div class="select-none text-body-sm text-chat-on-background">
           {{
             !isFirstUnread
               ? formatDateShort(message.date)
@@ -214,8 +214,8 @@ onBeforeUnmount(() => {
       class="flex w-full items-center px-5 pt-2 transition-all duration-200 ease-in-out"
       :class="[
         isSelectMode && isSelected
-          ? 'gap-x-3 bg-on-surface/5'
-          : 'gap-x-0 bg-on-surface/0',
+          ? 'gap-x-3 bg-chat-on-background/5'
+          : 'gap-x-0 bg-chat-on-background/0',
         isSelectMode ? 'cursor-pointer select-none' : '',
       ]"
     >
@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
               : 'scale-0 opacity-0',
           ]"
         >
-          <div class="h-2.5 w-2.5 rounded-full bg-surface" />
+          <div class="h-2.5 w-2.5 rounded-full bg-chat-background" />
         </div>
       </div>
 
@@ -265,9 +265,9 @@ onBeforeUnmount(() => {
                   class="rounded-xl p-1"
                   :class="[
                     roundingClasses,
-                    isMine ? 'bg-surface-variant-2' : 'bg-surface',
+                    isMine ? 'bg-chat-surface-2' : 'bg-chat-background',
                     messageType === 'text'
-                      ? 'text-body-sm text-on-surface'
+                      ? 'text-body-sm text-chat-on-background'
                       : '',
                   ]"
                 >
@@ -276,13 +276,13 @@ onBeforeUnmount(() => {
                     v-if="messageType === 'text' && message.repliedTo"
                     class="flex h-10 w-full items-center justify-between gap-x-2 rounded-lg p-2 text-body-sm select-none"
                     :class="[
-                      isMine ? 'bg-surface-variant-3' : 'bg-surface-variant',
+                      isMine ? 'bg-chat-surface-3' : 'bg-chat-surface',
                     ]"
                   >
-                    <div class="shrink-0 text-on-surface/50">
+                    <div class="shrink-0 text-chat-on-background/50">
                       {{ replyName }} :
                     </div>
-                    <div class="flex-1 text-on-surface">
+                    <div class="flex-1 text-chat-on-background">
                       <div
                         class="line-clamp-1 w-full overflow-hidden text-ellipsis"
                       >
@@ -292,7 +292,7 @@ onBeforeUnmount(() => {
                     <BIcon
                       icon="PhArrowUUpLeft"
                       weight="fill"
-                      class="h-5 w-5 fill-on-surface/20"
+                      class="h-5 w-5 fill-chat-on-background/20"
                     />
                   </div>
 
@@ -369,10 +369,10 @@ onBeforeUnmount(() => {
                 >
                   <div
                     v-if="message.imageUrl.length > 3"
-                    class="flex aspect-square h-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-surface-variant-2"
+                    class="flex aspect-square h-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-chat-surface-2"
                     @click="previewImage(3)"
                   >
-                    <div class="select-none text-label-md text-on-surface">
+                    <div class="select-none text-label-md text-chat-on-background">
                       +{{ message.imageUrl.length - 3 }}
                     </div>
                   </div>
@@ -439,11 +439,11 @@ onBeforeUnmount(() => {
                     class="h-4 w-4"
                     :class="[
                       message.isRead && message.isSent
-                        ? 'fill-primary'
-                        : 'fill-on-surface/50',
+                        ? 'fill-chat-primary'
+                        : 'fill-chat-on-background/50',
                     ]"
                   />
-                  <div class="select-none text-body-sm text-on-surface/50">
+                  <div class="select-none text-body-sm text-chat-on-background/50">
                     {{ formatTime(message.date) }}
                   </div>
                 </div>

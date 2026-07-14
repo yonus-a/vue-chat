@@ -2,7 +2,7 @@
   <div
     ref="sliderRef"
     dir="ltr"
-    class="relative flex h-44 w-12 cursor-pointer justify-center overflow-visible rounded-full bg-surface shadow-[0_4px_16px_rgba(0,0,0,0.1)] select-none touch-none"
+    class="relative flex h-44 w-12 cursor-pointer justify-center overflow-visible rounded-full bg-chat-background shadow-[0_4px_16px_rgba(0,0,0,0.1)] select-none touch-none"
     @pointerdown.stop.prevent="startDrag"
   >
     <!-- Tapered Track (Thin at top, thick at bottom) -->
@@ -17,7 +17,7 @@
       >
         <path
           d="M22,0 L26,0 L34,134 A 10 10 0 0 1 14,134 Z"
-          class="fill-surface-variant"
+          class="fill-chat-surface"
         />
       </svg>
     </div>

@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div class="w-55 p-2 flex items-center gap-x-2.5 select-none text-on-surface">
+  <div class="w-55 p-2 flex items-center gap-x-2.5 select-none text-chat-on-background">
     <div
       class="flex-1 h-7 relative flex items-center cursor-pointer overflow-hidden"
       @click="seekAudio"
@@ -201,7 +201,7 @@ onBeforeUnmount(() => {
           v-for="(h, idx) in staticWaveform"
           :key="'base-' + idx"
           :style="{ height: h + '%' }"
-          class="w-0.5 rounded-full bg-on-surface"
+          class="w-0.5 rounded-full bg-chat-on-background"
         ></div>
       </div>
 
@@ -214,7 +214,7 @@ onBeforeUnmount(() => {
           v-for="(h, idx) in staticWaveform"
           :key="'active-' + idx"
           :style="{ height: h + '%' }"
-          class="w-0.5 rounded-full bg-on-surface"
+          class="w-0.5 rounded-full bg-chat-on-background"
         ></div>
       </div>
     </div>
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
         v-else-if="status === 'downloaded' && !isUploading"
         :icon="isPlaying ? 'PhPause' : 'PhPlay'"
         weight="light"
-        class="w-5 h-5 text-surface transition-transform duration-300"
+        class="w-5 h-5 text-chat-background transition-transform duration-300"
         :class="[isPlaying ? 'scale-90' : 'scale-100']"
       />
     </div>

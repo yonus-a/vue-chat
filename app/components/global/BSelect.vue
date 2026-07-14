@@ -11,7 +11,7 @@
   >
     <span
       v-if="title"
-      class="pointer-events-none mb-1.5 select-none text-label-md text-on-surface"
+      class="pointer-events-none mb-1.5 select-none text-label-md text-chat-on-background"
     >
       {{ title }}
     </span>
@@ -34,14 +34,14 @@
 
           <span
             v-if="selectedItem && (!searchable || !isOpen)"
-            class="truncate select-none text-sm font-medium text-on-surface opacity-100 shrink-0"
+            class="truncate select-none text-sm font-medium text-chat-on-background opacity-100 shrink-0"
           >
             {{ selectedItem.label }}
           </span>
 
           <span
             v-if="showPlaceholder"
-            class="truncate select-none text-sm font-medium text-on-surface opacity-50 shrink-0"
+            class="truncate select-none text-sm font-medium text-chat-on-background opacity-50 shrink-0"
           >
             {{ placeholder }}
           </span>
@@ -54,14 +54,14 @@
             @keydown.down.prevent="highlightNext"
             @keydown.up.prevent="highlightPrev"
             @keydown.enter.prevent="selectHighlighted"
-            class="h-full min-w-15 max-w-full flex-1 bg-transparent text-sm font-medium text-on-surface outline-none placeholder:text-on-surface/50"
+            class="h-full min-w-15 max-w-full flex-1 bg-transparent text-sm font-medium text-chat-on-background outline-none placeholder:text-chat-on-background/50"
             :placeholder="placeholder"
           />
         </div>
 
         <BIcon
           icon="PhCaretDown"
-          class="h-5 w-5 shrink-0 fill-on-surface/50 transition-transform duration-300"
+          class="h-5 w-5 shrink-0 fill-chat-on-background/50 transition-transform duration-300"
           :class="[isOpen ? 'rotate-180' : '', disabled ? 'opacity-40' : '']"
         />
       </div>
@@ -70,7 +70,7 @@
         <div
           v-if="isOpen"
           :class="[
-            'absolute left-0 right-0 z-50 flex flex-col overflow-hidden rounded-xl border border-outline bg-surface shadow-[0_12px_16px_-4px_rgba(13,13,18,0.08)] dark:shadow-[0_12px_16px_-4px_rgba(0,0,0,0.4)]',
+            'absolute left-0 right-0 z-50 flex flex-col overflow-hidden rounded-xl border border-chat-outline bg-chat-background shadow-[0_12px_16px_-4px_rgba(13,13,18,0.08)] dark:shadow-[0_12px_16px_-4px_rgba(0,0,0,0.4)]',
             openDirection === 'up'
               ? 'bottom-[calc(100%+6px)] origin-bottom'
               : 'top-[calc(100%+6px)] origin-top',
@@ -82,14 +82,14 @@
           >
             <BIcon
               icon="PhCircleNotch"
-              class="h-7 w-7 animate-spin fill-outline"
+              class="h-7 w-7 animate-spin fill-chat-outline"
             />
           </div>
 
           <template v-else>
             <div
               v-if="filteredOptions.length === 0"
-              class="flex items-center justify-center gap-x-2 py-6 text-on-surface/50"
+              class="flex items-center justify-center gap-x-2 py-6 text-chat-on-background/50"
             >
               <span class="select-none text-sm font-medium">
                 {{
@@ -128,7 +128,7 @@
                     'flex cursor-pointer items-center gap-x-2 px-2 transition-colors duration-200 ease-in-out',
                     isSelected(filteredOptions[virtualRow.index]) ||
                     highlightedIndex === virtualRow.index
-                      ? 'bg-surface-variant-2'
+                      ? 'bg-chat-surface-2'
                       : 'bg-transparent',
                   ]"
                   @click.stop="toggleOption(filteredOptions[virtualRow.index])"
@@ -151,8 +151,8 @@
                     class="h-6 w-6 shrink-0"
                     :class="
                       isSelected(filteredOptions[virtualRow.index])
-                        ? 'fill-primary'
-                        : 'fill-on-surface'
+                        ? 'fill-chat-primary'
+                        : 'fill-chat-on-background'
                     "
                   />
 
@@ -160,8 +160,8 @@
                     class="flex-1 truncate overflow-hidden text-ellipsis text-sm font-medium"
                     :class="
                       isSelected(filteredOptions[virtualRow.index])
-                        ? 'text-primary'
-                        : 'text-on-surface'
+                        ? 'text-chat-primary'
+                        : 'text-chat-on-background'
                     "
                   >
                     {{ filteredOptions[virtualRow.index].label }}
@@ -170,7 +170,7 @@
                   <BIcon
                     v-if="isSelected(filteredOptions[virtualRow.index])"
                     icon="PhCheck"
-                    class="ms-auto h-5 w-5 shrink-0 fill-primary"
+                    class="ms-auto h-5 w-5 shrink-0 fill-chat-primary"
                   />
                 </div>
               </div>
@@ -266,10 +266,10 @@ const calculatePosition = () => {
 };
 
 const messageColorClass = computed(() => {
-  if (props.hasError || props.color === "error") return "fill-error text-error";
-  if (props.color === "success") return "fill-secondary text-secondary";
-  if (props.color === "warning") return "fill-warning text-warning";
-  return "fill-on-surface/50 text-on-surface/50";
+  if (props.hasError || props.color === "error") return "fill-chat-error text-chat-error";
+  if (props.color === "success") return "fill-chat-secondary text-chat-secondary";
+  if (props.color === "warning") return "fill-chat-warning text-chat-warning";
+  return "fill-chat-on-background/50 text-chat-on-background/50";
 });
 
 const messageIcon = computed(() => {
@@ -408,24 +408,24 @@ const containerClasses = computed(() => {
   const isError = props.hasError || c === "error";
 
   const bg = isOpen.value
-    ? "bg-surface"
+    ? "bg-chat-background"
     : isError
-      ? "bg-error/10"
+      ? "bg-chat-error/10"
       : c === "warning"
-        ? "bg-warning/10"
+        ? "bg-chat-warning/10"
         : c === "success" || c === "secondary"
-          ? "bg-secondary/10"
+          ? "bg-chat-secondary/10"
           : "bg-surface-rest";
 
   const border = isError
-    ? "border-error"
+    ? "border-chat-error"
     : c === "warning"
-      ? "border-warning"
+      ? "border-chat-warning"
       : c === "success" || c === "secondary"
-        ? "border-secondary"
+        ? "border-chat-secondary"
         : isOpen.value
-          ? "border-primary"
-          : "border-outline";
+          ? "border-chat-primary"
+          : "border-chat-outline";
 
   const shadow = isOpen.value
     ? "shadow-[0_8px_10px_-3px_rgba(13,13,18,0.05)] dark:shadow-[0_8px_10px_-3px_rgba(0,0,0,0.26)]"

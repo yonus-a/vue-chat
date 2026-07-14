@@ -331,7 +331,7 @@ defineExpose({
 
 <template>
   <div class="b-input-wrapper">
-    <div class="mb-1.5 select-none text-label-sm text-on-surface">
+    <div class="mb-1.5 select-none text-label-sm text-chat-on-background">
       {{ title }}
     </div>
 
@@ -344,9 +344,9 @@ defineExpose({
         <BMenu :options="options" @select="handleOptionSelect">
           <template #trigger="{ isOpen }">
             <div
-              class="flex cursor-pointer items-center gap-x-3 text-on-surface/50 ltr:pr-4 rtl:pl-4"
+              class="flex cursor-pointer items-center gap-x-3 text-chat-on-background/50 ltr:pr-4 rtl:pl-4"
             >
-              <div class="h-5 border border-outline"></div>
+              <div class="h-5 border border-chat-outline"></div>
               <div class="select-none text-body-md">{{ selectedOption }}</div>
               <BIcon
                 icon="PhCaretDown"

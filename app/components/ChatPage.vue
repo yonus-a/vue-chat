@@ -27,7 +27,7 @@ const showMessagingSection = computed(() => {
 });
 </script>
 <template>
-  <div class="flex w-full h-full max-h-full overflow-hidden">
+  <div class="flex w-full h-full max-h-full overflow-hidden font-chat-family text-chat-base text-chat-on-background bg-chat-background">
     <div v-if="showMessagingSection" class="h-full flex-1 relative">
       <ChatView v-if="isInChat" />
       <div v-else class="w-full h-full flex items-center justify-center">
@@ -40,7 +40,7 @@ const showMessagingSection = computed(() => {
 
     <div
       v-if="showContactList"
-      class="md:w-80 w-full h-full shrink-0 border-l border-outline-variant"
+      class="md:w-80 w-full h-full shrink-0 border-l border-chat-outline-variant"
     >
       <ChatList />
     </div>

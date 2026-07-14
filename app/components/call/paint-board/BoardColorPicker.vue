@@ -9,8 +9,8 @@
       class="absolute bottom-0 left-0 z-30 h-auto w-full origin-bottom rounded-t-2xl py-3 transition-all duration-200 ease-in-out"
       :class="[
         isOpen
-          ? 'pointer-events-auto bg-surface shadow-medium'
-          : 'pointer-events-none bg-surface/0 shadow-none',
+          ? 'pointer-events-auto bg-chat-background shadow-medium'
+          : 'pointer-events-none bg-chat-background/0 shadow-none',
       ]"
     >
       <div
@@ -25,7 +25,7 @@
             :key="index"
             class="aspect-square cursor-pointer rounded-lg border-2 transition-all duration-200 ease-in-out"
             :class="[
-              index === selectedColor ? 'border-primary' : 'border-primary/0',
+              index === selectedColor ? 'border-chat-primary' : 'border-chat-primary/0',
             ]"
             :style="{
               backgroundColor: color,
