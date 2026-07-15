@@ -185,7 +185,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    @contextmenu.prevent="handleRightClick"
     class="w-full transition-all duration-300 ease-in-out"
     :class="[
       isDeleting

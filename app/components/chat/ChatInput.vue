@@ -93,8 +93,16 @@
               ? 'rounded-full bg-chat-primary/10'
               : 'h-6 w-6 bg-chat-primary/0',
           ]"
-          @pointerdown="!isLocked ? onRecordPointerDown($event) : null"
-          @click="!isLocked ? toggleSecondaryMessageType() : null"
+          @pointerdown="
+            !isLocked && messageText.trim().length === 0
+              ? onRecordPointerDown($event)
+              : null
+          "
+          @click="
+            !isLocked && messageText.trim().length === 0
+              ? toggleSecondaryMessageType()
+              : null
+          "
         >
           <BIcon
             v-if="!isLocked && messageText.trim().length === 0"
@@ -106,7 +114,8 @@
           <div
             v-else
             class="flex aspect-square min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full bg-gradient-primary-secondary"
-            @click.stop="sendRecording"
+            @pointerdown.stop
+            @click.stop="sendMessage"
           >
             <BIcon
               icon="PhPaperPlaneTilt"
