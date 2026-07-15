@@ -47,12 +47,10 @@ export interface FetchContactsParams {
   search?: string;
 }
 
-
 export interface ContactsPage {
   data: Contact[];
   hasNextPage: boolean;
 }
-
 
 // ============= SEED-BASED RANDOM =============
 class SeededRandom {
@@ -168,8 +166,9 @@ const FILE_NAMES = [
   "proposal.pdf",
 ] as const;
 
-const AVATAR_URLS = Array.from({ length: 20 }, (_, i) =>
-  `https://i.pravatar.cc/150?img=${i + 1}`
+const AVATAR_URLS = Array.from(
+  { length: 20 },
+  (_, i) => `https://i.pravatar.cc/150?img=${i + 1}`,
 );
 
 const USER_TYPES: readonly UserRoleKey[] = [
@@ -218,7 +217,7 @@ function generateMessage(
   rng: SeededRandom,
   conversationId: string,
   senderId: string,
-  date: Date
+  date: Date,
 ): Message {
   const typeRoll = rng.next();
 
@@ -271,7 +270,7 @@ function generateContact(rng: SeededRandom, index: number): Contact {
 
   const lastMessageMinutes = rng.nextInt(1, 1440);
   const lastMessageDate = new Date(
-    now.getTime() - lastMessageMinutes * 60 * 1000
+    now.getTime() - lastMessageMinutes * 60 * 1000,
   );
 
   return {
@@ -300,7 +299,7 @@ let contactPool: Contact[] | null = null;
 function getContactPool(): Contact[] {
   if (!contactPool) {
     contactPool = Array.from({ length: TOTAL_CONTACTS }, (_, i) =>
-      generateContact(new SeededRandom(i * 7919 + 1), i)
+      generateContact(new SeededRandom(i * 7919 + 1), i),
     );
   }
   return contactPool;
@@ -317,6 +316,7 @@ export function createMockFetchConversations() {
     await new Promise((r) => setTimeout(r, 300 + Math.random() * 200));
 
     const { page, pageSize, state, search } = params;
+    console.log(params);
 
     let filtered = [...getContactPool()];
 
@@ -339,7 +339,7 @@ export function createMockFetchConversations() {
           `${c.name} ${c.lastName}`.includes(q) ||
           c.phoneNumber?.includes(q) ||
           c.nationalCode?.includes(q) ||
-          c.lastMessage?.text?.includes(q)
+          c.lastMessage?.text?.includes(q),
       );
     }
 
@@ -347,7 +347,7 @@ export function createMockFetchConversations() {
     filtered.sort(
       (a, b) =>
         new Date(b.lastMessage?.date ?? 0).getTime() -
-        new Date(a.lastMessage?.date ?? 0).getTime()
+        new Date(a.lastMessage?.date ?? 0).getTime(),
     );
 
     // 1-indexed pagination (matches chatStore's page semantics)

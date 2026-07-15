@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import NoData from "~/assets/lib-images/dashboard/no-contacts.webp";
 import NoDataDisplay from "~/components/general/NoDataDisplay.vue";
-import type { ChatFilter, StateKeys } from "~/types/chat";
+import type { ChatFilter, StateKeys } from "~/types";
 import ChatContactDisplay from "./ChatContactDisplay.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import ChatListSearch from "./ChatListSearch.vue";

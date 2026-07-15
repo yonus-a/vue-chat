@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from "vue";
-import { useLocale } from "~/composables/useLocale";
+import { useDirection } from "~/composables/useLocalI18n";
 
 const props = withDefaults(
   defineProps<{
@@ -17,7 +17,7 @@ const emit = defineEmits<{
   "update:modelValue": [value: number];
 }>();
 
-const { dir } = useLocale();
+const { dir } = useDirection();
 const isRtl = computed(() => dir.value === "rtl");
 
 const containerRef = ref<HTMLElement | null>(null);

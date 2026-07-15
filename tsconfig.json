@@ -23,7 +23,7 @@
       "@i18n/*": ["./i18n/*"]
     },
     "types": ["vite/client", "node"]
-  },
+  },  
   "include": [
     "app/**/*.ts",
     "app/**/*.d.ts",

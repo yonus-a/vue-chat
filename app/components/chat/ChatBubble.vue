@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ImageGroupDisplay from "./chat-bubbles/ImageGroupDisplay.vue";
 import { computed, ref, onBeforeUnmount, useTemplateRef } from "vue";
-import type { Contact, ExtendedMessage } from "~/types/chat";
+import type { Contact, ExtendedMessage } from "~/types";
 import BubbleOptions from "./chat-bubbles/BubbleOptions.vue";
 import { useMessagesStore } from "~/stores/messageStores.js";
 import VoiceDisplay from "./chat-bubbles/VoiceDisplay.vue";
@@ -202,9 +202,7 @@ onBeforeUnmount(() => {
       >
         <div class="select-none text-body-sm text-chat-on-background">
           {{
-            !isFirstUnread
-              ? formatDateShort(message.date)
-              : t("unreadMessages")
+            !isFirstUnread ? formatDateShort(message.date) : t("unreadMessages")
           }}
         </div>
       </div>
@@ -275,9 +273,7 @@ onBeforeUnmount(() => {
                   <div
                     v-if="messageType === 'text' && message.repliedTo"
                     class="flex h-10 w-full items-center justify-between gap-x-2 rounded-lg p-2 text-body-sm select-none"
-                    :class="[
-                      isMine ? 'bg-chat-surface-3' : 'bg-chat-surface',
-                    ]"
+                    :class="[isMine ? 'bg-chat-surface-3' : 'bg-chat-surface']"
                   >
                     <div class="shrink-0 text-chat-on-background/50">
                       {{ replyName }} :
@@ -372,7 +368,9 @@ onBeforeUnmount(() => {
                     class="flex aspect-square h-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-chat-surface-2"
                     @click="previewImage(3)"
                   >
-                    <div class="select-none text-label-md text-chat-on-background">
+                    <div
+                      class="select-none text-label-md text-chat-on-background"
+                    >
                       +{{ message.imageUrl.length - 3 }}
                     </div>
                   </div>
@@ -443,7 +441,9 @@ onBeforeUnmount(() => {
                         : 'fill-chat-on-background/50',
                     ]"
                   />
-                  <div class="select-none text-body-sm text-chat-on-background/50">
+                  <div
+                    class="select-none text-body-sm text-chat-on-background/50"
+                  >
                     {{ formatTime(message.date) }}
                   </div>
                 </div>

@@ -20,7 +20,10 @@
           class="h-5 w-5 shrink-0 fill-chat-on-background"
         />
         <div class="flex flex-1 items-center gap-x-2">
-          <div v-if="textMode === 'reply'" class="shrink-0 text-chat-on-background/50">
+          <div
+            v-if="textMode === 'reply'"
+            class="shrink-0 text-chat-on-background/50"
+          >
             {{ displayActionName }} :
           </div>
           <div class="flex-1">
@@ -218,7 +221,7 @@ import {
   useTemplateRef,
 } from "vue";
 import type { Menu } from "~/types/components/menu";
-import type { ExtendedMessage, Message } from "~/types/chat";
+import type { ExtendedMessage, Message } from "~/types";
 import InputAttachement from "./chat-input/InputAttachement.vue";
 import {
   useAppPermissions,
@@ -233,7 +236,6 @@ import { chatInput } from "@i18n/locales";
 import { useMessagesStore } from "~/stores/messageStores.js";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";
-
 
 const props = withDefaults(
   defineProps<{

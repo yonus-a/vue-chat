@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref } from "vue";
 import { useMessagesStore } from "~/stores/messageStores";
 import type { Menu } from "~/types/components/menu";
-import type { ExtendedMessage } from "~/types/chat";
+import type { ExtendedMessage } from "~/types";
 import BMenu from "~/components/global/BMenu.vue";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { bubbleOptions } from "@i18n/locales";

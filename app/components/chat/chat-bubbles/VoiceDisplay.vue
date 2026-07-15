@@ -3,6 +3,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import LoadingStatus from "~/components/general/LoadingStatus.vue";
 import { useMessagesStore } from "~/stores/messageStores";
+import { useMediaStore } from "~/stores/mediaStore";
 
 const props = withDefaults(
   defineProps<{
@@ -16,6 +17,7 @@ const props = withDefaults(
 );
 
 const messagesStore = useMessagesStore();
+const mediaStore = useMediaStore();
 const status = ref<"idle" | "downloading" | "downloaded">("idle");
 const downloadProgress = ref(0);
 const playProgress = ref(0);
@@ -24,7 +26,6 @@ const audioSrc = ref<string>("");
 
 const audioRef = ref<HTMLAudioElement | null>(null);
 let abortController: AbortController | null = null;
-const dbName = "ChatFileCache";
 
 const uploadData = computed(() =>
   props.messageId ? messagesStore.uploadProgress.get(props.messageId) : null,
@@ -46,25 +47,13 @@ const staticWaveform = [
   70, 40, 60, 20,
 ];
 
-const getDB = () =>
-  new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(dbName, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore("files");
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-
 const checkLocalExistence = async () => {
   try {
-    const db = await getDB();
-    const tx = db.transaction("files", "readonly");
-    const store = tx.objectStore("files");
-    store.get(props.url).onsuccess = (e: any) => {
-      if (e.target.result) {
-        audioSrc.value = URL.createObjectURL(e.target.result);
-        status.value = "downloaded";
-      }
-    };
+    const cached = await mediaStore.getCachedBlob(props.url);
+    if (cached) {
+      audioSrc.value = URL.createObjectURL(cached);
+      status.value = "downloaded";
+    }
   } catch (e) {
     console.warn("IDB check failed", e);
   }
@@ -111,33 +100,12 @@ const handleAction = async () => {
   abortController = new AbortController();
 
   try {
-    const response = await fetch(props.url, { signal: abortController.signal });
-    if (!response.ok) throw new Error("Network response failed");
-
-    const contentType = response.headers.get("content-type") || "audio/mpeg";
-    const total = parseInt(response.headers.get("content-length") || "0", 10);
-    let loaded = 0;
-    const chunks: Uint8Array[] = [];
-    const reader = response.body?.getReader();
-
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) {
-          chunks.push(value);
-          loaded += value.length;
-          if (total)
-            downloadProgress.value = Math.round((loaded / total) * 100);
-        }
-      }
-    }
-
-    const blob = new Blob(chunks, { type: contentType });
-    const db = await getDB();
-    const tx = db.transaction("files", "readwrite");
-    tx.objectStore("files").put(blob, props.url);
-
+    const blob = await mediaStore.download(props.url, {
+      signal: abortController.signal,
+      onProgress: (p) => {
+        downloadProgress.value = p;
+      },
+    });
     audioSrc.value = URL.createObjectURL(blob);
     status.value = "downloaded";
   } catch (error: any) {

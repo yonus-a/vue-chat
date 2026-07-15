@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeMount, onMounted } from "vue";
-import type { Contact } from "~/types/chat";
+import type { Contact } from "~/types";
 import { formatDuration } from "~/utils/format";
 import CallMemberDisplay from "./CallMemberDisplay.vue";
 import CallBoard from "./CallBoard.vue";

@@ -1,7 +1,9 @@
 <template>
   <div
     class="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl border-2 bg-black-600 p-2 transition-all duration-200 ease-in-out"
-    :class="[contact.isSpeaking ? 'border-chat-primary' : 'border-chat-primary/0']"
+    :class="[
+      contact.isSpeaking ? 'border-chat-primary' : 'border-chat-primary/0',
+    ]"
   >
     <!-- Video Background Feature -->
     <video
@@ -57,7 +59,7 @@
 import ContactAvatar from "../chat/contact/ContactAvatar.vue";
 import { computed, ref, watch, onMounted } from "vue";
 import { useChatStore } from "~/stores/chatStore.js";
-import type { CallMember } from "~/types/call";
+import type { CallMember } from "~/types";
 
 const props = withDefaults(
   defineProps<{

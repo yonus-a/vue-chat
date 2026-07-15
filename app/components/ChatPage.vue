@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import NoChatSelected from "../assets/lib-images/chat/no-chat-selected.webp";
 import NoDataDisplay from "./general/NoDataDisplay.vue";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "../stores/chatStore";
 import ChatList from "./chat/contact/ChatList.vue";
-import { useWindowSize } from "@vueuse/core";
 import ChatView from "./chat/ChatView.vue";
-import useLocalI18n from "~/composables/useLocalI18n";
 import { chatPage } from "@i18n/locales";
 import { computed } from "vue";
 
@@ -27,7 +26,9 @@ const showMessagingSection = computed(() => {
 });
 </script>
 <template>
-  <div class="flex w-full h-full max-h-full overflow-hidden font-chat-family text-chat-base text-chat-on-background bg-chat-background">
+  <div
+    class="flex w-full h-full max-h-full overflow-hidden font-chat-family text-chat-base text-chat-on-background bg-chat-background"
+  >
     <div v-if="showMessagingSection" class="h-full flex-1 relative">
       <ChatView v-if="isInChat" />
       <div v-else class="w-full h-full flex items-center justify-center">

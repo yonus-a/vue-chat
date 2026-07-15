@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BImage from "~/components/global/BImage.vue";
-import type { Contact } from "~/types/chat";
+import type { Contact } from "~/types";
 
 const props = withDefaults(
   defineProps<{

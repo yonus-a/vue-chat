@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import profileBackground from "~/assets/lib-images/chat/profile-background.webp";
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch } from "vue";
 import ContactAvatar from "./contact/ContactAvatar.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";
+import { useProfileStore } from "~/stores/profileStore.js";
 import FileDisplay from "./profile/FileDisplay.vue";
 import { useDate } from "~/composables/useDate.js";
-import type { Contact } from "~/types/chat";
+import type { Contact } from "~/types";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { chatProfileOverview } from "@i18n/locales";
 interface Action {
@@ -29,21 +30,30 @@ const props = withDefaults(
 const { getYearsPassed } = useDate();
 const callStore = useCallStore();
 const chatStore = useChatStore();
+const profileStore = useProfileStore();
 const { t } = useLocalI18n(chatProfileOverview);
 // FIX: Renamed from `imageList` to `imagesSection` to actually match the template ref="imagesSection"
 const imagesSection = ref<HTMLElement | null>(null);
 
-const isLoadingAttachements = ref(false);
-const isLoadingMedia = ref(false);
-const hasMediaNextPage = ref(false);
-const hasFileNextPage = ref(false);
-const currentFilePage = ref(0);
-const currentMediaPage = ref(1);
+const conversationId = computed(() => chatStore.activeConversationId ?? "");
 const isOpen = ref(false);
 const localProfile = ref<Contact>();
-const fileAttachements = ref<string[]>([]);
-const mediaAttachements = ref<string[]>([]);
 const currentTab = ref(0);
+
+const mediaAttachements = computed<string[]>(
+  () => (conversationId.value && profileStore.mediaMap[conversationId.value]) ?? [],
+);
+const fileAttachements = computed<string[]>(
+  () => (conversationId.value && profileStore.filesMap[conversationId.value]) ?? [],
+);
+const isLoadingMedia = computed(() => profileStore.mediaLoading);
+const isLoadingAttachements = computed(() => profileStore.filesLoading);
+const hasMediaNextPage = computed(
+  () => (conversationId.value && profileStore.mediaHasNextPage[conversationId.value]) ?? false,
+);
+const hasFileNextPage = computed(
+  () => (conversationId.value && profileStore.filesHasNextPage[conversationId.value]) ?? false,
+);
 
 const role = computed(() => chatStore.chosenRole);
 const isInCall = computed(() => callStore.isActive);
@@ -139,6 +149,11 @@ watch(
         localProfile.value = props.profile;
       }
       isOpen.value = true;
+      const id = conversationId.value;
+      if (id) {
+        profileStore.fetchMedia(id, 1, imagesPerPage.value);
+        profileStore.fetchFiles(id, 1, filesPerPage.value);
+      }
     } else {
       isOpen.value = false;
     }
@@ -152,6 +167,15 @@ watch(
     if (newVal) {
       localProfile.value = newVal;
     }
+  },
+);
+
+watch(
+  () => conversationId.value,
+  (newId, oldId) => {
+    if (!newId || newId === oldId || !isOpen.value) return;
+    profileStore.fetchMedia(newId, 1, imagesPerPage.value);
+    profileStore.fetchFiles(newId, 1, filesPerPage.value);
   },
 );
 
@@ -179,72 +203,18 @@ const handleAction = (action: Action) => {
 };
 
 const fetchMoreMedia = async () => {
-  if (isLoadingMedia.value || !hasMediaNextPage.value) return;
-  isLoadingMedia.value = true;
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const count = imagesPerPage.value;
-  const newMedia = Array.from({ length: count }).map(
-    (_, i) =>
-      `https://picsum.photos/id/${110 + currentMediaPage.value * count + i}/400/400`,
-  );
-
-  if (
-    mediaAttachements.value.length > 0 &&
-    mediaAttachements.value.every((i) => i === "")
-  ) {
-    mediaAttachements.value = newMedia;
-  } else {
-    mediaAttachements.value.push(...newMedia);
-  }
-
-  currentMediaPage.value++;
-  if (currentMediaPage.value >= 5) hasMediaNextPage.value = false;
-  isLoadingMedia.value = false;
+  const id = conversationId.value;
+  if (!id) return;
+  const nextPage = (profileStore.mediaPage[id] ?? 0) + 1;
+  await profileStore.fetchMedia(id, nextPage, imagesPerPage.value);
 };
 
 const fetchMoreFiles = async () => {
-  if (isLoadingAttachements.value || !hasFileNextPage.value) return;
-  isLoadingAttachements.value = true;
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const count = filesPerPage.value;
-  const newFiles = new Array(count).fill(
-    "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-  );
-
-  // BUG FIX: The original code checked `fileAttachements.value === ''` which is invalid
-  // for an array and always resulted in false (breaking initial pagination logic).
-  if (
-    fileAttachements.value.length > 0 &&
-    fileAttachements.value.every((f) => f === "")
-  ) {
-    fileAttachements.value = newFiles;
-  } else {
-    fileAttachements.value.push(...newFiles);
-  }
-
-  currentFilePage.value++;
-  if (currentFilePage.value >= 4) hasFileNextPage.value = false;
-  isLoadingAttachements.value = false;
+  const id = conversationId.value;
+  if (!id) return;
+  const nextPage = (profileStore.filesPage[id] ?? 0) + 1;
+  await profileStore.fetchFiles(id, nextPage, filesPerPage.value);
 };
-
-// --- Lifecycle ---
-onMounted(async () => {
-  await nextTick();
-
-  const initialCount = maxImageCounts.value;
-  mediaAttachements.value = Array(initialCount).fill("");
-  fileAttachements.value = Array(initialCount).fill(""); // Added missing initial state for files
-
-  hasMediaNextPage.value = true;
-  hasFileNextPage.value = true;
-
-  fetchMoreMedia();
-  fetchMoreFiles();
-});
 </script>
 
 <template>
@@ -282,7 +252,10 @@ onMounted(async () => {
         <div
           class="flex w-full shrink-0 flex-col items-center justify-center gap-y-2 select-none mt-2"
         >
-          <div v-loading="isLoading" class="text-title-md text-chat-on-background">
+          <div
+            v-loading="isLoading"
+            class="text-title-md text-chat-on-background"
+          >
             {{ localProfile?.name }}
           </div>
           <BLabel
@@ -312,10 +285,14 @@ onMounted(async () => {
                 weight="fill"
                 class="h-6 w-6"
                 :class="[
-                  action.color === 'error' ? 'fill-chat-error' : 'fill-chat-primary',
+                  action.color === 'error'
+                    ? 'fill-chat-error'
+                    : 'fill-chat-primary',
                 ]"
               />
-              <div class="select-none text-center text-[10px] text-chat-on-background">
+              <div
+                class="select-none text-center text-[10px] text-chat-on-background"
+              >
                 {{ action.title }}
               </div>
             </div>
@@ -337,7 +314,10 @@ onMounted(async () => {
               >
                 {{ info.title }}
               </div>
-              <div v-loading="isLoading" class="text-body-md text-chat-on-background">
+              <div
+                v-loading="isLoading"
+                class="text-body-md text-chat-on-background"
+              >
                 {{ info.value }}
               </div>
             </div>
@@ -434,7 +414,7 @@ onMounted(async () => {
                         <FileDisplay
                           :url="file"
                           :loading="
-                            isLoadingAttachements && currentFilePage === 0
+                            isLoadingAttachements && fileAttachements.length === 0
                           "
                         />
                       </div>

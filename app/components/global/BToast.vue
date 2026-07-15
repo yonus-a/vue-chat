@@ -52,7 +52,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from "vue";
-import { useWindowSize } from "~/composables/useWindowSize";
 
 type ToastType = "success" | "error" | "warning" | "info";
 

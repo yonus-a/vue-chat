@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { profileFileDisplay } from "@i18n/locales";
 import { formatBytes } from "~/utils/format";
+import { useMediaStore } from "~/stores/mediaStore";
 
 const props = withDefaults(
   defineProps<{
@@ -15,6 +16,7 @@ const props = withDefaults(
 );
 
 const { t } = useLocalI18n(profileFileDisplay);
+const mediaStore = useMediaStore();
 const fetchedSize = ref<number | null>(null);
 const isLoading = computed(() => props.loading);
 
@@ -50,13 +52,8 @@ const formattedSize = computed(() => {
 
 const getFileSize = async () => {
   try {
-    const res = await fetch(props.url, { method: "HEAD" });
-    const length = res.headers.get("Content-Length");
-    if (length) {
-      fetchedSize.value = parseInt(length, 10);
-    } else {
-      fetchedSize.value = 0;
-    }
+    const size = await mediaStore.fetchFileSize(props.url);
+    fetchedSize.value = size ?? 0;
   } catch (e) {
     console.warn("Could not fetch file size upfront:", e);
     fetchedSize.value = 0; // Fallback

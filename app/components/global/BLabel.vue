@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useLocale } from "~/composables/useLocale";
+import { useDirection } from "~/composables/useLocalI18n";
 
 const props = withDefaults(
   defineProps<{
@@ -54,7 +54,7 @@ const props = withDefaults(
   },
 );
 
-const { dir } = useLocale();
+const { dir } = useDirection();
 
 const emit = defineEmits<{
   click: [];

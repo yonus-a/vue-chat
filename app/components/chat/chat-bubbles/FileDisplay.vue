@@ -2,9 +2,10 @@
 import FileFormatDisplay from "~/components/general/FileFormatDisplay.vue";
 import LoadingStatus from "~/components/general/LoadingStatus.vue";
 import { useMessagesStore } from "~/stores/messageStores";
-import { computed, onMounted, ref } from "vue";
-import useLocalI18n from "~/composables/useLocalI18n";
 import { chatBubblesFileDisplay } from "@i18n/locales";
+import useLocalI18n from "~/composables/useLocalI18n";
+import { useMediaStore } from "~/stores/mediaStore";
+import { computed, onMounted, ref } from "vue";
 import { formatBytes } from "~/utils/format";
 
 const props = withDefaults(
@@ -22,12 +23,12 @@ const props = withDefaults(
 
 const { t } = useLocalI18n(chatBubblesFileDisplay);
 const messagesStore = useMessagesStore();
+const mediaStore = useMediaStore();
 
 const status = ref<"idle" | "downloading" | "downloaded">("idle");
 const progress = ref(0);
 const fetchedSize = ref<number | null>(null);
 let abortController: AbortController | null = null;
-const dbName = "ChatFileCache";
 
 const uploadData = computed(() =>
   props.messageId ? messagesStore.uploadProgress.get(props.messageId) : null,
@@ -44,22 +45,9 @@ const displayProgress = computed(() => {
   return 0;
 });
 
-const getDB = () =>
-  new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(dbName, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore("files");
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-
 const checkLocalExistence = async () => {
-  const db = await getDB();
-  const tx = db.transaction("files", "readonly");
-  const store = tx.objectStore("files");
-  const request = store.get(props.url);
-  request.onsuccess = () => {
-    if (request.result) status.value = "downloaded";
-  };
+  const cached = await mediaStore.getCachedBlob(props.url);
+  if (cached) status.value = "downloaded";
 };
 
 const fileName = computed(() => {
@@ -100,17 +88,20 @@ const formattedSize = computed(() => {
 });
 
 const getFileSize = async () => {
-  try {
-    if (props.url.startsWith("blob:")) {
+  if (props.url.startsWith("blob:")) {
+    try {
       const res = await fetch(props.url);
       const blob = await res.blob();
       fetchedSize.value = blob.size;
-    } else {
-      const res = await fetch(props.url, { method: "HEAD" });
-      const length = res.headers.get("Content-Length");
-      if (length) fetchedSize.value = parseInt(length, 10);
+    } catch {
+      fetchedSize.value = 0;
     }
-  } catch (e) {
+    return;
+  }
+  try {
+    const size = await mediaStore.fetchFileSize(props.url);
+    fetchedSize.value = size ?? 0;
+  } catch {
     fetchedSize.value = 0;
   }
 };
@@ -119,12 +110,7 @@ const toggleDownload = async () => {
   if (isUploading.value) return;
 
   if (status.value === "downloaded") {
-    const db = await getDB();
-    const tx = db.transaction("files", "readonly");
-    const store = tx.objectStore("files");
-    const fileBlob = await new Promise<Blob | undefined>((res) => {
-      store.get(props.url).onsuccess = (e: any) => res(e.target.result);
-    });
+    const fileBlob = await mediaStore.getCachedBlob(props.url);
 
     if (fileBlob) {
       const blobUrl = URL.createObjectURL(fileBlob);
@@ -154,32 +140,14 @@ const toggleDownload = async () => {
   abortController = new AbortController();
 
   try {
-    const response = await fetch(props.url, { signal: abortController.signal });
-    const total = parseInt(response.headers.get("content-length") || "0", 10);
-    let loaded = 0;
-    const chunks: BlobPart[] = [];
-    const reader = response.body?.getReader();
-
-    if (reader) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) {
-          chunks.push(value);
-          loaded += value.length;
-          if (total) progress.value = Math.round((loaded / total) * 100);
-        }
-      }
-    }
-
-    const blob = new Blob(chunks, {
-      type: response.headers.get("content-type") || "application/octet-stream",
+    await mediaStore.download(props.url, {
+      signal: abortController.signal,
+      onProgress: (p) => {
+        progress.value = p;
+      },
     });
-    const db = await getDB();
-    const tx = db.transaction("files", "readwrite");
-    tx.objectStore("files").put(blob, props.url);
     status.value = "downloaded";
-  } catch (error: any) {
+  } catch {
     status.value = "idle";
     progress.value = 0;
   }

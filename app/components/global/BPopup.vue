@@ -73,7 +73,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from "vue";
-import { useWindowSize } from "~/composables/useWindowSize";
 import type { Popup } from "~/types/components/popup";
 
 const props = withDefaults(

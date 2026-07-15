@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import BCarousel from "~/components/global/BCarousel.vue";
+import { useMediaStore } from "~/stores/mediaStore";
 
 const props = withDefaults(
   defineProps<{
@@ -10,6 +11,8 @@ const props = withDefaults(
     images: () => [],
   },
 );
+
+const mediaStore = useMediaStore();
 
 const isOpen = ref(false);
 const selectedImage = ref(0);
@@ -35,8 +38,7 @@ const downloadImage = async () => {
   const url = props.images[selectedImage.value] as string;
 
   try {
-    const response = await fetch(url);
-    const blob = await response.blob();
+    const blob = await mediaStore.download(url);
     const blobUrl = window.URL.createObjectURL(blob);
 
     const link = document.createElement("a");

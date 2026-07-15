@@ -2,7 +2,7 @@
 import SafeEmojiText from "~/components/general/SafeEmojiText.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import ContactAvatar from "./ContactAvatar.vue";
-import type { Contact } from "~/types/chat";
+import type { Contact } from "~/types";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { chatContactDisplay } from "@i18n/locales";
 import { computed } from "vue";
@@ -33,8 +33,10 @@ const lastMessageIcon = computed(() => {
   const msg = props.contact.lastMessage;
   if (!msg || !isFromMe.value) return { color: "", icon: "" };
 
-  if (!msg.isSent) return { color: "fill-chat-on-background/30", icon: "PhClock" };
-  if (!msg.isRead) return { color: "fill-chat-on-background/50", icon: "PhCheck" };
+  if (!msg.isSent)
+    return { color: "fill-chat-on-background/30", icon: "PhClock" };
+  if (!msg.isRead)
+    return { color: "fill-chat-on-background/50", icon: "PhCheck" };
   return { color: "fill-chat-primary", icon: "PhChecks" };
 });
 
@@ -86,7 +88,8 @@ const lastMessageColor = computed(() => {
   if ((!msg.text && msg.type !== "text") || msg.request)
     return "text-chat-primary font-medium";
 
-  if (props.contact.unreadCount > 0) return "text-chat-on-background font-medium";
+  if (props.contact.unreadCount > 0)
+    return "text-chat-on-background font-medium";
 
   return "text-chat-on-background/50";
 });
@@ -113,7 +116,10 @@ const lastMessageColor = computed(() => {
           v-if="contact.lastMessage"
           class="flex gap-x-1.5 items-center shrink-0"
         >
-          <div v-loading="isLoading" class="text-chat-on-background/50 text-[11px]">
+          <div
+            v-loading="isLoading"
+            class="text-chat-on-background/50 text-[11px]"
+          >
             {{ contact.lastMessage.date }}
           </div>
           <BIcon

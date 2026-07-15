@@ -2,6 +2,8 @@ import "./assets/css/main.css";
 import { useCallStore } from "./stores/callStore";
 import { useChatStore } from "./stores/chatStore";
 import { useMessagesStore } from "./stores/messageStores";
+import { useMediaStore } from "./stores/mediaStore";
+import { useProfileStore } from "./stores/profileStore";
 
 export { default as ChatPage } from "./components/ChatPage.vue";
 
@@ -21,8 +23,10 @@ export { default as BIcon } from "./components/global/BIcon.vue";
 export { default as BMenu } from "./components/global/BMenu.vue";
 export { default as BTab } from "./components/global/BTab.vue";
 
+export * from "./types";
 export * from "./stores/messageStores";
 export * from "./stores/chatStore";
-export * from "./stores/chatStore";
+export * from "./stores/mediaStore";
+export * from "./stores/profileStore";
 
-export { useChatStore, useCallStore, useMessagesStore };
+export { useChatStore, useCallStore, useMessagesStore, useMediaStore, useProfileStore };

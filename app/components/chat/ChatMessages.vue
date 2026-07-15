@@ -164,8 +164,13 @@
                 :key="option.key"
                 class="px-2.5 pointer-events-auto flex items-center gap-x-2 cursor-pointer bg-chat-surface-3 rounded-lg h-9 shrink-0"
               >
-                <BIcon :icon="option.icon" class="w-5 h-5 fill-chat-on-background/50" />
-                <div class="text-body-sm select-none text-chat-on-background/70">
+                <BIcon
+                  :icon="option.icon"
+                  class="w-5 h-5 fill-chat-on-background/50"
+                />
+                <div
+                  class="text-body-sm select-none text-chat-on-background/70"
+                >
                   {{ option.label }}
                 </div>
               </div>
@@ -191,12 +196,7 @@ import useLocalI18n from "~/composables/useLocalI18n";
 import { chatMessages } from "@i18n/locales";
 import { useVirtualizer } from "@tanstack/vue-virtual";
 import ChatBubble from "./ChatBubble.vue";
-import type {
-  Message,
-  MessageType,
-  Contact,
-  ExtendedMessage,
-} from "~/types/chat";
+import type { Message, Contact, ExtendedMessage } from "~/types";
 import loading from "~/assets/lottie/loading.json";
 import NoDataDisplay from "../general/NoDataDisplay.vue";
 import NoMessages from "~/assets/lib-images/chat/no-messages.webp";
@@ -231,11 +231,11 @@ const scrollContainer = ref<HTMLElement | null>(null);
 const loaderRef = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
-const messages = ref<Message[]>([]);
-const isLoading = ref(false);
-const currentPage = ref(1);
-const maxPages = 5;
 const currentUserId = chatStore.currentUserId;
+const messages = computed<Message[]>(
+  () => messagesStore.messagesMap[chatId.value] ?? [],
+);
+const isLoading = computed(() => messagesStore.messagesLoading);
 
 // --- BUS SUBSCRIPTIONS ---
 let unsubSend: () => void;
@@ -243,8 +243,10 @@ let unsubDelete: () => void;
 let unsubUpdate: () => void;
 
 onMounted(() => {
-  if (chatId.value) messagesStore.markAsRead(chatId.value);
-  fetchMessages(1);
+  if (chatId.value) {
+    messagesStore.markAsRead(chatId.value);
+    fetchMessages(1);
+  }
 
   unsubSend = messagesStore.sendBus.on((newMsgs) => {
     addMessages(newMsgs);
@@ -254,10 +256,18 @@ onMounted(() => {
     handleDeleteMessages(ids);
   });
 
-  unsubUpdate = messagesStore.updateBus.on(({ id, updates }) => {
-    const index = messages.value.findIndex((m) => m.id === id);
+  unsubUpdate = messagesStore.updateBus.on(({ id: msgId, updates }) => {
+    const convId = chatId.value;
+    if (!convId) return;
+    const list = messagesStore.messagesMap[convId];
+    if (!list) return;
+    const index = list.findIndex((m) => m.id === msgId);
     if (index !== -1) {
-      messages.value[index] = { ...messages.value[index], ...updates };
+      messagesStore.messagesMap[convId] = [
+        ...list.slice(0, index),
+        { ...list[index], ...updates },
+        ...list.slice(index + 1),
+      ];
     }
   });
 
@@ -270,7 +280,8 @@ onMounted(() => {
           !isLoading.value &&
           messages.value.length > 0
         ) {
-          fetchMessages(currentPage.value + 1);
+          const nextPage = (messagesStore.messagesPage[chatId.value] ?? 0) + 1;
+          fetchMessages(nextPage);
         }
       },
       { root: scrollContainer.value, threshold: 0, rootMargin: "150px" },
@@ -297,8 +308,7 @@ const reversedMessages = computed(() => {
     const next = raw[idx + 1];
     const isFirstInDate =
       !prev ||
-      new Date(msg.date).toDateString() !==
-        new Date(prev.date).toDateString();
+      new Date(msg.date).toDateString() !== new Date(prev.date).toDateString();
 
     return {
       ...msg,
@@ -336,105 +346,11 @@ const firstUnreadId = computed(() => {
   return unreadMsg ? unreadMsg.id : null;
 });
 
-// --- MOCK DATA GENERATION ---
-const generateMockMessages = (page: number): Message[] => {
-  const scenarios = [
-    "text",
-    "voice",
-    "text",
-    "image",
-    "file",
-    "multiImage",
-    "text",
-    "video",
-    "text",
-    "voice",
-  ];
-
-  return Array.from({ length: 20 }).map((_, i) => {
-    const globalIndex = (page - 1) * 20 + (19 - i);
-    const id = 1000 - globalIndex;
-    const scenario = scenarios[id % scenarios.length];
-
-    const isMe = Math.floor(globalIndex / 2) % 2 === 0;
-    const senderId = isMe ? chatStore.currentUserId : 2;
-
-    const daysOffset = Math.floor(globalIndex / 5) * 1.5;
-    const minutesOffset = (globalIndex % 5) * 15;
-    const totalOffset =
-      daysOffset * 24 * 60 * 60 * 1000 +
-      minutesOffset * 60 * 1000 +
-      30 * 60 * 1000;
-    const messageDate = new Date(Date.now() - totalOffset);
-
-    const isRead = globalIndex > 3;
-
-    let repliedTo: any = undefined;
-    if (id % 3 === 0) {
-      const repliedId = id - 2;
-      const repliedIsMe = Math.floor((globalIndex + 2) / 2) % 2 === 0;
-
-      repliedTo = {
-        id: repliedId,
-        conversationId: chatStore.activeConversationId ?? 101,
-        date: new Date(messageDate.getTime() - 15 * 60 * 1000),
-        type: "text",
-        text: `This is the original message ${repliedId} that got replied to.`,
-        isEdited: false,
-        senderId: repliedIsMe ? chatStore.currentUserId : 2,
-        isSent: true,
-        isRead: true,
-      };
-    }
-
-    return {
-      id,
-      conversationId: chatStore.activeConversationId ?? 101,
-      date: messageDate,
-      type: (scenario === "multiImage" ? "image" : scenario) as MessageType,
-      text:
-        scenario === "text"
-          ? `Message ${id}: ${isMe ? "Sent by me." : "Received from them."}`
-          : undefined,
-      imageUrl:
-        scenario === "image"
-          ? [`https://picsum.photos/600/600?sig=${id}`]
-          : scenario === "multiImage"
-            ? [
-                `https://picsum.photos/600/600?sig=${id}_1`,
-                `https://picsum.photos/600/600?sig=${id}_2`,
-                `https://picsum.photos/600/600?sig=${id}_3`,
-              ]
-            : undefined,
-      fileUrl:
-        scenario === "file"
-          ? `https://upload.wikimedia.org/wikipedia/commons/d/d3/Test.pdf`
-          : undefined,
-      voiceUrl:
-        scenario === "voice"
-          ? `https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3?id=${id}`
-          : undefined,
-      videoUrl:
-        scenario === "video"
-          ? "https://www.w3schools.com/html/mov_bbb.mp4"
-          : undefined,
-      isEdited: id % 8 === 0,
-      senderId: senderId,
-      isSent: true,
-      isRead: isMe ? true : isRead,
-      repliedTo: repliedTo,
-    } as Message;
-  });
-};
-
 const fetchMessages = async (page: number) => {
-  if (isLoading.value || page > maxPages) return;
-  isLoading.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  const newBatch = generateMockMessages(page);
-  messages.value = [...newBatch, ...messages.value];
-  currentPage.value = page;
-  isLoading.value = false;
+  if (!chatId.value) return;
+  if (messagesStore.messagesLoading) return;
+  if (page > 1 && !messagesStore.messagesHasNextPage[chatId.value]) return;
+  await messagesStore.fetchMessages(chatId.value, page);
 };
 
 // --- SCROLL LOGIC ---
@@ -467,7 +383,8 @@ const handleScroll = () => {
     !isLoading.value &&
     messages.value.length > 0
   ) {
-    fetchMessages(currentPage.value + 1);
+    const nextPage = (messagesStore.messagesPage[chatId.value] ?? 0) + 1;
+    fetchMessages(nextPage);
   }
 
   if (currentScroll < lastScrollTop) {
@@ -542,16 +459,20 @@ const selectedToDelete = ref<string[]>([]);
 
 const addMessages = (newMsgs: Message[]) => {
   if (!newMsgs || newMsgs.length === 0) return;
-  const hasMyMessage = newMsgs.some(
-    (msg) => msg.senderId === currentUserId,
-  );
+  const hasMyMessage = newMsgs.some((msg) => msg.senderId === currentUserId);
 
   newMsgs.forEach((msg) => animatingIds.value.add(msg.id));
   setTimeout(() => {
     newMsgs.forEach((msg) => animatingIds.value.delete(msg.id));
   }, 400);
 
-  messages.value.push(...newMsgs);
+  const id = chatId.value;
+  if (id) {
+    messagesStore.messagesMap[id] = [
+      ...(messagesStore.messagesMap[id] ?? []),
+      ...newMsgs,
+    ];
+  }
 
   if (hasMyMessage) {
     nextTick(() => resetScroll());
@@ -599,24 +520,23 @@ const deleteMessages = () => {
     selectedToDelete.value.forEach((id) => deletingIds.value.add(id));
 
     setTimeout(() => {
-      // 1. Filter out the deleted messages locally
-      const remainingMessages = messages.value.filter(
-        (m) => !selectedToDelete.value.includes(m.id),
-      );
-      messages.value = remainingMessages;
+      const id = chatId.value;
+      if (id) {
+        const remainingMessages = (messagesStore.messagesMap[id] ?? []).filter(
+          (m) => !selectedToDelete.value.includes(m.id),
+        );
+        messagesStore.messagesMap[id] = remainingMessages;
 
-      // 2. Update the sidebar Contact List in the store
-      if (chatId.value) {
-        // messages.value is chronological, so index [length-1] is the newest message
+        // messages are chronological, so index [length-1] is the newest message
         const newLastMessage =
           remainingMessages.length > 0
             ? remainingMessages[remainingMessages.length - 1]
             : null;
 
         if (newLastMessage) {
-          messagesStore.updateLastMessage(chatId.value, newLastMessage);
+          messagesStore.updateLastMessage(id, newLastMessage);
         } else {
-          messagesStore.patchLastMessage(chatId.value, -1, {
+          messagesStore.patchLastMessage(id, -1, {
             text: "",
             date: new Date(),
           } as any);
@@ -641,9 +561,6 @@ watch(
   (newId, oldId) => {
     if (newId && newId !== oldId) {
       messagesStore.markAsRead(chatId.value);
-
-      messages.value = [];
-      currentPage.value = 1;
 
       if (scrollContainer.value) {
         scrollContainer.value.scrollTop = 0;

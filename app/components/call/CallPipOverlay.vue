@@ -41,7 +41,7 @@
 
     <!-- Action Layer -->
     <div
-      class="pointer-events-none absolute z-[10000] flex h-full w-full items-end p-2"
+      class="pointer-events-none absolute z-10000 flex h-full w-full items-end p-2"
     >
       <div
         class="pointer-events-auto flex aspect-square w-10 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-md transition-colors hover:bg-black/80"
@@ -55,7 +55,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue";
-import { useDraggable, useWindowSize } from "@vueuse/core";
 import ContactAvatar from "../chat/contact/ContactAvatar.vue";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";

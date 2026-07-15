@@ -120,7 +120,7 @@ import { useCallStore } from "~/stores/callStore.js";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useDate } from "~/composables/useDate.js";
 import { formatDuration } from "~/utils/format";
-import type { Contact } from "~/types/chat";
+import type { Contact } from "~/types";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { chatPageBar } from "@i18n/locales";
 import { computed } from "vue";

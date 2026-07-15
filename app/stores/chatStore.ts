@@ -1,22 +1,5 @@
-import { Contact, StateKeys, UserRoleKey } from "~/types/chat";
-import { useWindowSize } from "~/composables/useWindowSize";
+import { ChatHandlers, Contact, StateKeys, UserRoleKey } from "~/types";
 import { defineStore } from "pinia";
-export interface FetchContactsParams {
-  page: number;
-  pageSize: number;
-  state: StateKeys;
-  search?: string;
-}
-
-export interface ContactsPage {
-  data: Contact[];
-  hasNextPage: boolean;
-}
-
-export interface ChatHandlers {
-  fetchConversations(params: FetchContactsParams): Promise<ContactsPage>;
-  deleteConversation(id: string): Promise<void>;
-}
 
 export const useChatStore = defineStore("chat", () => {
   const { height: windowHeight } = useWindowSize();
