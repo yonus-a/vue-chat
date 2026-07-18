@@ -1,8 +1,4 @@
-import {
-  FetchProfileAttachmentsParams,
-  ProfileAttachmentsPage,
-  ProfileHandlers,
-} from "~/types";
+import { ProfileAttachmentsPage, ProfileHandlers } from "~/types";
 import { defineStore } from "pinia";
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -14,6 +10,7 @@ export const useProfileStore = defineStore("profile-store", () => {
     handlers = val;
   }
 
+  const currentUserId = ref<string>("");
   const mediaMap = ref<Record<string, string[]>>({});
   const filesMap = ref<Record<string, string[]>>({});
   const mediaPage = ref<Record<string, number>>({});
@@ -91,6 +88,7 @@ export const useProfileStore = defineStore("profile-store", () => {
     mediaPage,
     filesPage,
     mediaHasNextPage,
+    currentUserId,
     filesHasNextPage,
     mediaLoading,
     filesLoading,

@@ -1,9 +1,10 @@
 <template>
   <div v-if="contact" class="relative w-full h-full overflow-hidden">
+    <!-- Floating Header -->
     <div
       :class="[hasCall ? 'top-12' : 'top-4']"
       class="absolute left-0 right-0 z-20 flex justify-center pointer-events-none transition-opacity duration-200"
-      :style="{ opacity: headerOpacity }"
+      :style="{ opacity: scroll.headerOpacity.value }"
     >
       <div
         v-if="floatingHeader"
@@ -14,31 +15,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Flipped Scroll Container -->
     <div
       dir="rtl"
       id="list"
       ref="scrollContainer"
       class="h-full w-full max-w-dvw overflow-x-hidden overflow-y-auto pb-4 hide-scrollbar flip-vertical bg-chat-surface/30"
       :class="[
-        !showOptionsBar ? 'pt-16' : 'pt-4',
+        !scroll.showOptionsBar.value ? 'pt-16' : 'pt-4',
         lockScroll ? 'overflow-hidden' : '',
       ]"
-      @scroll="handleScroll"
-      @wheel.prevent="handleWheel"
+      @scroll="scroll.handleScroll"
+      @wheel.prevent="scroll.handleWheel"
     >
-      <div class="w-full max-w-dvw overflow-x-hidden" v-show="messages.length">
+      <div
+        class="w-full max-w-dvw overflow-x-hidden"
+        v-show="msgList.messages.value.length"
+      >
         <div
           :style="{
-            height: virtualizer.getTotalSize() + 'px',
+            height: scroll.virtualizer.value.getTotalSize() + 'px',
             width: '100%',
             position: 'relative',
           }"
         >
           <div
-            v-for="virtualRow in virtualizer.getVirtualItems()"
-            :key="reversedMessages[virtualRow.index].id"
+            v-for="virtualRow in scroll.virtualizer.value.getVirtualItems()"
+            :key="msgList.reversedMessages.value[virtualRow.index].id"
             :data-index="virtualRow.index"
-            :ref="(el) => el && virtualizer.measureElement(el)"
+            :ref="
+              (el) => el && scroll.virtualizer.value.measureElement(el as any)
+            "
             :style="{
               position: 'absolute',
               top: 0,
@@ -48,18 +56,16 @@
             }"
           >
             <div
-              class="flip-vertical"
+              class="flip-vertical pt-0"
               :class="[
-                getSpacingClass(
-                  virtualRow.index,
-                  reversedMessages[virtualRow.index],
-                ),
                 virtualRow.index === 0 ? 'pb-2' : '',
-                animatingIds.has(reversedMessages[virtualRow.index].id)
-                  ? reversedMessages[virtualRow.index]?.request
+                msgList.animatingIds.value.has(
+                  msgList.reversedMessages.value[virtualRow.index].id,
+                )
+                  ? msgList.reversedMessages.value[virtualRow.index]?.request
                     ? 'animate-request-in'
-                    : reversedMessages[virtualRow.index].senderId ===
-                        currentUserId
+                    : msgList.reversedMessages.value[virtualRow.index]
+                          .senderId === currentUserId
                       ? 'animate-slide-right'
                       : 'animate-slide-left'
                   : '',
@@ -67,14 +73,18 @@
             >
               <ChatBubble
                 :is-deleting="
-                  deletingIds.has(reversedMessages[virtualRow.index].id)
+                  msgList.deletingIds.value.has(
+                    msgList.reversedMessages.value[virtualRow.index].id,
+                  )
                 "
                 :is-first-unread="
-                  reversedMessages[virtualRow.index].id === firstUnreadId
+                  msgList.reversedMessages.value[virtualRow.index].id ===
+                  msgList.firstUnreadId.value
                 "
-                :message="reversedMessages[virtualRow.index]"
+                :message="msgList.reversedMessages.value[virtualRow.index]"
                 :is-self="
-                  reversedMessages[virtualRow.index].senderId === currentUserId
+                  msgList.reversedMessages.value[virtualRow.index].senderId ===
+                  currentUserId
                 "
                 :contact="contact"
               />
@@ -83,30 +93,29 @@
         </div>
 
         <div
-          ref="loaderRef"
-          v-show="isLoading"
+          v-show="msgList.isLoading.value"
           class="w-full flex h-16 justify-center items-center shrink-0 overflow-hidden transition-all duration-300 flip-vertical py-4"
         >
-          <div>
-            <LottieAnimation
-              :animation-data="loading"
-              :height="52"
-              :width="52"
-              :loop="true"
-              :auto-play="true"
-            />
-          </div>
+          <LottieAnimation
+            :animation-data="loading"
+            :height="52"
+            :width="52"
+            :loop="true"
+            :auto-play="true"
+          />
         </div>
       </div>
 
+      <!-- Empty States -->
       <div
-        v-show="messages.length === 0 && !isLoading"
+        v-show="msgList.messages.value.length === 0 && !msgList.isLoading.value"
         class="h-full flex items-center justify-center text-chat-on-background/50 text-body-md flip-vertical"
       >
         <NoDataDisplay :title="t('noMessages')" :image-path="NoMessages" />
       </div>
+
       <div
-        v-show="messages.length === 0 && isLoading"
+        v-show="msgList.messages.value.length === 0 && msgList.isLoading.value"
         class="w-full flex h-full flip-vertical items-center justify-center"
       >
         <LottieAnimation
@@ -117,11 +126,14 @@
           :auto-play="true"
         />
       </div>
+
       <div
         class="transition-all duration-200 ease-in-out pointer-events-none"
-        :class="[canScroll ? 'h-16' : 'h-0']"
+        :class="[scroll.canScroll.value ? 'h-16' : 'h-0']"
       ></div>
     </div>
+
+    <!-- Bottom UI (Options & Scroll to Bottom) -->
     <div
       class="absolute pointer-events-none bottom-0 right-0 w-full transition-all duration-300 ease-in-out"
       @click.self.stop
@@ -129,31 +141,30 @@
       <div class="flex flex-col pointer-events-none" @click.self.stop>
         <div class="pr-3 pb-1 w-11">
           <div
-            @click="resetScroll"
+            @click="scroll.resetScroll()"
             :class="[
-              canScroll
-                ? ' scale-100 pointer-events-auto opacity-100'
-                : ' opacity-0 pointer-events-none scale-0',
+              scroll.canScroll.value
+                ? 'scale-100 pointer-events-auto opacity-100'
+                : 'opacity-0 pointer-events-none scale-0',
             ]"
             class="w-11 origin-bottom transition-all duration-200 ease-in-out h-11 rounded-full overflow-hidden bg-chat-background shadow-floating flex items-center justify-center cursor-pointer"
           >
             <BIcon icon="PhArrowDown" class="fill-chat-on-background w-6 h-6" />
           </div>
         </div>
+
         <div
           class="grid transition-all pointer-events-none duration-200 ease-in-out"
           :class="[
-            !showOptionsBar
+            !scroll.showOptionsBar.value
               ? 'grid-rows-[1fr] opacity-100'
               : 'grid-rows-[0fr] opacity-0',
           ]"
         >
-          <!-- 2. This wrapper with 'min-h-0' is required for the grid trick to work -->
           <div class="min-h-0">
-            <!-- 3. Your original content wrapper -->
             <div
               :class="[
-                !showOptionsBar
+                !scroll.showOptionsBar.value
                   ? 'translate-y-0 opacity-100 pointer-events-none'
                   : '-translate-y-2 opacity-0 pointer-events-none',
               ]"
@@ -180,23 +191,16 @@
       </div>
     </div>
   </div>
+
   <BModal ref="modal" @action="handleModalConfirm" />
 </template>
+
 <script setup lang="ts">
-// @ts-nocheck — grandfathered legacy chat-tree type errors; lift incrementally
-import {
-  ref,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  nextTick,
-} from "vue";
+import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { chatMessages } from "@i18n/locales";
-import { useVirtualizer } from "@tanstack/vue-virtual";
 import ChatBubble from "./ChatBubble.vue";
-import type { Message, Contact, ExtendedMessage } from "~/types";
+import type { Contact, Message } from "~/types";
 import loading from "~/assets/lottie/loading.json";
 import NoDataDisplay from "../general/NoDataDisplay.vue";
 import NoMessages from "~/assets/lib-images/chat/no-messages.webp";
@@ -206,300 +210,79 @@ import { useMessagesStore } from "~/stores/messageStores";
 import { useChatStore } from "~/stores/chatStore";
 import { useCallStore } from "~/stores/callStore";
 import { useDate } from "~/composables/useDate";
+import { useChatMessageList } from "~/composables/useChatMessageList.js";
+import { useFlippedVirtualScroll } from "~/composables/useFlippedVirtualScroll.js";
+import { useProfileStore } from "~/stores/profileStore.js";
 
 const props = withDefaults(
-  defineProps<{
-    contact: Contact | null;
-    options: MenuOption[];
-  }>(),
-  {
-    contact: null,
-    options: () => [],
-  },
+  defineProps<{ contact: Contact | null; options: MenuOption[] }>(),
+  { contact: null, options: () => [] },
 );
 
 const modal = ref<Modal | null>(null);
 const chatStore = useChatStore();
 const callStore = useCallStore();
-const { t } = useLocalI18n(chatMessages);
 const messagesStore = useMessagesStore();
+const { t } = useLocalI18n(chatMessages);
 const { formatDateShort } = useDate();
+const profileStore = useProfileStore();
+const currentUserId = computed(() => profileStore.currentUserId);
+
 const chatId = computed(() => chatStore.activeConversationId);
 const hasCall = computed(() => callStore.isActive);
-
-const scrollContainer = ref<HTMLElement | null>(null);
-const loaderRef = ref<HTMLElement | null>(null);
-let observer: IntersectionObserver | null = null;
-
-const currentUserId = chatStore.currentUserId;
-const messages = computed<Message[]>(
-  () => messagesStore.messagesMap[chatId.value] ?? [],
-);
-const isLoading = computed(() => messagesStore.messagesLoading);
-
-// --- BUS SUBSCRIPTIONS ---
-let unsubSend: () => void;
-let unsubDelete: () => void;
-let unsubUpdate: () => void;
-
-onMounted(() => {
-  if (chatId.value) {
-    messagesStore.markAsRead(chatId.value);
-    fetchMessages(1);
-  }
-
-  unsubSend = messagesStore.sendBus.on((newMsgs) => {
-    addMessages(newMsgs);
-  });
-
-  unsubDelete = messagesStore.deleteBus.on((ids) => {
-    handleDeleteMessages(ids);
-  });
-
-  unsubUpdate = messagesStore.updateBus.on(({ id: msgId, updates }) => {
-    const convId = chatId.value;
-    if (!convId) return;
-    const list = messagesStore.messagesMap[convId];
-    if (!list) return;
-    const index = list.findIndex((m) => m.id === msgId);
-    if (index !== -1) {
-      messagesStore.messagesMap[convId] = [
-        ...list.slice(0, index),
-        { ...list[index], ...updates },
-        ...list.slice(index + 1),
-      ];
-    }
-  });
-
-  // Intersection Observer setup
-  setTimeout(() => {
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (
-          entry.isIntersecting &&
-          !isLoading.value &&
-          messages.value.length > 0
-        ) {
-          const nextPage = (messagesStore.messagesPage[chatId.value] ?? 0) + 1;
-          fetchMessages(nextPage);
-        }
-      },
-      { root: scrollContainer.value, threshold: 0, rootMargin: "150px" },
-    );
-
-    if (loaderRef.value) observer.observe(loaderRef.value);
-  }, 500);
-});
-
-onBeforeUnmount(() => {
-  if (observer) observer.disconnect();
-  if (animationFrame) cancelAnimationFrame(animationFrame);
-  if (scrollTimer) clearTimeout(scrollTimer);
-  if (unsubSend) unsubSend();
-  if (unsubDelete) unsubDelete();
-  if (unsubUpdate) unsubUpdate();
-});
-
-// --- ENRICHMENT LOGIC ---
-const reversedMessages = computed(() => {
-  const raw = messages.value;
-  const enriched: ExtendedMessage[] = raw.map((msg, idx) => {
-    const prev = raw[idx - 1];
-    const next = raw[idx + 1];
-    const isFirstInDate =
-      !prev ||
-      new Date(msg.date).toDateString() !== new Date(prev.date).toDateString();
-
-    return {
-      ...msg,
-      prevMessage: prev,
-      nextMessage: next,
-      isFirstInDate,
-      contact: chatStore.getContactById(msg.senderId),
-    };
-  });
-  return enriched.reverse();
-});
-
-// --- TANSTACK VIRTUALIZER ---
-const virtualizer = useVirtualizer(
-  computed(() => ({
-    count: reversedMessages.value.length,
-    getScrollElement: () => scrollContainer.value,
-    estimateSize: () => 80,
-    overscan: 15,
-  })),
-);
-
-const getSpacingClass = (index: number, item: ExtendedMessage) => {
-  if (item.isFirstInDate) return "pt-0";
-  if (index === reversedMessages.value.length - 1) return "pt-0";
-  const msgBelow = reversedMessages.value[index - 1];
-  if (msgBelow && msgBelow.senderId === item.senderId) return "pt-0";
-  return "pt-0";
-};
-
-const firstUnreadId = computed(() => {
-  const unreadMsg = messages.value.find(
-    (m) => !m.isRead && m.senderId !== currentUserId,
-  );
-  return unreadMsg ? unreadMsg.id : null;
-});
-
-const fetchMessages = async (page: number) => {
-  if (!chatId.value) return;
-  if (messagesStore.messagesLoading) return;
-  if (page > 1 && !messagesStore.messagesHasNextPage[chatId.value]) return;
-  await messagesStore.fetchMessages(chatId.value, page);
-};
-
-// --- SCROLL LOGIC ---
-const headerOpacity = ref(0);
-let scrollTimer: any = null;
-const scrollOffset = ref(0);
-const topVisibleMessageIndex = ref(0);
-const targetScroll = ref(0);
-let animationFrame: number | null = null;
-const showOptionsBar = ref(false);
-let lastScrollTop = 0;
 const lockScroll = computed(() => messagesStore.isOptionMenuOpen);
-
-const handleScroll = () => {
-  if (lockScroll.value) return;
-  const el = scrollContainer.value;
-  if (!el) return;
-
-  scrollOffset.value = el.scrollTop;
-  const currentScroll = el.scrollTop;
-  headerOpacity.value = 1;
-  if (scrollTimer) clearTimeout(scrollTimer);
-
-  scrollTimer = setTimeout(() => {
-    headerOpacity.value = 0;
-  }, 3000);
-
-  if (
-    el.scrollHeight - el.scrollTop - el.clientHeight < 100 &&
-    !isLoading.value &&
-    messages.value.length > 0
-  ) {
-    const nextPage = (messagesStore.messagesPage[chatId.value] ?? 0) + 1;
-    fetchMessages(nextPage);
-  }
-
-  if (currentScroll < lastScrollTop) {
-    showOptionsBar.value = false;
-  } else {
-    showOptionsBar.value = chatStore.chosenRole !== "user";
-  }
-  lastScrollTop = currentScroll;
-
-  const items = virtualizer.value.getVirtualItems();
-  if (items.length > 0) {
-    // CHANGE: Calculate dynamic offset based on call state
-    // Base offset is 44px (top-4). If call is active (top-12), we add 44px.
-    const targetOffset = hasCall.value ? 88 : 44;
-
-    // We look for the message at the viewport bottom minus the dynamic header offset
-    const visualTopPhysical = el.scrollTop + el.clientHeight - targetOffset;
-
-    let closestIndex = items[0].index;
-    let minDiff = Infinity;
-
-    for (const item of items) {
-      const diff = Math.abs(item.start - visualTopPhysical);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = item.index;
-      }
-    }
-    topVisibleMessageIndex.value = closestIndex;
-  }
-};
-
-const canScroll = computed(() => scrollOffset.value > 100);
-
-const handleWheel = (e: WheelEvent) => {
-  if (lockScroll.value) return;
-  if (!scrollContainer.value || messages.value.length === 0) return;
-  if (targetScroll.value === 0)
-    targetScroll.value = scrollContainer.value.scrollTop;
-  targetScroll.value -= e.deltaY;
-  const maxScroll =
-    scrollContainer.value.scrollHeight - scrollContainer.value.clientHeight;
-  targetScroll.value = Math.max(0, Math.min(targetScroll.value, maxScroll));
-  if (!animationFrame) smoothScrollLoop();
-};
-
-const smoothScrollLoop = () => {
-  if (!scrollContainer.value) return;
-  const current = scrollContainer.value.scrollTop;
-  const target = targetScroll.value;
-  const distance = (target - current) * 0.22;
-  if (Math.abs(distance) > 0.5) {
-    scrollContainer.value.scrollTop += distance;
-    animationFrame = requestAnimationFrame(smoothScrollLoop);
-  } else {
-    scrollContainer.value.scrollTop = target;
-    animationFrame = null;
-  }
-};
-
-const resetScroll = () => {
-  if (scrollContainer.value) {
-    targetScroll.value = 0;
-    if (!animationFrame) smoothScrollLoop();
-  }
-};
-
-// --- ACTIONS & ANIMATIONS ---
-const animatingIds = ref<Set<string>>(new Set());
-const deletingIds = ref<Set<string>>(new Set());
+const scrollContainer = ref<HTMLElement | null>(null);
 const selectedToDelete = ref<string[]>([]);
 
-const addMessages = (newMsgs: Message[]) => {
-  if (!newMsgs || newMsgs.length === 0) return;
-  const hasMyMessage = newMsgs.some((msg) => msg.senderId === currentUserId);
+// --- Initialize Composables ---
 
-  newMsgs.forEach((msg) => animatingIds.value.add(msg.id));
-  setTimeout(() => {
-    newMsgs.forEach((msg) => animatingIds.value.delete(msg.id));
-  }, 400);
+// 1. Message List State
+const msgList = useChatMessageList(chatId);
 
-  const id = chatId.value;
-  if (id) {
-    messagesStore.messagesMap[id] = [
-      ...(messagesStore.messagesMap[id] ?? []),
-      ...newMsgs,
-    ];
-  }
+// 2. Scroll Mechanics (Depends on msgList for loadMore and count updates)
+const scroll = useFlippedVirtualScroll({
+  scrollContainer,
+  hasCall,
+  isLoading: msgList.isLoading,
+  chosenRole: computed(() => chatStore.chosenRole),
+  isLocked: lockScroll,
+  onLoadMore: msgList.loadNextPage,
+});
 
-  if (hasMyMessage) {
-    nextTick(() => resetScroll());
-  }
-};
+// Keep Virtualizer count in sync with messages
+watch(
+  () => msgList.reversedMessages.value.length,
+  (len) => {
+    scroll.setItemCount(len);
+    scroll.setGetItemKey(
+      (index: number) => msgList.reversedMessages.value[index]?.id ?? index,
+    );
+  },
+  { immediate: true },
+);
 
+// --- Event Bus Wiring ---
+msgList.subscribeToBus({
+  onSend: (hasMyMessage) => {
+    if (hasMyMessage) nextTick(() => scroll.resetScroll());
+  },
+  onDelete: (ids) => handleDeleteMessages(ids),
+});
+
+// --- Modal / Delete Actions (UI specific logic stays in component) ---
 const handleDeleteMessages = (idsToDelete: string[]) => {
   selectedToDelete.value = idsToDelete;
-
   const isRequestDeletion =
     idsToDelete.length === 1 &&
-    messages.value.find((m) => m.id === idsToDelete[0])?.request;
+    msgList.messages.value.find((m) => m.id === idsToDelete[0])?.request;
 
-  const modalTitle = isRequestDeletion
-    ? t("delete.requestTitle")
-    : t("delete.title");
-
-  const modalDescription = isRequestDeletion
-    ? t("delete.request")
-    : idsToDelete.length === 1
-      ? t("delete.singleMessage")
-      : t("delete.multipleMessages", { count: idsToDelete.length });
-
-  // 2. Open the modal with the dynamic title
   modal.value?.openModal(
-    modalTitle,
-    modalDescription,
+    isRequestDeletion ? t("delete.requestTitle") : t("delete.title"),
+    isRequestDeletion
+      ? t("delete.request")
+      : idsToDelete.length === 1
+        ? t("delete.singleMessage")
+        : t("delete.multipleMessages", { count: idsToDelete.length }),
     "error",
     true,
     t("delete.confirm"),
@@ -508,52 +291,32 @@ const handleDeleteMessages = (idsToDelete: string[]) => {
 
 const handleModalConfirm = () => {
   if (selectedToDelete.value.length > 0) {
-    deleteMessages();
+    modal.value?.closeModal();
+    msgList.executeDelete(selectedToDelete.value, () => {
+      selectedToDelete.value = [];
+    });
   }
 };
 
-const deleteMessages = () => {
-  modal.value?.closeModal();
-
-  setTimeout(() => {
-    // Trigger exit animation
-    selectedToDelete.value.forEach((id) => deletingIds.value.add(id));
-
-    setTimeout(() => {
-      const id = chatId.value;
-      if (id) {
-        const remainingMessages = (messagesStore.messagesMap[id] ?? []).filter(
-          (m) => !selectedToDelete.value.includes(m.id),
-        );
-        messagesStore.messagesMap[id] = remainingMessages;
-
-        // messages are chronological, so index [length-1] is the newest message
-        const newLastMessage =
-          remainingMessages.length > 0
-            ? remainingMessages[remainingMessages.length - 1]
-            : null;
-
-        if (newLastMessage) {
-          messagesStore.updateLastMessage(id, newLastMessage);
-        } else {
-          messagesStore.patchLastMessage(id, -1, {
-            text: "",
-            date: new Date(),
-          } as any);
-        }
-      }
-
-      messagesStore.clearActions();
-      selectedToDelete.value = []; // Reset the selection
-    }, 300);
-  }, 300);
-};
-
+// --- Floating Header Text ---
 const floatingHeader = computed(() => {
-  const msg = reversedMessages.value[topVisibleMessageIndex.value];
+  const msg =
+    msgList.reversedMessages.value[scroll.topVisibleMessageIndex.value];
   if (!msg) return null;
-  if (msg.id === firstUnreadId.value) return t("unreadMessages");
+  if (msg.id === msgList.firstUnreadId.value) return t("unreadMessages");
   return formatDateShort(msg.date);
+});
+
+// --- Lifecycle ---
+onMounted(() => {
+  if (chatId.value) {
+    messagesStore.markAsRead(chatId.value);
+    msgList.fetchMessages(1);
+  }
+});
+
+onBeforeUnmount(() => {
+  scroll.cleanup();
 });
 
 watch(
@@ -561,30 +324,23 @@ watch(
   (newId, oldId) => {
     if (newId && newId !== oldId) {
       messagesStore.markAsRead(chatId.value);
-
-      if (scrollContainer.value) {
-        scrollContainer.value.scrollTop = 0;
-      }
-
-      fetchMessages(1);
+      if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
+      msgList.fetchMessages(1);
     }
   },
 );
 </script>
+
 <style scoped>
-/* Add this to your existing styles */
+/* Styles remain exactly the same */
 .flip-vertical {
   transform: scaleY(-1);
-  /* Optimization for smooth virtual scrolling */
-  will-change: scroll-position;
+  will-change: transform;
 }
-
-/* Force hardware acceleration on the bubbles */
 [data-index] {
   will-change: transform;
   backface-visibility: hidden;
 }
-
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -594,36 +350,29 @@ watch(
     opacity: 0;
     transform: scaleY(-1) translateX(30px);
   }
-
   100% {
     opacity: 1;
     transform: scaleY(-1) translateX(0);
   }
 }
-
-/* Animation for 'Their' messages (Left to Right) */
 @keyframes slide-in-left {
   0% {
     opacity: 0;
     transform: scaleY(-1) translateX(-30px);
   }
-
   100% {
     opacity: 1;
     transform: scaleY(-1) translateX(0);
   }
 }
-
 .animate-slide-right {
   animation: slide-in-right 300ms ease-out forwards;
   will-change: transform, opacity;
 }
-
 .animate-slide-left {
   animation: slide-in-left 300ms ease-out forwards;
   will-change: transform, opacity;
 }
-
 #list {
   will-change: padding-top;
 }
@@ -631,22 +380,17 @@ watch(
 .animate-request-in {
   animation: request-in 0.4s ease-out forwards;
   overflow: hidden;
-  /* Ensure the base state is also flipped to avoid flickering at the end */
   transform: scaleY(-1);
 }
-
 @keyframes request-in {
   0% {
     opacity: 0;
     max-height: 0;
-    /* Include scaleY(-1) here to maintain the flip */
     transform: scaleY(-1) translateY(10px);
   }
-
   100% {
     opacity: 1;
     max-height: 1000px;
-    /* Keep scaleY(-1) here as well */
     transform: scaleY(-1) translateY(0);
   }
 }

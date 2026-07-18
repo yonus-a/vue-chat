@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import ImageGroupDisplay from "./chat-bubbles/ImageGroupDisplay.vue";
-import { computed, ref, onBeforeUnmount, useTemplateRef } from "vue";
+import { computed, useTemplateRef } from "vue";
 import type { Contact, ExtendedMessage } from "~/types";
+import ImageGroupDisplay from "./chat-bubbles/ImageGroupDisplay.vue";
 import BubbleOptions from "./chat-bubbles/BubbleOptions.vue";
-import { useMessagesStore } from "~/stores/messageStores.js";
 import VoiceDisplay from "./chat-bubbles/VoiceDisplay.vue";
 import BubbleVideo from "./chat-bubbles/BubbleVideo.vue";
 import FileDisplay from "./chat-bubbles/FileDisplay.vue";
 import SafeEmojiText from "../general/SafeEmojiText.vue";
 import ContactAvatar from "./contact/ContactAvatar.vue";
+
+import { useMessagesStore } from "~/stores/messageStores.js";
+import { useLongPress } from "~/composables/useLongPress";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useDate } from "~/composables/useDate.js";
-import useLocalI18n from "~/composables/useLocalI18n";
 import { chatBubble } from "@i18n/locales";
+import { useProfileStore } from "~/stores/profileStore.js";
+
 const props = withDefaults(
   defineProps<{
     message: ExtendedMessage;
@@ -31,19 +35,19 @@ const chatStore = useChatStore();
 const messagesStore = useMessagesStore();
 const { formatDateShort, formatTime } = useDate();
 
-// Isolate the `openMenu` TS error to this specific ref instead of disabling TS checks globally
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BubbleOptionsInstance = any;
 type ImageDisplayInstance = InstanceType<typeof ImageGroupDisplay>;
+type BubbleOptionsInstance = InstanceType<typeof BubbleOptions>;
 
 const imageDisplayRef = useTemplateRef<ImageDisplayInstance>("imageDisplayRef");
 const bubbleOptionsRef =
   useTemplateRef<BubbleOptionsInstance>("bubbleOptionsRef");
 
-const isMine = computed(
-  () => props.message.senderId === chatStore.currentUserId,
-);
+const MAX_VISIBLE_IMAGES = 3;
 
+const profileStore = useProfileStore();
+const currentUserId = computed(() => profileStore.currentUserId);
+
+const isMine = computed(() => props.message.senderId === currentUserId.value);
 const isSelected = computed(() =>
   messagesStore.selectedMessages.has(props.message.id),
 );
@@ -59,6 +63,10 @@ const messageType = computed(() => {
   if (props.message.fileUrl?.trim()) return "file";
   return "text";
 });
+
+const isTextBased = computed(() =>
+  ["text", "file", "voice"].includes(messageType.value),
+);
 
 const isSameDayNext = computed(() => {
   if (!props.message.nextMessage) return false;
@@ -83,7 +91,7 @@ const shouldShowStatus = computed(() => {
   if (!isNextSameSender || !isSameDayNext.value) return true;
   const currentTime = new Date(props.message.date).getTime();
   const nextTime = new Date(nextMsg.date).getTime();
-  return nextTime - currentTime > 2 * 60 * 1000; // 2 minutes threshold
+  return nextTime - currentTime > 2 * 60 * 1000; // 2 minutes
 });
 
 const isSameSenderNext = computed(
@@ -91,7 +99,7 @@ const isSameSenderNext = computed(
 );
 
 const displayedImages = computed(
-  () => props.message.imageUrl?.slice(0, 3) || [],
+  () => props.message.imageUrl?.slice(0, MAX_VISIBLE_IMAGES) || [],
 );
 
 const checkIcon = computed(() => {
@@ -100,359 +108,228 @@ const checkIcon = computed(() => {
   return "PhClock";
 });
 
-const replyName = computed(() => {
-  if (!props.message.repliedTo) return "";
-  return props.message.repliedTo.senderId === chatStore.currentUserId
-    ? t("you")
-    : props.contact.name;
-});
-
-const replyContent = computed(() => {
-  const msg = props.message.repliedTo;
-  if (!msg) return "";
-  if (msg.videoUrl?.trim()) return t("attachementTypes.video");
-  if (msg.voiceUrl?.trim()) return t("attachementTypes.voice");
-  if (msg.fileUrl?.trim()) return t("attachementTypes.file");
-  if (msg.imageUrl?.length > 0) return t("attachementTypes.image");
-  return msg.text;
-});
-
 const uploadData = computed(() =>
   messagesStore.uploadProgress.get(props.message.id),
 );
 
 // --- Actions ---
-const previewImage = (index: number) => {
-  imageDisplayRef.value?.open(index);
-};
+const previewImage = (index: number) => imageDisplayRef.value?.open(index);
 
-const handleRightClick = (event: MouseEvent) => {
+const handleRightClick = (event: MouseEvent | PointerEvent) => {
   if (props.message.request || !props.message.isSent) return;
   if (!messagesStore.isSelectMode) {
     messagesStore.selectedMessages.clear();
     messagesStore.toggleSelection(props.message);
   }
-  bubbleOptionsRef.value?.openMenu(event.clientX, event.clientY);
+  bubbleOptionsRef.value?.openMenu(
+    (event as MouseEvent).clientX,
+    (event as MouseEvent).clientY,
+  );
 };
 
 const handleLeftClick = () => {
-  if (messagesStore.isSelectMode) {
-    messagesStore.toggleSelection(props.message);
-  }
+  if (messagesStore.isSelectMode) messagesStore.toggleSelection(props.message);
 };
 
-// --- Long Press / Touch Logic ---
-const longPressTimer = ref<ReturnType<typeof setTimeout> | null>(null);
-const touchStartPos = ref({ x: 0, y: 0 });
-
-const onPointerDown = (event: PointerEvent) => {
-  if (event.button !== 0 && event.pointerType === "mouse") return;
-  if (messagesStore.isSelectMode) return;
-
-  touchStartPos.value = { x: event.clientX, y: event.clientY };
-
-  longPressTimer.value = setTimeout(() => {
-    if ("vibrate" in navigator) navigator.vibrate(50);
-    handleRightClick(event as unknown as MouseEvent);
-    longPressTimer.value = null;
-  }, 1000);
-};
-
-const onPointerMove = (event: PointerEvent) => {
-  if (!longPressTimer.value) return;
-  const deltaX = Math.abs(event.clientX - touchStartPos.value.x);
-  const deltaY = Math.abs(event.clientY - touchStartPos.value.y);
-  if (deltaX > 10 || deltaY > 10) {
-    clearTimeout(longPressTimer.value);
-    longPressTimer.value = null;
-  }
-};
-
-const onPointerUp = () => {
-  if (longPressTimer.value) {
-    clearTimeout(longPressTimer.value);
-    longPressTimer.value = null;
-  }
-};
-
-// Cleanup timer if component unmounts while holding
-onBeforeUnmount(() => {
-  if (longPressTimer.value) {
-    clearTimeout(longPressTimer.value);
-  }
-});
+// Replaces 40 lines of pointer event logic
+const longPress = useLongPress(handleRightClick);
 </script>
 
 <template>
   <div
+    @contextmenu.prevent="handleRightClick"
     class="w-full transition-all duration-300 ease-in-out"
-    :class="[
-      isDeleting
-        ? 'max-h-0 overflow-hidden opacity-0'
-        : 'max-h-250 opacity-100',
-    ]"
+    :class="{
+      'max-h-0 opacity-0 overflow-hidden': isDeleting,
+      'max-h-250 opacity-100': !isDeleting,
+    }"
   >
+    <!-- Date / Unread Divider -->
     <div
       v-if="message.isFirstInDate || isFirstUnread"
-      class="flex w-full items-center justify-center py-5"
+      class="py-5 w-full flex items-center justify-center"
     >
       <div
-        class="flex items-center justify-center rounded-full bg-chat-on-background/10 px-4 py-0.5"
+        class="rounded-full bg-on-surface/10 flex items-center justify-center px-4 py-0.5"
       >
-        <div class="select-none text-body-sm text-chat-on-background">
+        <div class="text-on-surface select-none text-body-sm">
           {{
-            !isFirstUnread ? formatDateShort(message.date) : t("unreadMessages")
+            !isFirstUnread
+              ? formatDateShort(message.date)
+              : t("chat.unreadMessages")
           }}
         </div>
       </div>
     </div>
 
+    <!-- Message Row -->
     <div
-      class="flex w-full items-center px-5 pt-2 transition-all duration-200 ease-in-out"
-      :class="[
-        isSelectMode && isSelected
-          ? 'gap-x-3 bg-chat-on-background/5'
-          : 'gap-x-0 bg-chat-on-background/0',
-        isSelectMode ? 'cursor-pointer select-none' : '',
-      ]"
+      class="w-full px-5 pt-2 transition-all duration-200 flex items-center ease-in-out"
+      :class="{
+        'bg-on-surface/5 gap-x-3': isSelectMode && isSelected,
+        'bg-on-surface/0 gap-x-0': !(isSelectMode && isSelected),
+        'cursor-pointer select-none': isSelectMode,
+      }"
     >
       <!-- Selection Checkbox -->
       <div
         v-if="!message.request"
-        class="shrink-0 whitespace-nowrap overflow-hidden transition-all duration-200 ease-in-out"
-        :class="[isSelectMode && isSelected ? 'w-auto' : 'w-0']"
+        class="shrink-0 transition-all duration-200 overflow-hidden ease-in-out whitespace-nowrap"
+        :class="{
+          'w-auto': isSelectMode && isSelected,
+          'w-0': !(isSelectMode && isSelected),
+        }"
       >
         <div
-          class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-primary-secondary transition-all duration-200 ease-in-out"
-          :class="[
-            isSelectMode && isSelected
-              ? 'scale-100 opacity-100'
-              : 'scale-0 opacity-0',
-          ]"
+          class="transition-all duration-200 ease-in-out w-5 h-5 rounded-full bg-gradient-primary-secondary flex items-center justify-center"
+          :class="{
+            'opacity-100 scale-100': isSelectMode && isSelected,
+            'opacity-0 scale-0': !(isSelectMode && isSelected),
+          }"
         >
-          <div class="h-2.5 w-2.5 rounded-full bg-chat-background" />
+          <div class="w-2.5 h-2.5 rounded-full bg-surface"></div>
         </div>
       </div>
 
-      <!-- Message Content Wrapper -->
+      <!-- Request Card Fallback -->
+      <div v-if="message.request" class="py-3 w-full flex justify-center">
+        <RequestCard :message="message" :contact="contact" />
+      </div>
+
+      <!-- Standard Message Bubble -->
       <div
-        v-if="!message.request"
-        class="relative flex flex-1 items-center"
-        :class="[isMine ? 'justify-start' : 'justify-end']"
+        v-else
+        class="flex items-center flex-1 relative"
+        :class="{ 'justify-start': isMine, 'justify-end': !isMine }"
         @click="handleLeftClick"
-        @pointerdown="onPointerDown"
-        @pointermove="onPointerMove"
-        @pointerup="onPointerUp"
-        @pointercancel="onPointerUp"
+        v-on="longPress"
       >
-        <div class="w-full select-none md:select-auto">
+        <div class="select-none md:select-auto w-full">
           <div
-            class="flex w-full items-center"
-            :class="[isMine ? 'justify-start' : 'justify-end']"
+            class="w-full flex items-center"
+            :class="{ 'justify-start': isMine, 'justify-end': !isMine }"
           >
             <div class="flex max-w-4/5 items-end gap-x-3">
               <div class="flex-1">
-                <!-- Text / File / Voice Bubble -->
+                <!-- Text / File / Voice Bubble Wrapper -->
                 <div
-                  v-if="
-                    messageType === 'text' ||
-                    messageType === 'file' ||
-                    messageType === 'voice'
-                  "
-                  class="rounded-xl p-1"
+                  v-if="isTextBased"
+                  class="p-1 rounded-xl"
                   :class="[
                     roundingClasses,
-                    isMine ? 'bg-chat-surface-2' : 'bg-chat-background',
-                    messageType === 'text'
-                      ? 'text-body-sm text-chat-on-background'
-                      : '',
+                    isMine ? 'bg-surface-variant-2' : 'bg-surface',
+                    { 'text-body-sm text-on-surface': messageType === 'text' },
                   ]"
                 >
-                  <!-- Reply Preview -->
-                  <div
+                  <ReplyPreview
                     v-if="messageType === 'text' && message.repliedTo"
-                    class="flex h-10 w-full items-center justify-between gap-x-2 rounded-lg p-2 text-body-sm select-none"
-                    :class="[isMine ? 'bg-chat-surface-3' : 'bg-chat-surface']"
-                  >
-                    <div class="shrink-0 text-chat-on-background/50">
-                      {{ replyName }} :
-                    </div>
-                    <div class="flex-1 text-chat-on-background">
-                      <div
-                        class="line-clamp-1 w-full overflow-hidden text-ellipsis"
-                      >
-                        {{ replyContent }}
-                      </div>
-                    </div>
-                    <BIcon
-                      icon="PhArrowUUpLeft"
-                      weight="fill"
-                      class="h-5 w-5 fill-chat-on-background/20"
-                    />
-                  </div>
-
-                  <p v-if="messageType === 'text'" class="max-w-full p-3">
+                    :message="message"
+                    :contact="contact"
+                    :is-mine="isMine"
+                    :current-user-id="currentUserId"
+                  />
+                  <p v-if="messageType === 'text'" class="p-3 max-w-full">
                     <SafeEmojiText :text="message.text" />
                   </p>
-
                   <FileDisplay
-                    v-else-if="message.fileUrl && messageType === 'file'"
+                    v-else-if="messageType === 'file'"
                     :is-mine="isMine"
                     :url="message.fileUrl"
                     :message-id="message.id"
                     :is-sent="message.isSent"
                   />
-
                   <VoiceDisplay
-                    v-else-if="message.voiceUrl && messageType === 'voice'"
+                    v-else-if="messageType === 'voice'"
                     :url="message.voiceUrl"
                     :message-id="message.id"
                     :is-sent="message.isSent"
                   />
                 </div>
 
-                <!-- Single Image -->
+                <!-- Single Image Bubble -->
                 <div
-                  v-else-if="message.imageUrl && messageType === 'image'"
-                  class="relative max-w-4/5 cursor-pointer overflow-hidden rounded-xl w-85 h-40.5 md:max-w-85"
+                  v-else-if="messageType === 'image'"
                   @click.stop="previewImage(0)"
+                  class="relative cursor-pointer overflow-hidden rounded-xl max-w-4/5 md:max-w-85 w-85 h-40.5"
                 >
                   <BImage
-                    :src="message.imageUrl[0]"
                     fit="cover"
-                    class="absolute inset-0 h-full w-full min-h-full min-w-full max-h-full max-w-full overflow-hidden rounded-xl"
+                    :src="message.imageUrl[0]"
+                    class="w-full h-full rounded-xl overflow-hidden"
                   />
-                  <div
+                  <UploadProgressOverlay
                     v-if="!message.isSent && uploadData"
-                    class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/40"
-                  >
-                    <svg
-                      class="absolute h-12 w-12 -rotate-90"
-                      viewBox="0 0 48 48"
-                    >
-                      <circle
-                        cx="24"
-                        cy="24"
-                        r="22"
-                        class="fill-none stroke-white/30"
-                        stroke-width="3"
-                      />
-                      <circle
-                        cx="24"
-                        cy="24"
-                        r="22"
-                        class="fill-none stroke-white transition-all duration-200 ease-linear"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                        stroke-dasharray="138.2"
-                        :stroke-dashoffset="
-                          138.2 - (uploadData.progress / 100) * 138.2
-                        "
-                      />
-                    </svg>
-                    <BIcon
-                      icon="PhUploadSimple"
-                      class="absolute h-5 w-5 text-white"
-                    />
-                  </div>
+                    :progress="uploadData.progress"
+                    size="lg"
+                  />
                 </div>
 
-                <!-- Multiple Images -->
+                <!-- Multi Image Bubble -->
                 <div
-                  v-else-if="message.imageUrl && messageType === 'multiImage'"
-                  class="flex h-16 max-w-75 items-center gap-x-3"
+                  v-else-if="messageType === 'multiImage'"
+                  class="max-w-75 flex items-center gap-x-3 h-16"
                 >
                   <div
-                    v-if="message.imageUrl.length > 3"
-                    class="flex aspect-square h-full cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-chat-surface-2"
-                    @click="previewImage(3)"
+                    v-if="message.imageUrl.length > MAX_VISIBLE_IMAGES"
+                    @click="previewImage(MAX_VISIBLE_IMAGES)"
+                    class="h-full rounded-xl cursor-pointer overflow-hidden aspect-square flex items-center justify-center bg-surface-variant-2"
                   >
-                    <div
-                      class="select-none text-label-md text-chat-on-background"
-                    >
-                      +{{ message.imageUrl.length - 3 }}
+                    <div class="text-on-surface select-none text-label-md">
+                      +{{ message.imageUrl.length - MAX_VISIBLE_IMAGES }}
                     </div>
                   </div>
+
                   <div
                     v-for="(image, index) in displayedImages"
                     :key="index"
-                    class="relative aspect-square h-full cursor-pointer overflow-hidden rounded-xl"
                     @click.stop="previewImage(index)"
+                    class="relative h-full rounded-xl cursor-pointer overflow-hidden aspect-square"
                   >
                     <BImage
                       :src="image"
-                      class="h-full w-full min-h-full min-w-full max-h-full max-w-full cursor-pointer"
+                      class="min-w-full min-h-full max-w-full max-h-full h-full w-full"
                     />
-                    <div
+                    <UploadProgressOverlay
                       v-if="!message.isSent && uploadData"
-                      class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/40"
-                    >
-                      <svg
-                        class="absolute h-8 w-8 -rotate-90"
-                        viewBox="0 0 32 32"
-                      >
-                        <circle
-                          cx="16"
-                          cy="16"
-                          r="14"
-                          class="fill-none stroke-white/30"
-                          stroke-width="2.5"
-                        />
-                        <circle
-                          cx="16"
-                          cy="16"
-                          r="14"
-                          class="fill-none stroke-white transition-all duration-200 ease-linear"
-                          stroke-width="2.5"
-                          stroke-linecap="round"
-                          stroke-dasharray="87.9"
-                          :stroke-dashoffset="
-                            87.9 - (uploadData.progress / 100) * 87.9
-                          "
-                        />
-                      </svg>
-                      <BIcon
-                        icon="PhUploadSimple"
-                        class="absolute h-3.5 w-3.5 text-white"
-                      />
-                    </div>
+                      :progress="uploadData.progress"
+                      size="sm"
+                    />
                   </div>
                 </div>
 
-                <!-- Video -->
-                <div v-else-if="messageType === 'video'">
-                  <BubbleVideo :video-url="message.videoUrl" mode="playback" />
-                </div>
+                <!-- Video Bubble -->
+                <BubbleVideo
+                  v-else-if="messageType === 'video'"
+                  :video-url="message.videoUrl"
+                  mode="playback"
+                />
 
-                <!-- Timestamp & Status -->
+                <!-- Status / Timestamp Footer -->
                 <div
                   v-if="shouldShowStatus"
-                  class="flex w-full items-center gap-x-2.5 pt-2"
-                  :class="[isMine ? 'justify-start' : 'justify-end']"
+                  class="w-full pt-2 flex items-center gap-x-2.5"
+                  :class="{ 'justify-start': isMine, 'justify-end': !isMine }"
                 >
                   <BIcon
                     v-if="isMine"
                     :icon="checkIcon"
-                    class="h-4 w-4"
-                    :class="[
-                      message.isRead && message.isSent
-                        ? 'fill-chat-primary'
-                        : 'fill-chat-on-background/50',
-                    ]"
+                    class="w-4 h-4"
+                    :class="{
+                      'fill-primary': message.isRead && message.isSent,
+                      'fill-on-surface/50': !(message.isRead && message.isSent),
+                    }"
                   />
-                  <div
-                    class="select-none text-body-sm text-chat-on-background/50"
-                  >
+                  <div class="select-none text-body-sm text-on-surface/50">
                     {{ formatTime(message.date) }}
                   </div>
                 </div>
               </div>
 
               <!-- Avatar -->
-              <div class="w-10 shrink-0 pb-8">
+              <div class="shrink-0 w-10 pb-8">
                 <div
                   v-if="!isMine && (!isSameSenderNext || !isSameDayNext)"
-                  class="h-10 w-10"
+                  class="w-10 h-10"
                 >
                   <ContactAvatar :contact="contact" :show-online="false" />
                 </div>
@@ -461,76 +338,14 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
+        <!-- Hidden Modals / Overlays -->
         <ImageGroupDisplay
           v-show="message.imageUrl && message.imageUrl.length > 0"
           ref="imageDisplayRef"
           :images="message.imageUrl"
         />
-
-        <BubbleOptions ref="bubbleOptionsRef" :message="message" />
-      </div>
-
-      <!-- Request Card -->
-      <div v-if="message.request" class="flex w-full justify-center py-3">
-        <RequestCard :message="message" :contact="contact" />
+        <BubbleOptions :message="message" ref="bubbleOptionsRef" />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-@keyframes slide-out-right {
-  0% {
-    transform: scaleY(-1) translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(-1) translateX(40px);
-    opacity: 0;
-  }
-}
-
-@keyframes slide-out-left {
-  0% {
-    transform: scaleY(-1) translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(-1) translateX(-40px);
-    opacity: 0;
-  }
-}
-
-.animate-delete-right {
-  animation: slide-out-right 300ms ease-in forwards;
-  white-space: nowrap;
-}
-
-.animate-delete-left {
-  animation: slide-out-left 300ms ease-in forwards;
-  white-space: nowrap;
-}
-
-.msg-slide-enter-active {
-  transition: all 0.3s ease-out;
-}
-.msg-slide-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
-}
-
-.msg-grow-enter-active {
-  transition:
-    grid-template-rows 0.4s ease,
-    opacity 0.4s ease;
-  display: grid;
-  grid-template-rows: 1fr;
-}
-.msg-grow-enter-from {
-  grid-template-rows: 0fr;
-  opacity: 0;
-}
-.msg-grow-enter-active > div {
-  overflow: hidden;
-}
-</style>

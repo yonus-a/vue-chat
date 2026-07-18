@@ -68,8 +68,6 @@ export interface VideoRecordDisplayExposed {
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import BubbleVideo from "../chat-bubbles/BubbleVideo.vue";
-import { useCallStore } from "~/stores/callStore.js";
-
 
 const props = withDefaults(
   defineProps<{
@@ -88,7 +86,6 @@ const emit = defineEmits<{
   "flip-camera": [];
 }>();
 
-const callStore = useCallStore();
 
 const isOpen = ref(false);
 const isFlashOn = ref(false);

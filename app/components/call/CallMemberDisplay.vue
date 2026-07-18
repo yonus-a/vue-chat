@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import ContactAvatar from "../chat/contact/ContactAvatar.vue";
 import { computed, ref, watch, onMounted } from "vue";
-import { useChatStore } from "~/stores/chatStore.js";
+import { useProfileStore } from "~/stores/profileStore.js";
 import type { CallMember } from "~/types";
 
 const props = withDefaults(
@@ -75,10 +75,10 @@ const emit = defineEmits<{
   "toggle-fullscreen": [];
 }>();
 
-const chatStore = useChatStore();
+const profileStore = useProfileStore();
 const videoRef = ref<HTMLVideoElement | null>(null);
 
-const isMine = computed(() => chatStore.currentUserId === props.contact.id);
+const isMine = computed(() => profileStore.currentUserId === props.contact.id);
 
 // Detect if camera is on or screen is being shared
 const hasActiveStream = computed(() => {

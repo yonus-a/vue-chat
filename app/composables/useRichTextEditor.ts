@@ -1,0 +1,112 @@
+import { ref, nextTick, type Ref } from "vue";
+import { parseEmojiArray } from "~/utils/emojiParser";
+
+export function useRichTextEditor(inputRef: Ref<HTMLDivElement | null>) {
+  const messageText = ref("");
+  const savedRange = ref<Range | null>(null);
+  const isSelectingEmoji = ref(false);
+
+  const adjustHeight = () => {
+    const el = inputRef.value;
+    if (!el) return;
+
+    // 1. Temporarily shrink to get the accurate scroll height of the content
+    el.style.height = "0px";
+
+    // 2. Cap at 144 to match the CSS max-height. This prevents JS from assigning
+    // a height larger than 144px, which would break the parent flex layout.
+    const maxHeight = 144;
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+  };
+  const saveCursorPosition = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && inputRef.value) {
+      if (inputRef.value.contains(selection.anchorNode)) {
+        savedRange.value = selection.getRangeAt(0).cloneRange();
+      }
+    }
+  };
+
+  const handleContentInput = () => {
+    if (!inputRef.value) return;
+    let rawText = "";
+
+    inputRef.value.childNodes.forEach((node: Node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        rawText += node.textContent;
+      } else if (node.nodeName === "IMG") {
+        rawText += (node as HTMLImageElement).alt;
+      } else if (node.nodeName === "DIV" || node.nodeName === "BR") {
+        rawText += "\n";
+      }
+    });
+
+    messageText.value = rawText;
+    adjustHeight();
+  };
+
+  const handleEmojiSelect = (emoji: string, shouldBlurAfter = false) => {
+    isSelectingEmoji.value = true;
+    if (!inputRef.value) return;
+
+    inputRef.value.focus();
+    const selection = window.getSelection();
+    let range;
+
+    if (savedRange.value) {
+      range = savedRange.value;
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(inputRef.value);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    range.deleteContents();
+
+    const parsed = parseEmojiArray(emoji);
+    if (parsed.length > 0 && parsed[0].type === "emoji") {
+      const chunk = parsed[0];
+      const img = document.createElement("img");
+      img.src = `/emojis/apple/webp/${chunk.hex}.webp`;
+      img.alt = chunk.content;
+      img.className =
+        "inline-block h-5 w-5 mx-0.5 align-middle select-text pointer-events-none";
+
+      range.insertNode(img);
+      range.setStartAfter(img);
+      range.collapse(true);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      savedRange.value = range.cloneRange();
+    }
+
+    handleContentInput();
+
+    nextTick(() => {
+      if (shouldBlurAfter) inputRef.value?.blur();
+      adjustHeight();
+    });
+
+    isSelectingEmoji.value = false;
+  };
+
+  const clearInput = () => {
+    messageText.value = "";
+    if (inputRef.value) inputRef.value.innerHTML = "";
+    nextTick(() => adjustHeight());
+  };
+
+  return {
+    messageText,
+    isSelectingEmoji,
+    saveCursorPosition,
+    handleContentInput,
+    handleEmojiSelect,
+    clearInput,
+    adjustHeight,
+  };
+}

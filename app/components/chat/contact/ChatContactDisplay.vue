@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import SafeEmojiText from "~/components/general/SafeEmojiText.vue";
+import { useProfileStore } from "~/stores/profileStore.js";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "~/stores/chatStore.js";
+import { chatContactDisplay } from "@i18n/locales";
 import ContactAvatar from "./ContactAvatar.vue";
 import type { Contact } from "~/types";
-import useLocalI18n from "~/composables/useLocalI18n";
-import { chatContactDisplay } from "@i18n/locales";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -14,6 +15,8 @@ const props = defineProps<{
 
 const { t } = useLocalI18n(chatContactDisplay);
 const chatStore = useChatStore();
+const profileStore = useProfileStore();
+const currentUserId = computed(() => profileStore.currentUserId);
 
 const isActive = computed(
   () => chatStore.activeConversationId === props.contact.id,
@@ -26,7 +29,7 @@ const openChat = () => {
 };
 
 const isFromMe = computed(
-  () => props.contact.lastMessage?.senderId === chatStore.currentUserId,
+  () => props.contact.lastMessage?.senderId === currentUserId.value,
 );
 
 const lastMessageIcon = computed(() => {

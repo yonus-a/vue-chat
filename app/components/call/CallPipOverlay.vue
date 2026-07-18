@@ -16,8 +16,7 @@
       class="absolute inset-0 z-0 h-full w-full object-cover"
       :class="{
         'scale-x-[-1]':
-          !callStore.isSharingScreen &&
-          targetMember.id === chatStore.currentUserId,
+          !callStore.isSharingScreen && targetMember.id === currentUserId,
       }"
     />
 
@@ -56,16 +55,17 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue";
 import ContactAvatar from "../chat/contact/ContactAvatar.vue";
-import { useChatStore } from "~/stores/chatStore.js";
+import { useProfileStore } from "~/stores/profileStore.js";
 import { useCallStore } from "~/stores/callStore.js";
 
-const chatStore = useChatStore();
 const callStore = useCallStore();
 
+const profileStore = useProfileStore();
 const pipContainer = ref<HTMLElement | null>(null);
 const pipVideo = ref<HTMLVideoElement | null>(null);
 
 const { width: windowWidth, height: windowHeight } = useWindowSize();
+const currentUserId = computed(() => profileStore.currentUserId);
 
 // --- DRAG LOGIC WITH BOUNDARIES & CORNER SNAPPING ---
 const PIP_WIDTH = 280;
@@ -117,7 +117,7 @@ const clampedStyle = computed(() => {
 // --- TARGET MEMBER & STREAM LOGIC ---
 const targetMember = computed(() => {
   const others = callStore.callMembers.filter(
-    (m) => m.id !== chatStore.currentUserId,
+    (m) => m.id !== currentUserId.value,
   );
   return others.length > 0 ? others[0] : callStore.callMembers[0];
 });
@@ -130,7 +130,7 @@ const targetMember = computed(() => {
  */
 const activeStream = computed(() => {
   const others = callStore.callMembers.filter(
-    (m) => m.id !== chatStore.currentUserId,
+    (m) => m.id !== currentUserId.value,
   );
   const otherStream = others.find((m) => m.stream)?.stream;
 
@@ -142,7 +142,7 @@ const activeStream = computed(() => {
 
 const showVideo = computed(() => {
   const otherStreaming = callStore.callMembers.some(
-    (m) => m.id !== chatStore.currentUserId && m.stream,
+    (m) => m.id !== currentUserId.value && m.stream,
   );
   if (otherStreaming) return true;
 

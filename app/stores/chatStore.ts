@@ -14,7 +14,6 @@ export const useChatStore = defineStore("chat", () => {
     return Math.floor((h - 138) / 76) + 1;
   });
 
-  const currentUserId = ref<string>("");
   const chosenRole = ref<UserRoleKey>("user");
   const currentUserBirthDate = ref<Date | null>(
     new Date("1999-11-25T00:00:00Z"),
@@ -177,7 +176,6 @@ export const useChatStore = defineStore("chat", () => {
   });
 
   return {
-    currentUserId,
     chosenRole,
     currentUserBirthDate,
     conversationStates,

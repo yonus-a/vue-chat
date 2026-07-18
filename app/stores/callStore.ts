@@ -3,9 +3,12 @@ import type { CallHandlers, CallKind, CallMember } from "~/types";
 import { useChatStore } from "./chatStore";
 import type { Contact } from "~/types";
 import { defineStore } from "pinia";
+import { useProfileStore } from "./profileStore";
 
 export const useCallStore = defineStore("call", () => {
   const chatStore = useChatStore();
+  const profileStore = useProfileStore();
+  const currentUserId = computed(() => profileStore.currentUserId);
   const { checkMediaStatus, requestWithPopup } = useAppPermissions();
   let handlers: CallHandlers;
 
@@ -61,10 +64,10 @@ export const useCallStore = defineStore("call", () => {
 
   // Computed
   const callMembers = computed<CallMember[]>(() => {
-    if (!chatStore.currentUserId) return participants.value;
+    if (!currentUserId.value) return participants.value;
 
     const currentUser: CallMember = {
-      id: chatStore.currentUserId,
+      id: currentUserId.value,
       name: "",
       lastName: "",
       imageUrl: "",

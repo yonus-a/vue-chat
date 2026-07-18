@@ -1,5 +1,12 @@
-import { ExtendedMessage, Message, MessagesHandlers, StateKeys, UploadProgressEvent } from "~/types";
+import {
+  ExtendedMessage,
+  Message,
+  MessagesHandlers,
+  StateKeys,
+  UploadProgressEvent,
+} from "~/types";
 import { useAppToast } from "~/composables/useAppToast";
+import { useProfileStore } from "./profileStore";
 import { useDate } from "~/composables/useDate";
 import { useChatStore } from "./chatStore";
 import { useI18n } from "vue-i18n";
@@ -10,6 +17,9 @@ export const useMessagesStore = defineStore("messages-store", () => {
   const { openToast } = useAppToast();
   const { formatDateShort, formatTime } = useDate();
   const chatStore = useChatStore();
+  const profileStore = useProfileStore();
+  const currentUserId = computed(() => profileStore.currentUserId);
+  
   let handlers: MessagesHandlers;
 
   function setHandlers(val: MessagesHandlers) {
@@ -38,7 +48,7 @@ export const useMessagesStore = defineStore("messages-store", () => {
     if (selectedMessages.value.size !== 1) return false;
     const msg = selectedArray.value[0];
     if (!msg) return false;
-    const isMine = msg.senderId === chatStore.currentUserId;
+    const isMine = msg.senderId === currentUserId.value;
     const hoursPassed =
       (Date.now() - new Date(msg.date).getTime()) / (1000 * 60 * 60);
     return isMine && hoursPassed < editWindowHours.value;
@@ -47,7 +57,7 @@ export const useMessagesStore = defineStore("messages-store", () => {
   const canDelete = computed(() => {
     if (selectedMessages.value.size === 0) return false;
     return selectedArray.value.every((msg) => {
-      const isMine = msg.senderId === chatStore.currentUserId;
+      const isMine = msg.senderId === currentUserId.value;
       const hoursPassed =
         (Date.now() - new Date(msg.date).getTime()) / (1000 * 60 * 60);
       return isMine && hoursPassed < editWindowHours.value;
@@ -85,7 +95,7 @@ export const useMessagesStore = defineStore("messages-store", () => {
   const copyMessageText = () => {
     const textToCopy = selectedArray.value
       .map((msg) => {
-        const isMine = msg.senderId === chatStore.currentUserId;
+        const isMine = msg.senderId === currentUserId.value;
         const senderName = isMine ? t("chat.you") : msg.contact?.name || "User";
         const dateTime = `${formatDateShort(msg.date)}, ${formatTime(msg.date)}`;
         const content =
