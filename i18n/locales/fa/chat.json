@@ -106,7 +106,26 @@
     "call": {
       "title": "تماس",
       "you": "شما",
-      "deviceDoesntSupport": "دستگاه شما از این قابلیت پشتیبانی نمیکند."
+      "deviceDoesntSupport": "دستگاه شما از این قابلیت پشتیبانی نمیکند.",
+      "errors": {
+        "noMicDevice": "میکروفونی شناسایی نشد",
+        "noCameraDevice": "دوربینی شناسایی نشد",
+        "cameraDenied": "دسترسی به دوربین رد شد",
+        "micDenied": "دسترسی به میکروفون رد شد",
+        "noMicFound": "میکروفونی یافت نشد",
+        "micAccessError": "خطا در دسترسی به میکروفون",
+        "noCameraFound": "دوربینی یافت نشد",
+        "cameraAccessError": "خطا در دسترسی به دوربین",
+        "mediaInitError": "خطا در راه‌اندازی دستگاه‌های رسانه‌ای",
+        "screenShareMobileUnsupported": "اشتراک‌گذاری صفحه در دستگاه‌های موبایل پشتیبانی نمی‌شود",
+        "screenShareBrowserUnsupported": "اشتراک‌گذاری صفحه در این مرورگر پشتیبانی نمی‌شود",
+        "screenShareDenied": "دسترسی به اشتراک‌گذاری صفحه رد شد",
+        "screenAccessError": "امکان دسترسی به صفحه وجود ندارد",
+        "screenShareMobileMaybeUnavailable": "ممکن است اشتراک‌گذاری صفحه در دستگاه‌های موبایل در دسترس نباشد",
+        "screenShareStartFailed": "راه‌اندازی اشتراک‌گذاری صفحه ناموفق بود",
+        "cameraUnavailable": "دوربین در دسترس نیست",
+        "flashlightToggleFailed": "تغییر حالت چراغ قوه ناموفق بود"
+      }
     },
     "board": {
       "title": "تخته",

@@ -6,6 +6,7 @@ import { useMediaStore } from "./stores/mediaStore";
 import { useProfileStore } from "./stores/profileStore";
 
 export { default as ChatPage } from "./components/ChatPage.vue";
+export { default as Call } from "./components/call/Call.vue";
 
 export { default as BVirtualVerticalList } from "./components/global/BVirtualVerticalList.vue";
 export { default as BEmojiPicker } from "./components/global/BEmojiPicker.vue";
@@ -29,4 +30,12 @@ export * from "./stores/chatStore";
 export * from "./stores/mediaStore";
 export * from "./stores/profileStore";
 
-export { useChatStore, useCallStore, useMessagesStore, useMediaStore, useProfileStore };
+export { provideCallHandlers } from "./provider/callProvider";
+
+export {
+  useChatStore,
+  useCallStore,
+  useMessagesStore,
+  useMediaStore,
+  useProfileStore,
+};

@@ -16,7 +16,7 @@ const props = defineProps<{
 const { t } = useLocalI18n(chatContactDisplay);
 const chatStore = useChatStore();
 const profileStore = useProfileStore();
-const currentUserId = computed(() => profileStore.currentUserId);
+const currentUserId = computed(() => profileStore.userId);
 
 const isActive = computed(
   () => chatStore.activeConversationId === props.contact.id,

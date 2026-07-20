@@ -1,3 +1,5 @@
+import type { SignalData } from "simple-peer";
+
 export type ThemeMode = "light" | "dark";
 
 export interface CallMember extends Contact {
@@ -66,21 +68,61 @@ export interface ChatProvider {
 
 export type CallKind = "voice-call" | "video-call";
 
-export type CallSignalEvent =
-  | { type: "offer"; callId: string; sdp: RTCSessionDescriptionInit }
-  | { type: "answer"; callId: string; sdp: RTCSessionDescriptionInit }
-  | { type: "ice"; callId: string; candidate: RTCIceCandidateInit }
-  | { type: "end"; callId: string }
-  | { type: "join"; callId: string; memberId: string }
-  | { type: "leave"; callId: string; memberId: string };
+export type CallMessage =
+  | {
+      type: "signal";
+      payload: {
+        signal: SignalData & { sdp: string };
+        from: string;
+        to: string;
+        name: string;
+      };
+    }
+  | { type: "join"; payload: { from: string; name: string } }
+  | {
+      type: "track_type";
+      payload: { from: string; types: { id: string; type: TrackType }[] };
+    }
+  | {
+      type: "call";
+      payload: {
+        from: string;
+        name: string;
+        channel: string;
+        avatar?: string;
+      };
+    }
+  | {
+      type: "hangup";
+      payload: { from: string; channel: string; name?: string };
+    };
+
+export interface TurnConfig {
+  urls: string[];
+  username?: string;
+  credential?: string;
+  iceTransportPolicy?: "relay" | "all";
+}
+
+export interface CallPublishOptions {
+  retain?: boolean;
+}
+
+export type Credential = {
+  ttl: number;
+  user: string;
+  pass: string;
+  urls: string[];
+};
 
 export interface CallHandlers {
-  initiate(conversationId: string, kind: CallKind): Promise<{ callId: string }>;
-  sendOffer(callId: string, sdp: RTCSessionDescriptionInit): Promise<void>;
-  sendAnswer(callId: string, sdp: RTCSessionDescriptionInit): Promise<void>;
-  sendIce(callId: string, candidate: RTCIceCandidateInit): Promise<void>;
-  end(callId: string): Promise<void>;
-  onSignal(handler: (e: CallSignalEvent) => void): () => void;
+  credential: Credential;
+  handleGenerateCred: () => Promise<void>;
+  publisher: (json: string) => Promise<void>;
+  subscriber: (
+    callback: (message: CallMessageSchema) => Promise<void>,
+  ) => Promise<number>;
+  unSubscriber: (id: number) => Promise<void>;
 }
 
 export interface FetchContactsParams {
@@ -145,6 +187,61 @@ export interface ProfileAttachmentsPage {
 }
 
 export interface ProfileHandlers {
-  fetchMedia(params: FetchProfileAttachmentsParams): Promise<ProfileAttachmentsPage>;
-  fetchFiles(params: FetchProfileAttachmentsParams): Promise<ProfileAttachmentsPage>;
+  fetchMedia(
+    params: FetchProfileAttachmentsParams,
+  ): Promise<ProfileAttachmentsPage>;
+  fetchFiles(
+    params: FetchProfileAttachmentsParams,
+  ): Promise<ProfileAttachmentsPage>;
 }
+
+export const enum CallMessageType {
+  Signal = "signal",
+  Join = "join",
+  TrackType = "track_type",
+  Call = "call",
+  Hangup = "hangup",
+}
+
+export type TrackType = "webcam" | "screen" | "audio" | "webcam_audio";
+
+export type CallMessageSchema =
+  | {
+      type: CallMessageType.Signal;
+      payload: {
+        signal: SignalData & { sdp: string };
+        from: string;
+        to: string;
+        name: string;
+      };
+    }
+  | {
+      type: CallMessageType.Join;
+      payload: {
+        from: string;
+        name: string;
+      };
+    }
+  | {
+      type: CallMessageType.TrackType;
+      payload: {
+        from: string;
+        types: { id: string; type: TrackType }[];
+      };
+    }
+  | {
+      type: CallMessageType.Call;
+      payload: {
+        from: string;
+        name: string;
+        channel: string;
+        avatar: string;
+      };
+    }
+  | {
+      type: CallMessageType.Hangup;
+      payload: {
+        from: string;
+        channel: string;
+      };
+    };

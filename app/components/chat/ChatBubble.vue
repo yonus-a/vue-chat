@@ -45,7 +45,7 @@ const bubbleOptionsRef =
 const MAX_VISIBLE_IMAGES = 3;
 
 const profileStore = useProfileStore();
-const currentUserId = computed(() => profileStore.currentUserId);
+const currentUserId = computed(() => profileStore.userId);
 
 const isMine = computed(() => props.message.senderId === currentUserId.value);
 const isSelected = computed(() =>

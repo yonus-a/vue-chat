@@ -35,33 +35,19 @@
           >
             <div
               class="relative flex items-center gap-x-4 transition-all duration-200 ease-in-out"
-              :class="[
-                isSelectMode
-                  ? 'pointer-events-none opacity-0'
-                  : 'pointer-events-auto opacity-100',
-              ]"
             >
               <div class="hidden md:block">
                 <BIcon
                   icon="PhPhone"
-                  class="h-6 w-6"
-                  :class="[
-                    contact?.isActive || isInCall
-                      ? 'cursor-pointer fill-chat-on-background/50'
-                      : 'cursor-not-allowed fill-chat-on-background/25',
-                  ]"
+                  class="h-6 w-6 cursor-pointer fill-chat-on-background/50"
                   @click="initCall"
                   v-if="selectedChat.serviceType !== 'chat'"
                 />
               </div>
             </div>
-            <div
+            <!-- <div
               class="hidden items-center gap-x-4 md:flex"
-              :class="[
-                !isSelectMode
-                  ? 'pointer-events-none opacity-0'
-                  : 'pointer-events-auto opacity-100',
-              ]"
+             
             >
               <BIcon
                 icon="PhTrash"
@@ -78,7 +64,7 @@
                 class="h-6 w-6 cursor-pointer fill-chat-on-background"
                 @click="copy"
               />
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -116,13 +102,13 @@
 <script setup lang="ts">
 import { useMessagesStore } from "~/stores/messageStores.js";
 import ContactAvatar from "./contact/ContactAvatar.vue";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useCallStore } from "~/stores/callStore.js";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useDate } from "~/composables/useDate.js";
 import { formatDuration } from "~/utils/format";
-import type { Contact } from "~/types";
-import useLocalI18n from "~/composables/useLocalI18n";
 import { chatPageBar } from "@i18n/locales";
+import type { Contact } from "~/types";
 import { computed } from "vue";
 
 const props = withDefaults(
@@ -143,15 +129,15 @@ const emit = defineEmits<{
 
 const messagesStore = useMessagesStore();
 const { formatRelativeDate } = useDate();
+const { t } = useLocalI18n(chatPageBar);
 const callStore = useCallStore();
 const chatStore = useChatStore();
-const { t } = useLocalI18n(chatPageBar);
+
 const currentConversationId = computed(() => chatStore.activeConversationId);
-const selectedChat = computed(() => props.contact);
 const isSelectMode = computed(() => messagesStore.isSelectMode);
 const canDelete = computed(() => messagesStore.canDelete);
 const isInCall = computed(() => callStore.isActive);
-
+const selectedChat = computed(() => props.contact);
 const callData = computed(() => ({
   show: callStore.isActive,
   duration: formatDuration(callStore.elapsedTime),
@@ -175,13 +161,8 @@ const deleteMessages = () => {
 };
 
 const initCall = () => {
-  const kind = props.contact?.serviceType;
-  if (
-    props.contact?.isActive &&
-    currentConversationId.value &&
-    (kind === "voice-call" || kind === "video-call")
-  ) {
-    callStore.startCall(props.contact, currentConversationId.value, kind);
+  if (currentConversationId.value) {
+    callStore.startCall(currentConversationId.value);
   }
 };
 

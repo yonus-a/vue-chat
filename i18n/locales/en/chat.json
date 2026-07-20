@@ -106,7 +106,26 @@
     "call": {
       "title": "Call",
       "you": "You",
-      "deviceDoesntSupport": "Your device does not support this feature."
+      "deviceDoesntSupport": "Your device does not support this feature.",
+      "errors": {
+        "noMicDevice": "No microphone device detected",
+        "noCameraDevice": "No camera device detected",
+        "cameraDenied": "Camera access denied",
+        "micDenied": "Microphone access denied",
+        "noMicFound": "No microphone found",
+        "micAccessError": "Error accessing microphone",
+        "noCameraFound": "No camera found",
+        "cameraAccessError": "Error accessing camera",
+        "mediaInitError": "Error initializing media devices",
+        "screenShareMobileUnsupported": "Screen sharing is not supported on mobile devices",
+        "screenShareBrowserUnsupported": "Screen sharing is not supported in this browser",
+        "screenShareDenied": "Screen sharing permission denied",
+        "screenAccessError": "Unable to access screen",
+        "screenShareMobileMaybeUnavailable": "Screen sharing may not be available on mobile devices",
+        "screenShareStartFailed": "Failed to start screen sharing",
+        "cameraUnavailable": "Camera not available",
+        "flashlightToggleFailed": "Failed to toggle flashlight"
+      }
     },
     "board": {
       "title": "Board",

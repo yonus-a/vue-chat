@@ -26,9 +26,8 @@ const chats = computed(() =>
 );
 
 const filters = computed<ChatFilter[]>(() => [
-  { key: "online", label: t("filters.online") },
-  { key: "ended", label: t("filters.ended") },
   { key: "active", label: t("filters.active") },
+  { key: "ended", label: t("filters.ended") },
 ]);
 
 const setFilter = (type: StateKeys) => {

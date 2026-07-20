@@ -226,7 +226,7 @@ const messagesStore = useMessagesStore();
 const { t } = useLocalI18n(chatMessages);
 const { formatDateShort } = useDate();
 const profileStore = useProfileStore();
-const currentUserId = computed(() => profileStore.currentUserId);
+const currentUserId = computed(() => profileStore.userId);
 
 const chatId = computed(() => chatStore.activeConversationId);
 const hasCall = computed(() => callStore.isActive);

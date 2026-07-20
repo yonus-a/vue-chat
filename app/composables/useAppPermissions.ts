@@ -14,6 +14,7 @@ interface PermissionRequest {
   state: PopupState;
   resolve: (value: boolean) => void;
 }
+
 const permissionBus = useEventBus<PermissionRequest>("global-permission-popup");
 export function useAppPermissions() {
   const checkMediaStatus = async () => {

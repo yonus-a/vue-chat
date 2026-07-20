@@ -33,11 +33,6 @@
       />
     </div>
 
-    <CallPageOverlay
-      v-show="isCallMode && selectedChat"
-      :contact="selectedChat"
-    />
-
     <PermissionPopup />
   </div>
 </template>
@@ -46,15 +41,14 @@
 import { computed, ref, nextTick, watch } from "vue";
 import PermissionPopup from "~/components/chat/chat-input/PermissionPopup.vue";
 import ChatProfileOverview from "~/components/chat/ChatProfileOverview.vue";
-import CallPageOverlay from "~/components/call/CallPageOverlay.vue";
 import type { ChatTextField } from "~/types/components/chat-input";
 import type { MenuOption } from "~/types/components/menu-options";
 import ChatMessages from "~/components/chat/ChatMessages.vue";
 import ChatPageBar from "~/components/chat/ChatPageBar.vue";
 import ChatInput from "~/components/chat/ChatInput.vue";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "~/stores/chatStore";
 import { useCallStore } from "~/stores/callStore";
-import useLocalI18n from "~/composables/useLocalI18n";
 import { chatView } from "@i18n/locales";
 const chatStore = useChatStore();
 const callStore = useCallStore();
@@ -67,7 +61,7 @@ const isMobile = computed(() => width.value < 768);
 
 const chatId = computed(() => chatStore.activeConversationId);
 const isProfile = computed(() => chatStore.profileViewOpen);
-const isCallMode = computed(() => callStore.isActive && !callStore.isPiP);
+const isCallMode = computed(() => callStore.isActive);
 
 const selectedChat = computed(() => {
   if (!chatId.value) return null;

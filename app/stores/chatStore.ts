@@ -4,6 +4,9 @@ import { defineStore } from "pinia";
 export const useChatStore = defineStore("chat", () => {
   const { height: windowHeight } = useWindowSize();
   let handlers: ChatHandlers;
+  const calls = ref<
+    { channel: string; name: string; avatar?: string; from: string }[]
+  >([]);
 
   function setHandlers(val: ChatHandlers) {
     handlers = val;
@@ -193,5 +196,6 @@ export const useChatStore = defineStore("chat", () => {
     loadNextPage,
     getContactById,
     getDisplayedContacts,
+    calls,
   };
 });

@@ -10,16 +10,18 @@ export const useProfileStore = defineStore("profile-store", () => {
     handlers = val;
   }
 
-  const currentUserId = ref<string>("");
+  const userId = ref<string>("");
+  const userName = ref<string>("");
+  const userAvatar = ref<Blob | undefined>(undefined);
   const mediaMap = ref<Record<string, string[]>>({});
   const filesMap = ref<Record<string, string[]>>({});
   const mediaPage = ref<Record<string, number>>({});
   const filesPage = ref<Record<string, number>>({});
   const mediaHasNextPage = ref<Record<string, boolean>>({});
   const filesHasNextPage = ref<Record<string, boolean>>({});
+  const pageSize = ref(DEFAULT_PAGE_SIZE);
   const mediaLoading = ref(false);
   const filesLoading = ref(false);
-  const pageSize = ref(DEFAULT_PAGE_SIZE);
 
   const fetchMedia = async (
     conversationId: string,
@@ -88,7 +90,9 @@ export const useProfileStore = defineStore("profile-store", () => {
     mediaPage,
     filesPage,
     mediaHasNextPage,
-    currentUserId,
+    userId,
+    userName,
+    userAvatar,
     filesHasNextPage,
     mediaLoading,
     filesLoading,

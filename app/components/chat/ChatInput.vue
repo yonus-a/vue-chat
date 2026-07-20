@@ -237,8 +237,6 @@ import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";
 import { chatInput } from "@i18n/locales";
 
-
-
 const props = withDefaults(
   defineProps<{
     isActive?: boolean;
@@ -258,7 +256,7 @@ const chatStore = useChatStore();
 const callStore = useCallStore();
 
 const profileStore = useProfileStore();
-const currentUserId = computed(() => profileStore.currentUserId);
+const currentUserId = computed(() => profileStore.userId);
 
 // Template Refs (Properly typed, no 'any')
 const rootElements = useTemplateRef<HTMLElement>("rootElements");
@@ -534,7 +532,7 @@ const handleGlobalKeyDown = (event: KeyboardEvent) => {
     if (textMode.value !== "normal" || messagesStore.selectedArray.length > 0) {
       cancelAction();
     } else {
-      const isCallMode = callStore.isActive && !callStore.isPiP;
+      const isCallMode = callStore.isActive;
       const isProfileView = chatStore.profileViewOpen;
 
       if (isCallMode) callStore.minimize();

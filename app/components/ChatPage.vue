@@ -4,12 +4,15 @@ import NoDataDisplay from "./general/NoDataDisplay.vue";
 import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "../stores/chatStore";
 import ChatList from "./chat/contact/ChatList.vue";
+import { useCallStore } from "~/stores/callStore";
 import ChatView from "./chat/ChatView.vue";
 import { chatPage } from "@i18n/locales";
+import Call from "./call/Call.vue";
 import { computed } from "vue";
 
 const { width } = useWindowSize();
 const chatStore = useChatStore();
+const callStore = useCallStore();
 const { t } = useLocalI18n(chatPage);
 
 const isMobile = computed(() => width.value < 768);
@@ -46,4 +49,5 @@ const showMessagingSection = computed(() => {
       <ChatList />
     </div>
   </div>
+  <Call v-if="callStore.channelId" />
 </template>

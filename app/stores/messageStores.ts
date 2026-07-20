@@ -18,8 +18,8 @@ export const useMessagesStore = defineStore("messages-store", () => {
   const { formatDateShort, formatTime } = useDate();
   const chatStore = useChatStore();
   const profileStore = useProfileStore();
-  const currentUserId = computed(() => profileStore.currentUserId);
-  
+  const currentUserId = computed(() => profileStore.userId);
+
   let handlers: MessagesHandlers;
 
   function setHandlers(val: MessagesHandlers) {

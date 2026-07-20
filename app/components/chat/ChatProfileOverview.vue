@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import profileBackground from "~/assets/lib-images/chat/profile-background.webp";
-import { ref, computed, watch } from "vue";
+import { useProfileStore } from "~/stores/profileStore.js";
 import ContactAvatar from "./contact/ContactAvatar.vue";
+import useLocalI18n from "~/composables/useLocalI18n";
 import { useChatStore } from "~/stores/chatStore.js";
 import { useCallStore } from "~/stores/callStore.js";
-import { useProfileStore } from "~/stores/profileStore.js";
+import { chatProfileOverview } from "@i18n/locales";
 import FileDisplay from "./profile/FileDisplay.vue";
 import { useDate } from "~/composables/useDate.js";
+import { ref, computed, watch } from "vue";
 import type { Contact } from "~/types";
-import useLocalI18n from "~/composables/useLocalI18n";
-import { chatProfileOverview } from "@i18n/locales";
+
 interface Action {
   title: string;
   icon: string;
@@ -41,18 +42,26 @@ const localProfile = ref<Contact>();
 const currentTab = ref(0);
 
 const mediaAttachements = computed<string[]>(
-  () => (conversationId.value && profileStore.mediaMap[conversationId.value]) ?? [],
+  () =>
+    (conversationId.value && profileStore.mediaMap[conversationId.value]) ?? [],
 );
 const fileAttachements = computed<string[]>(
-  () => (conversationId.value && profileStore.filesMap[conversationId.value]) ?? [],
+  () =>
+    (conversationId.value && profileStore.filesMap[conversationId.value]) ?? [],
 );
 const isLoadingMedia = computed(() => profileStore.mediaLoading);
 const isLoadingAttachements = computed(() => profileStore.filesLoading);
 const hasMediaNextPage = computed(
-  () => (conversationId.value && profileStore.mediaHasNextPage[conversationId.value]) ?? false,
+  () =>
+    (conversationId.value &&
+      profileStore.mediaHasNextPage[conversationId.value]) ??
+    false,
 );
 const hasFileNextPage = computed(
-  () => (conversationId.value && profileStore.filesHasNextPage[conversationId.value]) ?? false,
+  () =>
+    (conversationId.value &&
+      profileStore.filesHasNextPage[conversationId.value]) ??
+    false,
 );
 
 const role = computed(() => chatStore.chosenRole);
@@ -192,11 +201,7 @@ const handleAction = (action: Action) => {
     case "voice-call":
     case "video-call":
       if (chatStore.activeConversationId && props.profile) {
-        callStore.startCall(
-          props.profile,
-          chatStore.activeConversationId,
-          action.key,
-        );
+        callStore.startCall(chatStore.activeConversationId);
       }
       break;
   }
@@ -414,7 +419,8 @@ const fetchMoreFiles = async () => {
                         <FileDisplay
                           :url="file"
                           :loading="
-                            isLoadingAttachements && fileAttachements.length === 0
+                            isLoadingAttachements &&
+                            fileAttachements.length === 0
                           "
                         />
                       </div>

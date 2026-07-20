@@ -9,7 +9,7 @@ export function useChatMessageList(chatId: ComputedRef<string | null>) {
   const chatStore = useChatStore();
 
   const profileStore = useProfileStore();
-  const currentUserId = computed(() => profileStore.currentUserId);
+  const currentUserId = computed(() => profileStore.userId);
 
   const messages = computed<Message[]>(
     () => messagesStore.messagesMap[chatId.value ?? ""] ?? [],
